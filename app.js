@@ -1,7 +1,7 @@
 const {createClient} = supabase;
-const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'academia-auth-session'}});
+const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'academia-auth-session'}});
 let session=null, role='unknown', isOwner=false, ownerId=null, supervisor=null, permissions={}, students=[], attendance=[], payments=[], links=[], supervisors=[], tab='overview', authMode='login', authChannel='email', pendingPhone='';
-let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null;
+let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='';
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG').format(Number(n||0))+' ج.م', dateText=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ar-EG'):'—';
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const msg=t=>{clearTimeout(messageTimer);$('message').textContent=t;$('message').hidden=false;messageTimer=setTimeout(()=>$('message').hidden=true,6000)};
@@ -18,10 +18,39 @@ $('toggle-auth').onclick=()=>{authMode=authMode==='login'?'signup':'login';updat
 updateAuthView();
 $('forgot-password').onclick=async()=>{const email=$('email').value.trim();if(!email){$('auth-message').textContent='اكتب بريدك الإلكتروني أولاً.';$('email').focus();return}try{$('auth-message').textContent='جارٍ إرسال رسالة الاستعادة…';const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(error)throw error;$('auth-message').textContent='تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني.'}catch(e){$('auth-message').textContent=e.message}};
 $('reset-form').onsubmit=lockForm(async e=>{e.preventDefault();const password=$('new-password').value;try{const {error}=await db.auth.updateUser({password});if(error)throw error;recoveryMode=false;$('reset-form').hidden=true;$('auth-form').hidden=false;$('toggle-auth').hidden=false;$('forgot-password').hidden=false;$('auth-message').textContent='تم تغيير كلمة المرور بنجاح.';renderShell()}catch(x){$('auth-message').textContent=x.message}});
-$('auth-form').onsubmit=lockForm(async e=>{e.preventDefault();$('auth-message').textContent='جارٍ التنفيذ…';try{const password=$('password').value;let result;if(authChannel==='email'){const email=$('email').value.trim();result=authMode==='login'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password,options:{data:{full_name:$('full-name').value.trim()}}});if(result.error)throw result.error;$('auth-message').textContent=authMode==='login'?'تم تسجيل الدخول':'تم إنشاء الحساب. راجع بريدك لتأكيد الحساب إذا طُلب ذلك.'}else{const phone=$('phone').value.trim();if(!/^\\+[1-9]\\d{7,14}$/.test(phone))throw new Error('اكتب رقم الهاتف بالصيغة الدولية، مثال: +201xxxxxxxxx');if(authMode==='login'){result=await db.auth.signInWithPassword({phone,password});if(result.error)throw result.error;$('auth-message').textContent='تم تسجيل الدخول'}else{result=await db.auth.signUp({phone,password,options:{data:{full_name:$('full-name').value.trim()}}});if(result.error)throw result.error;pendingPhone=phone;$('auth-form').hidden=true;$('otp-form').hidden=false;$('auth-message').textContent='أرسلنا رمز التأكيد إذا كانت خدمة SMS مفعّلة في Supabase.'}}}catch(e){$('auth-message').textContent=e.message}});
+$('auth-form').onsubmit=lockForm(async e=>{e.preventDefault();$('auth-message').textContent='جارٍ التنفيذ…';try{const password=$('password').value;let result;if(authChannel==='email'){const email=$('email').value.trim();result=authMode==='login'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+window.location.pathname,data:{full_name:$('full-name').value.trim()}}});if(result.error)throw result.error;$('auth-message').textContent=authMode==='login'?'تم تسجيل الدخول':'تم إنشاء الحساب. راجع بريدك لتأكيد الحساب إذا طُلب ذلك.'}else{const phone=$('phone').value.trim();if(!/^\\+[1-9]\\d{7,14}$/.test(phone))throw new Error('اكتب رقم الهاتف بالصيغة الدولية، مثال: +201xxxxxxxxx');if(authMode==='login'){result=await db.auth.signInWithPassword({phone,password});if(result.error)throw result.error;$('auth-message').textContent='تم تسجيل الدخول'}else{result=await db.auth.signUp({phone,password,options:{data:{full_name:$('full-name').value.trim()}}});if(result.error)throw result.error;pendingPhone=phone;$('auth-form').hidden=true;$('otp-form').hidden=false;$('auth-message').textContent='أرسلنا رمز التأكيد إذا كانت خدمة SMS مفعّلة في Supabase.'}}}catch(e){$('auth-message').textContent=e.message}});
 $('otp-form').onsubmit=lockForm(async e=>{e.preventDefault();try{const {error}=await db.auth.verifyOtp({phone:pendingPhone,token:$('sms-token').value.trim(),type:'sms'});if(error)throw error;$('auth-message').textContent='تم تأكيد رقم الهاتف بنجاح.'}catch(x){$('auth-message').textContent=x.message}});
 $('logout').onclick=async()=>{const {error}=await db.auth.signOut();if(error)msg(error.message)};$('backup').onclick=backup;
 let authReady=false, recoveryMode=false;
+async function processAuthCallback(){
+ const url=new URL(window.location.href),params=url.searchParams,hash=new URLSearchParams(url.hash.slice(1));
+ const tokenHash=params.get('token_hash'),type=params.get('type')||'email',code=params.get('code');
+ const accessToken=hash.get('access_token'),refreshToken=hash.get('refresh_token');
+ const errorText=params.get('error_description')||hash.get('error_description');
+ if(errorText){authCallbackMessage='تعذر تأكيد البريد: '+errorText;history.replaceState({},document.title,url.pathname);return}
+ try{
+  if(tokenHash){
+   $('auth').hidden=false;$('dashboard').hidden=true;$('auth-message').textContent='جارٍ تأكيد بريدك الإلكتروني…';
+   const {error}=await db.auth.verifyOtp({token_hash:tokenHash,type});if(error)throw error;
+   authCallbackMessage='تم تأكيد بريدك الإلكتروني بنجاح. أهلاً بك في أكاديميا.';
+   params.delete('token_hash');params.delete('type');history.replaceState({},document.title,url.pathname+(params.toString()?'?'+params.toString():''));
+  }else if(code){
+   $('auth').hidden=false;$('dashboard').hidden=true;$('auth-message').textContent='جارٍ إكمال تسجيل الدخول…';
+   const {error}=await db.auth.exchangeCodeForSession(code);if(error)throw error;
+   authCallbackMessage='تم تأكيد بريدك الإلكتروني وتسجيل دخولك بنجاح.';
+   params.delete('code');params.delete('type');history.replaceState({},document.title,url.pathname+(params.toString()?'?'+params.toString():''));
+  }else if(accessToken&&refreshToken){
+   const {error}=await db.auth.setSession({access_token:accessToken,refresh_token:refreshToken});if(error)throw error;
+   authCallbackMessage=hash.get('type')==='recovery'?'تم التحقق من الرابط. يمكنك تعيين كلمة مرور جديدة.':'تم تأكيد بريدك الإلكتروني بنجاح.';
+   if(hash.get('type')==='recovery')recoveryMode=true;
+   history.replaceState({},document.title,url.pathname+url.search);
+  }
+ }catch(e){
+  authCallbackMessage='لم نتمكن من إكمال تأكيد البريد. قد يكون الرابط منتهي الصلاحية أو مستخدمًا من قبل. اطلب رسالة تأكيد جديدة ثم جرّب مرة أخرى.';
+  history.replaceState({},document.title,url.pathname);
+ }
+}
+const authCallbackPromise=processAuthCallback();
 // Restore the saved Supabase session before deciding whether to show login.
 $('auth').hidden=true;$('dashboard').hidden=true;
 db.auth.onAuthStateChange((event,s)=>{
@@ -30,9 +59,10 @@ db.auth.onAuthStateChange((event,s)=>{
   if(!authReady)return;
   renderShell();
 });
-db.auth.getSession().then(({data,error})=>{
+db.auth.getSession().then(async ({data,error})=>{
   if(error)throw error;
-  if(!authReady){session=data.session;authReady=true;renderShell()}
+  await authCallbackPromise;
+  if(!authReady){session=data.session;authReady=true;renderShell();if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;if(recoveryMode){$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.'}}
 }).catch(e=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
