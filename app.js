@@ -1,5 +1,5 @@
 const {createClient} = supabase;
-const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY);
+const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'academia-auth-session'}});
 let session=null, role='owner', students=[], attendance=[], payments=[], links=[], tab='overview', authMode='login';
 let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null;
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG').format(Number(n||0))+' ج.م', dateText=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ar-EG'):'—';
@@ -11,8 +11,22 @@ $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day
 $('toggle-auth').onclick=()=>{authMode=authMode==='login'?'signup':'login';$('auth-submit').textContent=authMode==='login'?'تسجيل الدخول':'إنشاء حساب';$('toggle-auth').textContent=authMode==='login'?'ليس لديك حساب؟ إنشاء حساب':'لديك حساب؟ تسجيل الدخول'};
 $('auth-form').onsubmit=lockForm(async e=>{e.preventDefault();$('auth-message').textContent='جارٍ التنفيذ…';try{const email=$('email').value,password=$('password').value;const {error}=authMode==='login'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password});if(error)throw error;$('auth-message').textContent=authMode==='login'?'تم تسجيل الدخول':'تم إنشاء الحساب. راجع بريدك إذا طُلب تأكيده.'}catch(e){$('auth-message').textContent=e.message}});
 $('logout').onclick=async()=>{const {error}=await db.auth.signOut();if(error)msg(error.message)};$('backup').onclick=backup;
-db.auth.onAuthStateChange((_e,s)=>{session=s;renderShell()});
-db.auth.getSession().then(({data,error})=>{if(error)throw error;session=data.session;renderShell()}).catch(e=>{$('auth-message').textContent=e.message});
+let authReady=false;
+// Restore the saved Supabase session before deciding whether to show login.
+$('auth').hidden=true;$('dashboard').hidden=true;
+db.auth.onAuthStateChange((event,s)=>{
+  session=s;
+  if(event==='INITIAL_SESSION'&&!authReady){authReady=true;renderShell();return}
+  if(!authReady)return;
+  renderShell();
+});
+db.auth.getSession().then(({data,error})=>{
+  if(error)throw error;
+  if(!authReady){session=data.session;authReady=true;renderShell()}
+}).catch(e=>{
+  authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
+  $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
+});
 function renderShell(){const authenticated=!!session;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){loadedUserId=null;loadingUserId=null;loadVersion++;role='owner';students=[];attendance=[];payments=[];links=[];tab='overview';return}$('user-email').textContent=session.user.email;if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
 async function load(force=false){if(!session?.user?.id)return;const userId=session.user.id;if(!force&&(loadedUserId===userId||loadingUserId===userId))return;loadingUserId=userId;const currentLoad=++loadVersion;$('message').textContent='جار تحميل البيانات…';$('message').hidden=false;try{
  const em=session.user.email.toLowerCase();
