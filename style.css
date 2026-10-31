@@ -35,3 +35,27 @@ html[data-theme="dark"] body{background:#0c1222;color:#e7ecf8}html[data-theme="d
 @media(max-width:700px){.topbar-actions{gap:5px}.theme-toggle{padding:8px;font-size:0}.theme-toggle::before{content:'◐';font-size:16px}.date-chip{display:none}}
 
 .brand-mark img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}.brand-mark.small img{padding:0}
+
+
+/* Academia premium management polish */
+:root{--brand:#5965d9;--brand-2:#7b68e8;--surface:#fff;--line:#e8ecf5;--ink:#17233e}
+button{transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+button:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 7px 18px #24345a16}
+button:active{transform:translateY(0)}
+.panel,.stat-card{transition:box-shadow .2s ease,border-color .2s ease}
+.panel:hover,.stat-card:hover{box-shadow:0 12px 30px #1b2d5210;border-color:#dce2f2}
+.form-grid{border:1px solid #edf0f7;background:linear-gradient(145deg,#fafbff,#f4f6fc)}
+.form-grid input:focus,.form-grid select:focus,.search:focus{border-color:#7774e8;box-shadow:0 0 0 3px #7774e81a}
+.form-grid button,.stack button{background:linear-gradient(135deg,#5965d9,#7865df);box-shadow:0 7px 18px #5965d92b}
+.danger-action{color:#cf4d5b!important}
+.danger-action:hover{background:#fff0f1;border-radius:8px}
+table tbody tr{transition:background .15s ease}
+table tbody tr:hover{background:#f7f8ff}
+th{letter-spacing:.1px}
+.status{font-weight:700}
+.welcome{position:relative;overflow:hidden;box-shadow:0 14px 34px #303c7b20}
+.welcome:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff20;border-radius:50%;left:8%;top:-145px;box-shadow:0 0 0 24px #ffffff08,0 0 0 48px #ffffff06}
+html[data-theme="dark"] .form-grid{background:linear-gradient(145deg,#18243b,#121c30);border-color:#2a3853}
+html[data-theme="dark"] table tbody tr:hover{background:#1b2942}
+html[data-theme="dark"] .danger-action:hover{background:#482630}
+@media(max-width:700px){.topbar{align-items:flex-start}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}.welcome{min-height:145px}.stat-card{border-radius:13px}.form-grid{padding:13px}td,th{padding:10px 8px}}
