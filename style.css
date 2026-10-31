@@ -59,3 +59,9 @@ html[data-theme="dark"] .form-grid{background:linear-gradient(145deg,#18243b,#12
 html[data-theme="dark"] table tbody tr:hover{background:#1b2942}
 html[data-theme="dark"] .danger-action:hover{background:#482630}
 @media(max-width:700px){.topbar{align-items:flex-start}.topbar-actions{flex-wrap:wrap;justify-content:flex-end}.welcome{min-height:145px}.stat-card{border-radius:13px}.form-grid{padding:13px}td,th{padding:10px 8px}}
+
+/* One-time-code verification experience */
+.otp-actions{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:2px}
+.otp-actions .text-button{background:transparent!important;box-shadow:none!important;color:#5965d9;padding:8px 2px;font-size:12px}
+.otp-actions button:disabled{opacity:.55;cursor:wait}
+html[data-theme="dark"] .otp-actions .text-button{color:#aaa8ff}
