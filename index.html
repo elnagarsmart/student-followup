@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101a32"><title>أكاديميا | متابعة الطلاب</title>
+<meta name="theme-color" content="#101a32"><meta name="description" content="أكاديميا - نظام متابعة الطلاب والحضور والمدفوعات"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="أكاديميا"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/icon-192.png"><title>أكاديميا | متابعة الطلاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script><script defer src="app.js"></script>
-</head><body><div id="app">
+<script>window.addEventListener("load",()=>{if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(console.error)});</script>\n</head><body><div id="app">
 <section id="auth" class="auth-shell"><div class="auth-card" id="auth-card"><div class="brand-mark">أ</div><p class="eyebrow">منصة إدارة تعليمية</p><h1>أكاديميا</h1><p class="muted">متابعة الطلاب والحضور والمدفوعات في مكان واحد</p>
 <div class="auth-channel" role="group" aria-label="طريقة التسجيل"><button type="button" class="channel-btn active" data-channel="email">البريد الإلكتروني</button><button type="button" class="channel-btn" data-channel="phone">رقم الهاتف</button></div>
 <form id="auth-form" class="stack">

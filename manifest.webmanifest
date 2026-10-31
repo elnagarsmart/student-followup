@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "أكاديميا | متابعة الطلاب",
+  "short_name": "أكاديميا",
+  "description": "نظام إدارة ومتابعة الطلاب والحضور والمدفوعات",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6fb",
+  "theme_color": "#101a32",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
