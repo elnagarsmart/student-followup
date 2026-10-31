@@ -9,8 +9,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script><script defer src="app.js"></script>
 </head><body><div id="app">
-<section id="auth" class="auth-shell"><div class="auth-card"><div class="brand-mark">أ</div><p class="eyebrow">منصة إدارة تعليمية</p><h1>أكاديميا</h1><p class="muted">متابعة الطلاب والحضور والمدفوعات في مكان واحد</p>
-<form id="auth-form" class="stack"><label>البريد الإلكتروني<input id="email" type="email" required autocomplete="email" placeholder="name@example.com"></label><label>كلمة المرور<input id="password" type="password" minlength="6" required autocomplete="current-password" placeholder="••••••••"></label><button id="auth-submit">تسجيل الدخول</button></form>
+<section id="auth" class="auth-shell"><div class="auth-card" id="auth-card"><div class="brand-mark">أ</div><p class="eyebrow">منصة إدارة تعليمية</p><h1>أكاديميا</h1><p class="muted">متابعة الطلاب والحضور والمدفوعات في مكان واحد</p>
+<div class="auth-channel" role="group" aria-label="طريقة التسجيل"><button type="button" class="channel-btn active" data-channel="email">البريد الإلكتروني</button><button type="button" class="channel-btn" data-channel="phone">رقم الهاتف</button></div>
+<form id="auth-form" class="stack">
+<label id="name-field" hidden>الاسم الكامل<input id="full-name" type="text" autocomplete="name" placeholder="اكتب اسمك"></label>
+<label id="email-field">البريد الإلكتروني<input id="email" type="email" required autocomplete="email" placeholder="name@example.com"></label>
+<label id="phone-field" hidden>رقم الهاتف<input id="phone" type="tel" autocomplete="tel" placeholder="+201xxxxxxxxx"></label>
+<label>كلمة المرور<input id="password" type="password" minlength="6" required autocomplete="current-password" placeholder="••••••••"></label>
+<button id="auth-submit" type="submit">تسجيل الدخول</button></form>
+<form id="otp-form" class="stack" hidden><p class="muted">أدخل رمز التأكيد المرسل إلى هاتفك.</p><label>رمز SMS<input id="sms-token" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="123456"></label><button type="submit">تأكيد رقم الهاتف</button></form>
 <button id="forgot-password" type="button" class="text-button">نسيت كلمة المرور؟</button><form id="reset-form" class="stack" hidden><label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" required autocomplete="new-password" placeholder="••••••••"></label><button type="submit">حفظ كلمة المرور الجديدة</button></form>
 <button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div></section>
 <div id="dashboard" class="app-shell" hidden><aside class="sidebar"><div class="brand"><div class="brand-mark small">أ</div><div><b>أكاديميا</b><small>إدارة ومتابعة الطلاب</small></div></div><div class="profile"><div class="avatar">أ</div><div><b id="user-email"></b><small id="role-label">الإدارة</small></div></div><nav id="nav"></nav><div class="sidebar-bottom"><button id="backup" class="nav-item" title="نسخة احتياطية" aria-label="نسخة احتياطية">⇩ نسخة احتياطية</button><button id="logout" class="nav-item logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">↪ تسجيل الخروج</button></div></aside>
