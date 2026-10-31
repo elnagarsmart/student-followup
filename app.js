@@ -9,9 +9,11 @@ const run=async q=>{const {data,error}=await q;if(error)throw error;return data}
 function lockForm(handler){return async e=>{e.preventDefault();const form=e.currentTarget;if(form.dataset.busy==='true')return;form.dataset.busy='true';const button=form.querySelector('button[type="submit"],button:not([type])');const originalLabel=button?.textContent;if(button){button.disabled=true;button.textContent='جارٍ الحفظ…'}try{await handler(e)}finally{form.dataset.busy='false';if(button?.isConnected){button.disabled=false;button.textContent=originalLabel}}}}
 $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
 $('toggle-auth').onclick=()=>{authMode=authMode==='login'?'signup':'login';$('auth-submit').textContent=authMode==='login'?'تسجيل الدخول':'إنشاء حساب';$('toggle-auth').textContent=authMode==='login'?'ليس لديك حساب؟ إنشاء حساب':'لديك حساب؟ تسجيل الدخول'};
+$('forgot-password').onclick=async()=>{const email=$('email').value.trim();if(!email){$('auth-message').textContent='اكتب بريدك الإلكتروني أولاً.';$('email').focus();return}try{$('auth-message').textContent='جارٍ إرسال رسالة الاستعادة…';const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});if(error)throw error;$('auth-message').textContent='تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني.'}catch(e){$('auth-message').textContent=e.message}};
+$('reset-form').onsubmit=lockForm(async e=>{e.preventDefault();const password=$('new-password').value;try{const {error}=await db.auth.updateUser({password});if(error)throw error;recoveryMode=false;$('reset-form').hidden=true;$('auth-form').hidden=false;$('toggle-auth').hidden=false;$('forgot-password').hidden=false;$('auth-message').textContent='تم تغيير كلمة المرور بنجاح.';renderShell()}catch(x){$('auth-message').textContent=x.message}});
 $('auth-form').onsubmit=lockForm(async e=>{e.preventDefault();$('auth-message').textContent='جارٍ التنفيذ…';try{const email=$('email').value,password=$('password').value;const {error}=authMode==='login'?await db.auth.signInWithPassword({email,password}):await db.auth.signUp({email,password});if(error)throw error;$('auth-message').textContent=authMode==='login'?'تم تسجيل الدخول':'تم إنشاء الحساب. راجع بريدك إذا طُلب تأكيده.'}catch(e){$('auth-message').textContent=e.message}});
 $('logout').onclick=async()=>{const {error}=await db.auth.signOut();if(error)msg(error.message)};$('backup').onclick=backup;
-let authReady=false;
+let authReady=false, recoveryMode=false;
 // Restore the saved Supabase session before deciding whether to show login.
 $('auth').hidden=true;$('dashboard').hidden=true;
 db.auth.onAuthStateChange((event,s)=>{
@@ -27,7 +29,7 @@ db.auth.getSession().then(({data,error})=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
 });
-function renderShell(){const authenticated=!!session;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){loadedUserId=null;loadingUserId=null;loadVersion++;role='owner';students=[];attendance=[];payments=[];links=[];tab='overview';return}$('user-email').textContent=session.user.email;if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
+function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;return}const authenticated=!!session;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){loadedUserId=null;loadingUserId=null;loadVersion++;role='owner';students=[];attendance=[];payments=[];links=[];tab='overview';return}$('user-email').textContent=session.user.email;if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
 async function load(force=false){if(!session?.user?.id)return;const userId=session.user.id;if(!force&&(loadedUserId===userId||loadingUserId===userId))return;loadingUserId=userId;const currentLoad=++loadVersion;$('message').textContent='جار تحميل البيانات…';$('message').hidden=false;try{
  const em=session.user.email.toLowerCase();
  const mine=await run(db.from('student_portal_links').select('*').eq('portal_email',em));
