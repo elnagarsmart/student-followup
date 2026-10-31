@@ -60,10 +60,12 @@ db.auth.onAuthStateChange((event,s)=>{
   if(!authReady)return;
   renderShell();
 });
-db.auth.getSession().then(async ({data,error})=>{
+db.auth.getSession().then(async ({error})=>{
   if(error)throw error;
   await authCallbackPromise;
-  if(!authReady){session=data.session;authReady=true;renderShell();if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;if(recoveryMode){$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.'}}
+  const {data,error:sessionError}=await db.auth.getSession();
+  if(sessionError)throw sessionError;
+  session=data.session;authReady=true;renderShell();
 }).catch(e=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
