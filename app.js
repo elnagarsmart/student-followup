@@ -37,6 +37,7 @@ async function processAuthCallback(){
   }else if(code){
    $('auth').hidden=false;$('dashboard').hidden=true;$('auth-message').textContent='جارٍ إكمال تسجيل الدخول…';
    const {error}=await db.auth.exchangeCodeForSession(code);if(error)throw error;
+   if(type==='recovery')recoveryMode=true;
    authCallbackMessage='تم تأكيد بريدك الإلكتروني وتسجيل دخولك بنجاح.';
    params.delete('code');params.delete('type');history.replaceState({},document.title,url.pathname+(params.toString()?'?'+params.toString():''));
   }else if(accessToken&&refreshToken){
