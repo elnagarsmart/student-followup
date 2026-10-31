@@ -16,3 +16,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 /* Respect the HTML hidden attribute even on elements with explicit display styles. */
 [hidden]{display:none!important}
+
+/* Refined authentication card and smooth mode transitions */
+.auth-card{animation:auth-enter .55s cubic-bezier(.2,.8,.2,1) both}
+.auth-card.auth-switch{animation:auth-switch .34s ease both}
+.auth-channel{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#f2f4fb;border-radius:12px;margin:22px 0 0}
+.channel-btn{padding:10px 8px;border-radius:9px;background:transparent;color:#7e88a1;font-size:11px;font-weight:700;transition:background .2s,color .2s,box-shadow .2s}
+.channel-btn.active{background:#fff;color:#555fc0;box-shadow:0 3px 12px #24345a12}
+.auth-card h1{margin:0;font-size:27px}.auth-card .stack{margin-top:18px}
+.stack input{transition:border-color .2s,box-shadow .2s}.stack input:focus{border-color:#7774e8;box-shadow:0 0 0 3px #7774e81a}
+@keyframes auth-enter{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes auth-switch{0%{opacity:.65;transform:translateY(5px)}100%{opacity:1;transform:translateY(0)}}
