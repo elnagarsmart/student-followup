@@ -166,3 +166,10 @@ html[data-theme="dark"] .message-thread{background:#101a2d;border-color:#26334d}
 html[data-theme="dark"] .message-bubble.theirs,html[data-theme="dark"] .message-panel select,html[data-theme="dark"] .message-compose textarea{background:#18243b;border-color:#344562;color:#e7ecf8}
 html[data-theme="dark"] .message-compose label{color:#b8c5db}
 @media(max-width:700px){.nav-count{position:absolute;top:3px;right:3px;min-width:16px;height:16px;font-size:9px}.message-bubble{max-width:92%}.message-thread{max-height:48vh;padding:10px}}
+
+.passkey-button{width:100%;margin:8px 0 4px;padding:12px 14px;border:1px solid #d8dff0;border-radius:11px;background:#f7f8ff;color:#344a84;font-size:12px;font-weight:800}
+.passkey-button:disabled{opacity:.65}
+.passkey-register{font-size:11px;color:#b9c5dc}
+.whatsapp-action{display:inline-block;margin-top:6px;color:#12865b!important;font-weight:800;text-decoration:none}
+html[data-theme="dark"] .passkey-button{background:#1d2a45;border-color:#344562;color:#dbe7ff}
+html[data-theme="dark"] .whatsapp-action{color:#7de0b0!important}
