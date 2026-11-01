@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101a32">
-<meta name="description" content="أكاديميا: منصة لإدارة ومتابعة الطلاب، تسجيل الطلاب، الحضور والغياب، المدفوعات، وحسابات المشرفين وأولياء الأمور.">
-<meta name="keywords" content="أكاديميا, أكاديمية, تسجيل طلاب, تسجيل الطلاب, نظام تسجيل الطلاب, متابعة الطلاب, إدارة الطلاب, شؤون الطلاب, حضور الطلاب, تسجيل الحضور, متابعة الحضور, الغياب, كشف الغياب, إدارة الحضور والغياب, متابعة أولياء الأمور, حساب ولي الأمر, حساب الطالب, إدارة المدفوعات, مصروفات الطلاب, رسوم الطلاب, نظام إدارة أكاديمية, برنامج إدارة أكاديمية, برنامج متابعة الطلاب, منصة تعليمية, إدارة مركز تعليمي, إدارة سنتر تعليمي, نظام متابعة الطلاب والحضور, Marwan Hany EL-Nagar, Marwan Hany El Nagar, Marwan El-Nagar, مروان هاني النجار, مروان النجار, Zeyad Hany EL-Nagar, Zeyad Hany El Nagar, زياد هاني النجار">
+<meta name="description" content="أكاديميا برنامج عربي لإدارة الأكاديميات ومتابعة الطلاب؛ نظّم بيانات الطلاب والحضور والغياب والمدفوعات وتواصل مع المشرفين وأولياء الأمور من مكان واحد.">
 <meta name="google-site-verification" content="rU5iJixNiRHUubE6sl4CHJdvaDoUJyRafLvsd3Ivb1E">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://student-followup-three.vercel.app/">
@@ -12,11 +11,16 @@
 <meta property="og:locale" content="ar_EG">
 <meta property="og:site_name" content="أكاديميا">
 <meta property="og:title" content="أكاديميا | تسجيل ومتابعة الطلاب والحضور">
-<meta property="og:description" content="منصة أكاديميا لإدارة الطلاب وتسجيل الحضور والغياب ومتابعة المدفوعات والمشرفين.">
+<meta property="og:description" content="برنامج عربي لإدارة الأكاديميات ومتابعة الطلاب والحضور والغياب والمدفوعات والتواصل مع أولياء الأمور.">
 <meta property="og:url" content="https://student-followup-three.vercel.app/">
+<meta property="og:image" content="https://student-followup-three.vercel.app/images/academia-preview.svg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="أكاديميا - برنامج إدارة الأكاديميات ومتابعة الطلاب">
+<meta name="twitter:image" content="https://student-followup-three.vercel.app/images/academia-preview.svg">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="أكاديميا | متابعة الطلاب">
-<meta name="twitter:description" content="نظام إدارة الطلاب والحضور والغياب والمدفوعات."><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="أكاديميا"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/icon.svg"><title>أكاديميا | متابعة الطلاب</title>
+<meta name="twitter:description" content="نظام إدارة الطلاب والحضور والغياب والمدفوعات للأكاديميات والمراكز التعليمية."><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="أكاديميا"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/icon.svg"><title>أكاديميا | متابعة الطلاب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -25,14 +29,26 @@
 <script>window.addEventListener("load",()=>{if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(console.error)});</script>\n<script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "أكاديميا",
-  "alternateName": ["Academia", "نظام متابعة الطلاب"],
-  "applicationCategory": "EducationalApplication",
-  "operatingSystem": "Web",
-  "inLanguage": ["ar", "en"],
-  "url": "https://student-followup-three.vercel.app/",
-  "description": "منصة لإدارة ومتابعة الطلاب وتسجيل الحضور والغياب والمدفوعات وإدارة المشرفين."
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "أكاديميا",
+      "url": "https://student-followup-three.vercel.app/",
+      "logo": "https://student-followup-three.vercel.app/icons/icon.svg"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "أكاديميا - متابعة الطلاب",
+      "alternateName": ["Academia", "برنامج إدارة الأكاديميات", "نظام متابعة الطلاب"],
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web browser",
+      "inLanguage": "ar-EG",
+      "url": "https://student-followup-three.vercel.app/",
+      "description": "برنامج عربي يساعد الأكاديميات والمراكز التعليمية على إدارة بيانات الطلاب ومتابعة الحضور والغياب والمدفوعات وإدارة المشرفين والتواصل مع أولياء الأمور.",
+      "featureList": ["إدارة بيانات الطلاب", "متابعة الحضور والغياب", "إدارة المدفوعات", "إدارة حسابات المشرفين والصلاحيات", "بوابة متابعة الطلاب وأولياء الأمور", "التواصل داخل المنصة"],
+      "publisher": {"@type": "Organization", "name": "أكاديميا", "url": "https://student-followup-three.vercel.app/"}
+    }
+  ]
 }
 </script>
 </head><body><div id="app">
@@ -47,6 +63,21 @@
 <form id="otp-form" class="stack" hidden><p id="otp-description" class="muted">أدخل رمز التحقق المرسل إليك.</p><label><span id="otp-label">رمز التحقق</span><input id="otp-token" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="123456"></label><button type="submit">تأكيد الرمز</button><div class="otp-actions"><button id="otp-resend" type="button" class="text-button">إعادة إرسال الرمز</button><button id="otp-back" type="button" class="text-button">رجوع</button></div></form>
 <button id="google-login" type="button" class="google-button"><span class="google-g">G</span> المتابعة باستخدام Google</button>
 <button id="forgot-password" type="button" class="text-button">نسيت كلمة المرور؟</button><form id="reset-form" class="stack" hidden><label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" required autocomplete="new-password" placeholder="••••••••"></label><button type="submit">حفظ كلمة المرور الجديدة</button></form>
-<button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div></section>
+<button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div><section class="seo-content" aria-labelledby="seo-title">
+  <h2 id="seo-title">برنامج أكاديميا لإدارة الأكاديميات ومتابعة الطلاب</h2>
+  <p>أكاديميا منصة عربية للمدرسين ومديري الأكاديميات والمراكز التعليمية. تساعدك على تنظيم بيانات الطلاب، وتسجيل الحضور والغياب، ومتابعة المدفوعات، وإدارة حسابات المشرفين، وإتاحة متابعة الطالب وولي الأمر من مكان واحد.</p>
+  <div class="seo-features">
+    <article><h3>إدارة الطلاب</h3><p>نظّم ملفات الطلاب وبيانات التواصل والأكواد الخاصة بالدخول.</p></article>
+    <article><h3>الحضور والغياب</h3><p>سجّل الحضور وتابع سجلات الطلاب بصورة منظمة.</p></article>
+    <article><h3>المدفوعات</h3><p>تابع الرسوم والمدفوعات واعرف سجل كل طالب.</p></article>
+    <article><h3>المشرفون والصلاحيات</h3><p>أضف المشرفين وحدد صلاحيات الوصول حسب دور كل حساب.</p></article>
+    <article><h3>متابعة أولياء الأمور</h3><p>وفّر بوابة لمتابعة بيانات الطالب والحضور والمدفوعات المتاحة.</p></article>
+    <article><h3>التواصل</h3><p>استخدم رسائل المنصة للتواصل بين الحسابات المرتبطة بالأكاديمية.</p></article>
+  </div>
+  <h3>لمن صُمم برنامج أكاديميا؟</h3>
+  <p>للأكاديميات التعليمية، والمدرسين، والسناتر، والمراكز التعليمية التي تحتاج إلى نظام إدارة طلاب ومتابعة حضور وغياب وتنظيم المدفوعات والتواصل مع أولياء الأمور.</p>
+  <p class="seo-search-terms">من الموضوعات التي تساعدك أكاديميا في إدارتها: تسجيل الطلاب في الأكاديمية، برنامج متابعة الطلاب، نظام إدارة الأكاديميات، متابعة حضور الطلاب وغيابهم، وإدارة مصروفات الطلاب.</p>
+</section>
+</section>
 <div id="dashboard" class="app-shell" hidden><aside class="sidebar"><div class="brand"><div class="brand-mark small"><img src="/icons/icon.svg" alt="شعار أكاديميا"></div><div><b>أكاديميا</b><small>إدارة ومتابعة الطلاب</small></div></div><div class="profile"><div class="avatar">أ</div><div><b id="user-email"></b><small id="role-label">الإدارة</small></div></div><nav id="nav"></nav><div class="sidebar-bottom"><button id="backup" class="nav-item" title="نسخة احتياطية" aria-label="نسخة احتياطية">⇩ نسخة احتياطية</button><button id="logout" class="nav-item logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">↪ تسجيل الخروج</button></div></aside>
 <main class="main"><header class="topbar"><div><p class="eyebrow">لوحة التحكم</p><h1 id="page-title">نظرة عامة</h1></div><div class="topbar-actions"><button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل الوضع الداكن">🌙 الوضع الداكن</button><span class="date-chip" id="today"></span></div></header><div id="message" class="notice-banner" hidden></div><section id="content"></section><footer>أكاديميا · نظام متابعة الطلاب <span>صلاحيات وصول منفصلة لكل حساب</span></footer></main></div></div></body></html>
