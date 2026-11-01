@@ -111,3 +111,18 @@ html[data-theme="dark"] .message-bubble{background:#1a2943;border-color:#34425e}
 html[data-theme="dark"] .message-bubble.mine{background:#29315e;border-color:#454f90}
 html[data-theme="dark"] .message-bubble p{color:#e7ecf8}
 @media(max-width:700px){.message-thread{max-height:48vh;min-height:180px;padding:10px}.message-bubble{max-width:92%}.message-compose button{width:100%;min-height:44px}}
+
+
+/* Clear in-page editors */
+.editor-form{margin-top:18px;border:1px solid #dfe5f1;border-radius:14px;padding:18px;background:linear-gradient(145deg,#fbfcff,#f5f7fc)}
+.editor-heading{grid-column:1/-1;border-bottom:1px solid #e8edf5;padding-bottom:8px;margin-bottom:2px}
+.editor-heading h3{margin:0 0 5px;font-size:15px;color:#24304a}
+.editor-heading p{margin:0;color:#7d879d;font-size:11px;line-height:1.7}
+.editor-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.editor-actions .text-button{background:transparent!important;box-shadow:none!important;padding:10px 14px;color:#66728c}
+.phone-help{margin:-7px 0 0;padding:9px 11px;border-radius:9px;background:#f4f6fc;color:#68738c;font-size:10px}
+html[data-theme="dark"] .editor-form{background:linear-gradient(145deg,#18243b,#121c30);border-color:#2a3853}
+html[data-theme="dark"] .editor-heading{border-color:#2b3a56}
+html[data-theme="dark"] .editor-heading h3{color:#e7ecf8}
+html[data-theme="dark"] .phone-help{background:#101a2d;color:#c1cbe0}
+@media(max-width:700px){.editor-form{padding:13px}.editor-actions{flex-direction:column;align-items:stretch}.editor-actions button{width:100%}}
