@@ -145,3 +145,24 @@ html[data-theme="dark"] .seo-features article{background:#101a2d;border-color:#2
 html[data-theme="dark"] .seo-features h3,html[data-theme="dark"] .seo-content>h3{color:#c8c7ff}
 @media(max-width:700px){.auth-shell{padding:24px 12px 32px;gap:20px}.seo-content{padding:18px 16px}.seo-content h2{font-size:18px}.seo-features{grid-template-columns:1fr 1fr;gap:9px}}
 @media(max-width:420px){.seo-features{grid-template-columns:1fr}}
+
+/* Message delivery and unread navigation indicators */
+.nav-item{position:relative}
+.nav-count{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#d94f65;color:#fff;font-size:10px;font-weight:800;line-height:1;margin-inline-start:auto}
+.message-receipt{display:block;margin-top:5px;text-align:left;color:#a9c4ef;font-size:10px;font-weight:700}
+.message-panel .message-toolbar label{display:grid;gap:7px;max-width:480px;font-size:12px;color:#69748b;font-weight:700}
+.message-panel select{width:100%;border:1px solid #e1e6f0;background:#fff;border-radius:10px;padding:11px 12px;color:#24304a}
+.message-thread{min-height:260px;max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:14px;margin:16px 0;background:#f7f8fc;border:1px solid #e9edf5;border-radius:14px;scroll-behavior:smooth}
+.message-bubble{max-width:min(82%,620px);padding:11px 14px;border-radius:14px;box-shadow:0 2px 8px #17233e0b;overflow-wrap:anywhere}
+.message-bubble.mine{align-self:flex-start;background:#263d68;color:#fff;border-bottom-left-radius:4px}
+.message-bubble.theirs{align-self:flex-end;background:#fff;color:#26334b;border:1px solid #e6ebf4;border-bottom-right-radius:4px}
+.message-bubble p{white-space:pre-wrap;line-height:1.8;font-size:13px;margin:8px 0 0}
+.message-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:10px;opacity:.82}
+.message-compose{display:grid;gap:9px}
+.message-compose label{font-size:12px;color:#69748b;font-weight:700}
+.message-compose textarea{width:100%;resize:vertical;min-height:80px;border:1px solid #e1e6f0;border-radius:11px;padding:12px;background:#fff;color:#24304a;font:inherit;font-size:13px}
+.message-compose button{justify-self:start;background:#565fc1;color:#fff;border-radius:10px;padding:11px 20px;font-size:12px;font-weight:800}
+html[data-theme="dark"] .message-thread{background:#101a2d;border-color:#26334d}
+html[data-theme="dark"] .message-bubble.theirs,html[data-theme="dark"] .message-panel select,html[data-theme="dark"] .message-compose textarea{background:#18243b;border-color:#344562;color:#e7ecf8}
+html[data-theme="dark"] .message-compose label{color:#b8c5db}
+@media(max-width:700px){.nav-count{position:absolute;top:3px;right:3px;min-width:16px;height:16px;font-size:9px}.message-bubble{max-width:92%}.message-thread{max-height:48vh;padding:10px}}
