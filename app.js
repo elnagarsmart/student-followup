@@ -164,7 +164,8 @@ async function loadMessageThread(view){
  $('message-thread').innerHTML=rows.length?rows.map(m=>{
   const mine=m.sender_id===session?.user?.id;
   const stamp=m.created_at?new Date(m.created_at).toLocaleString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
-  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><div class="message-meta"><b>'+esc(mine?'أنت':peer?.name||'الطرف الآخر')+'</b><time>'+esc(stamp)+'</time></div><p>'+esc(m.body)+'</p></article>';
+  const receipt=mine?(m.read_at?'✓✓ تمت القراءة':'✓ تم الإرسال'):'';
+  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><div class="message-meta"><b>'+esc(mine?'أنت':peer?.name||'الطرف الآخر')+'</b><time>'+esc(stamp)+'</time></div><p>'+esc(m.body)+'</p>'+(mine?'<small class="message-receipt">'+receipt+'</small>':'')+'</article>';
  }).join(''):'<p class="empty-row">لا توجد رسائل في هذه المحادثة بعد. ابدأ برسالة جديدة.</p>';
  $('message-thread').scrollTop=$('message-thread').scrollHeight;
  const form=$('message-send-form');form.hidden=false;
@@ -175,7 +176,7 @@ async function loadMessageThread(view){
   try{
    const {data:sent,error:sendError}=await db.functions.invoke('academia-messages',{body:{action:'send',peer_id:peerId,message:body}});
    if(sendError)throw sendError;if(sent?.error)throw new Error(sent.error);
-   input.value='';await loadMessageThread(view);
+   input.value='';await loadMessageThread(view);await refreshUnreadCounts();
   }catch(x){msg(x.message||'تعذر إرسال الرسالة');}
   finally{form.dataset.busy='false';if(btn.isConnected){btn.disabled=false;btn.textContent='إرسال الرسالة';}}
  };
