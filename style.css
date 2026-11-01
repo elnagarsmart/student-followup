@@ -65,3 +65,27 @@ html[data-theme="dark"] .danger-action:hover{background:#482630}
 .otp-actions .text-button{background:transparent!important;box-shadow:none!important;color:#5965d9;padding:8px 2px;font-size:12px}
 .otp-actions button:disabled{opacity:.55;cursor:wait}
 html[data-theme="dark"] .otp-actions .text-button{color:#aaa8ff}
+
+/* Mobile layout: move navigation to a fixed bottom bar so it never covers dashboard content. */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+#app,.app-shell{width:100%;max-width:100%;overflow-x:clip}
+.google-button{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#29344d;border:1px solid #dfe4ee;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:700;box-shadow:0 2px 8px #17233e0b}
+.google-button:active{transform:translateY(1px)}
+.google-g{font-family:Arial,sans-serif;font-size:20px;font-weight:800;color:#4285f4}
+@media(max-width:700px){
+ .sidebar{position:fixed;top:auto;right:0;bottom:0;left:0;width:100%;height:70px;padding:5px 7px calc(5px + env(safe-area-inset-bottom));display:flex;flex-direction:row;align-items:center;justify-content:center;overflow-x:auto;overflow-y:hidden}
+ .sidebar .brand,.sidebar .profile,.sidebar .sidebar-bottom{display:none}
+ .sidebar nav{display:flex;flex:1;min-width:0;align-items:center;justify-content:space-around;gap:3px;overflow-x:auto;overflow-y:hidden}
+ .sidebar nav .nav-item{display:flex;flex:1 0 48px;min-width:48px;max-width:90px;min-height:55px;flex-direction:column;justify-content:center;align-items:center;gap:3px;padding:5px 3px;border-radius:9px;font-size:9px;line-height:1.2;white-space:nowrap}
+ .sidebar nav .nav-item span{display:block;min-width:0;flex:0 0 auto;font-size:17px;line-height:1}
+ .sidebar nav .nav-item:before{display:none}
+ .main{width:100%;max-width:100%;min-width:0;margin:0;padding:18px 12px calc(92px + env(safe-area-inset-bottom))}
+ .topbar{gap:8px;align-items:flex-start}
+ .topbar h1{font-size:19px}
+ .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .content-grid{grid-template-columns:minmax(0,1fr)}
+ .form-grid{grid-template-columns:minmax(0,1fr)}
+ .panel,.stat-card,.welcome{min-width:0}
+ .table-wrap{max-width:100%;overflow-x:auto}
+ .main footer{padding-bottom:10px}
+}
