@@ -33,7 +33,7 @@ async function processAuthCallback(){
  const tokenHash=params.get('token_hash'),type=params.get('type')||'email',code=params.get('code');
  const accessToken=hash.get('access_token'),refreshToken=hash.get('refresh_token');
  const errorText=params.get('error_description')||hash.get('error_description');
- if(errorText){authCallbackMessage='تعذر تأكيد البريد: '+errorText;history.replaceState({},document.title,url.pathname);return}
+ if(errorText){const expired=/token.*(expired|invalid)|invalid.*token|otp_expired/i.test(errorText);authCallbackMessage=expired?'انتهت صلاحية رابط التأكيد أو تم استخدامه من قبل. اطلب رسالة جديدة وافتح أحدث رسالة مرة واحدة فقط.':'تعذر إكمال الدخول: '+errorText;history.replaceState({},document.title,url.pathname);return}
  try{
   if(tokenHash){
    $('auth').hidden=false;$('dashboard').hidden=true;$('auth-message').textContent='جارٍ تأكيد بريدك الإلكتروني…';
