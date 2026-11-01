@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0"></script>
 <script src="config.js"></script><script defer src="app.js"></script>
 <script>window.addEventListener("load",()=>{if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(console.error)});</script>\n<script type="application/ld+json">
 {
@@ -62,6 +62,7 @@
 <button id="auth-submit" type="submit">تسجيل الدخول</button></form>
 <form id="otp-form" class="stack" hidden><p id="otp-description" class="muted">أدخل رمز التحقق المرسل إليك.</p><label><span id="otp-label">رمز التحقق</span><input id="otp-token" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required placeholder="123456"></label><button type="submit">تأكيد الرمز</button><div class="otp-actions"><button id="otp-resend" type="button" class="text-button">إعادة إرسال الرمز</button><button id="otp-back" type="button" class="text-button">رجوع</button></div></form>
 <button id="google-login" type="button" class="google-button"><span class="google-g">G</span> المتابعة باستخدام Google</button>
+<button id="passkey-login" type="button" class="passkey-button">◈ الدخول بالبصمة أو مفتاح المرور</button>
 <button id="forgot-password" type="button" class="text-button">نسيت كلمة المرور؟</button><form id="reset-form" class="stack" hidden><label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" required autocomplete="new-password" placeholder="••••••••"></label><button type="submit">حفظ كلمة المرور الجديدة</button></form>
 <button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div><section class="seo-content" aria-labelledby="seo-title">
   <h2 id="seo-title">برنامج أكاديميا لإدارة الأكاديميات ومتابعة الطلاب</h2>
@@ -79,5 +80,5 @@
   <p class="seo-search-terms">من الموضوعات التي تساعدك أكاديميا في إدارتها: تسجيل الطلاب في الأكاديمية، برنامج متابعة الطلاب، نظام إدارة الأكاديميات، متابعة حضور الطلاب وغيابهم، وإدارة مصروفات الطلاب.</p>
 </section>
 </section>
-<div id="dashboard" class="app-shell" hidden><aside class="sidebar"><div class="brand"><div class="brand-mark small"><img src="/icons/icon.svg" alt="شعار أكاديميا"></div><div><b>أكاديميا</b><small>إدارة ومتابعة الطلاب</small></div></div><div class="profile"><div class="avatar">أ</div><div><b id="user-email"></b><small id="role-label">الإدارة</small></div></div><nav id="nav"></nav><div class="sidebar-bottom"><button id="backup" class="nav-item" title="نسخة احتياطية" aria-label="نسخة احتياطية">⇩ نسخة احتياطية</button><button id="logout" class="nav-item logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">↪ تسجيل الخروج</button></div></aside>
+<div id="dashboard" class="app-shell" hidden><aside class="sidebar"><div class="brand"><div class="brand-mark small"><img src="/icons/icon.svg" alt="شعار أكاديميا"></div><div><b>أكاديميا</b><small>إدارة ومتابعة الطلاب</small></div></div><div class="profile"><div class="avatar">أ</div><div><b id="user-email"></b><small id="role-label">الإدارة</small></div></div><nav id="nav"></nav><div class="sidebar-bottom"><button id="backup" class="nav-item" title="نسخة احتياطية" aria-label="نسخة احتياطية">⇩ نسخة احتياطية</button><button id="passkey-register" class="nav-item passkey-register" type="button" title="تفعيل الدخول بالبصمة" aria-label="تفعيل الدخول بالبصمة">◈ تفعيل الدخول بالبصمة</button><button id="logout" class="nav-item logout" title="تسجيل الخروج" aria-label="تسجيل الخروج">↪ تسجيل الخروج</button></div></aside>
 <main class="main"><header class="topbar"><div><p class="eyebrow">لوحة التحكم</p><h1 id="page-title">نظرة عامة</h1></div><div class="topbar-actions"><button id="theme-toggle" class="theme-toggle" type="button" aria-label="تبديل الوضع الداكن">🌙 الوضع الداكن</button><span class="date-chip" id="today"></span></div></header><div id="message" class="notice-banner" hidden></div><section id="content"></section><footer>أكاديميا · نظام متابعة الطلاب <span>صلاحيات وصول منفصلة لكل حساب</span></footer></main></div></div></body></html>
