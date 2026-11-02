@@ -2,14 +2,25 @@
   "id": "/",
   "name": "أكاديميا | متابعة الطلاب",
   "short_name": "أكاديميا",
-  "description": "برنامج عربي لإدارة الأكاديميات ومتابعة الطلاب والحضور والغياب والمدفوعات",
+  "description": "برنامج عربي لإدارة الطلاب والأعمار والحضور بالباركود ورمز QR والبطاقات الرقمية والمدفوعات",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
   "background_color": "#f4f6fb",
   "theme_color": "#101a32",
-  "icons": [{"src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
