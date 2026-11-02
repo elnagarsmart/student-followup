@@ -233,3 +233,6 @@ html[data-theme="dark"] .scan-actions .camera-scan-button{background:#29315e;col
  .scan-actions{grid-template-columns:1fr}
  .scan-actions button:first-child{grid-column:auto}
 }
+
+.portal-age-line{margin:10px 0 0!important;color:#e8ecff!important;font-size:13px!important;font-weight:800;line-height:1.9}
+@media(max-width:700px){.portal-age-line{font-size:12px!important}}
