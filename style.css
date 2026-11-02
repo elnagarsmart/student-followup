@@ -173,3 +173,63 @@ html[data-theme="dark"] .message-compose label{color:#b8c5db}
 .whatsapp-action{display:inline-block;margin-top:6px;color:#12865b!important;font-weight:800;text-decoration:none}
 html[data-theme="dark"] .passkey-button{background:#1d2a45;border-color:#344562;color:#dbe7ff}
 html[data-theme="dark"] .whatsapp-action{color:#7de0b0!important}
+
+
+/* Student identity cards and compact mobile student management */
+.student-mobile-cards{display:none}
+.student-mobile-card{background:var(--surface,#fff);border:1px solid var(--line,#e8ecf5);border-radius:15px;padding:14px;box-shadow:0 5px 16px #17233e09;min-width:0}
+.student-mobile-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid #e8ecf5}
+.student-mobile-heading b{font-size:14px;color:var(--ink,#17233e);overflow-wrap:anywhere}
+.student-mobile-heading span{flex:0 0 auto;font-size:11px;font-weight:800;color:#5965d9;background:#f0f1ff;border-radius:20px;padding:5px 9px}
+.student-mobile-meta{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;padding:12px 0;color:#758098;font-size:11px}
+.student-mobile-meta span{min-width:0;overflow-wrap:anywhere}
+.student-mobile-meta b{color:#35425f}
+.student-mobile-actions{display:flex;flex-wrap:wrap;gap:7px}
+.student-mobile-actions button{min-height:38px;padding:8px 11px;border:1px solid #e4e8f1;border-radius:9px;background:#f8f9fd;font-size:11px;font-weight:800}
+.attendance-scan{margin:16px 0;padding:16px;border:1px solid #dfe5f2;border-radius:16px;background:linear-gradient(145deg,#fbfcff,#f3f6ff)}
+.scan-heading{display:flex;flex-direction:column;gap:4px;margin-bottom:13px}
+.scan-heading b{font-size:14px;color:#29375d}
+.scan-heading span,.scan-feedback{font-size:11px;line-height:1.8;color:#6e7a93}
+.attendance-scan-form{display:grid;grid-template-columns:minmax(140px,.65fr) minmax(220px,1.5fr);gap:10px;align-items:end}
+.attendance-scan-form label{display:grid;gap:7px;font-size:11px;font-weight:800;color:#66728c}
+.attendance-scan-form input{width:100%;min-width:0;min-height:46px;padding:11px 12px;border:1px solid #dfe5f1;border-radius:10px;background:white;color:#26334c;font:inherit;font-size:14px}
+.scan-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:9px}
+.scan-actions button{min-height:44px;padding:10px 17px;border-radius:10px;background:#5965d9;color:white;font-weight:800;font-size:12px}
+.scan-actions .camera-scan-button{background:#e9edff;color:#3e4caa;border:1px solid #d8defe}
+.scan-feedback{margin:10px 0 0;min-height:22px}
+#camera-reader{width:100%;max-width:520px;margin:14px auto 4px;overflow:hidden;border-radius:14px;background:#0f172a}
+#camera-reader video{width:100%!important;max-width:100%;height:auto!important;border-radius:14px}
+#camera-reader button{margin:8px;padding:8px 12px;border-radius:8px}
+.student-table-wrap{max-width:100%;overflow-x:auto}
+html[data-theme="dark"] .student-mobile-card{background:#151f34;border-color:#34425e}
+html[data-theme="dark"] .student-mobile-heading{border-color:#34425e}
+html[data-theme="dark"] .student-mobile-heading b{color:#e7ecf8}
+html[data-theme="dark"] .student-mobile-heading span{background:#29315e;color:#d2d5ff}
+html[data-theme="dark"] .student-mobile-meta{color:#aab8d0}
+html[data-theme="dark"] .student-mobile-meta b{color:#e7ecf8}
+html[data-theme="dark"] .student-mobile-actions button{background:#202d48;border-color:#354562;color:#e7ecf8}
+html[data-theme="dark"] .attendance-scan{background:linear-gradient(145deg,#18243b,#121c30);border-color:#34425e}
+html[data-theme="dark"] .scan-heading b{color:#e7ecf8}
+html[data-theme="dark"] .scan-heading span,html[data-theme="dark"] .scan-feedback{color:#aab8d0}
+html[data-theme="dark"] .attendance-scan-form label{color:#c1cbe0}
+html[data-theme="dark"] .attendance-scan-form input{background:#101a2d;border-color:#34425e;color:#e7ecf8}
+html[data-theme="dark"] .scan-actions .camera-scan-button{background:#29315e;color:#d2d5ff;border-color:#454f90}
+@media(max-width:700px){
+ .student-table-wrap{display:none}
+ .student-mobile-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:12px}
+ .student-mobile-meta{grid-template-columns:1fr 1fr}
+ .attendance-scan{padding:12px;margin:12px 0}
+ .attendance-scan-form{grid-template-columns:1fr}
+ .attendance-scan-form input{font-size:16px}
+ .scan-actions{display:grid;grid-template-columns:1fr 1fr}
+ .scan-actions button{width:100%;padding:10px 8px}
+ .scan-actions button:first-child{grid-column:1/-1}
+ .sidebar nav{scrollbar-width:none;overscroll-behavior-x:contain}
+ .sidebar nav::-webkit-scrollbar{display:none}
+ .main{padding-top:14px}
+}
+@media(max-width:380px){
+ .student-mobile-meta{grid-template-columns:1fr}
+ .scan-actions{grid-template-columns:1fr}
+ .scan-actions button:first-child{grid-column:auto}
+}
