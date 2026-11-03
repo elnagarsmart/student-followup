@@ -25,3 +25,39 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}#app,.app-shell{width:100%
 @media(max-width:700px){.portal-age-line{font-size:12px!important}}
 @media(max-width:700px){.student-table-wrap{display:none}.student-mobile-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-top:12px}.student-mobile-meta{grid-template-columns:1fr 1fr}.attendance-scan{padding:12px;margin:12px 0}.attendance-scan-form{grid-template-columns:1fr}.attendance-scan-form input{font-size:16px}.scan-actions{display:grid;grid-template-columns:1fr 1fr}.scan-actions button{width:100%;padding:10px 8px}.scan-actions button:first-child{grid-column:1/-1}.sidebar nav{scrollbar-width:none;overscroll-behavior-x:contain}.main{padding-top:14px}}
 @media(max-width:380px){.student-mobile-meta{grid-template-columns:1fr}.scan-actions{grid-template-columns:1fr}.scan-actions button:first-child{grid-column:auto}}
+
+
+/* Mobile account actions: keep backup, passkey setup and sign-out visible. */
+@media(max-width:700px){
+ .sidebar-bottom{
+  position:fixed;
+  inset:auto 0 0 0;
+  z-index:10;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:4px;
+  padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));
+  background:#101a32;
+  border-top:1px solid #ffffff20;
+  box-shadow:0 -8px 24px #101a3230;
+ }
+ .sidebar-bottom .nav-item{
+  min-width:0;
+  min-height:48px;
+  padding:7px 3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  font-size:clamp(9px,2.5vw,11px)!important;
+  line-height:1.45;
+  color:#e9eefb;
+  border-radius:9px;
+ }
+ .sidebar-bottom .nav-item::before{content:none!important;display:none!important}
+ .sidebar-bottom .passkey-register{color:#d8d4ff}
+ .sidebar-bottom .logout{color:#ffb6b6}
+ .main{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+}
