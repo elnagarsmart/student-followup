@@ -113,28 +113,57 @@ async function stopAttendanceCamera(){
  const button=$('camera-scan-start');if(button)button.textContent='▣ فتح الكاميرا';const placeholder=$('attendance-camera-placeholder');if(placeholder)placeholder.hidden=false;
  attendanceScanLocked=false;
 }
+function selectAttendanceStudent(studentId){
+ const student=students.find(s=>s.id===studentId),box=$('attendance-selected');if(!student||!box)return;
+ attendanceSelectedStudentId=student.id;
+ $('attendance-selected-name').textContent=student.name||'—';
+ $('attendance-selected-code').textContent=student.code||'—';
+ $('attendance-selected-group').textContent=groups.find(g=>g.id===student.group_id)?.name||'بدون مجموعة';
+ $('attendance-selected-phone').textContent=student.student_phone||'—';box.hidden=false;
+ const feedback=$('attendance-feedback');if(feedback)feedback.textContent='تم اختيار الطالب. راجع بياناته ثم أكد التسجيل.';
+ const manual=$('attendance-manual-student');if(manual)manual.value=student.id;
+}
+function bindAttendanceSearch(inputId,targetId){
+ const input=$(inputId),target=$(targetId);if(!input||!target)return;
+ input.oninput=()=>{
+  const q=input.value.trim().toLowerCase();
+  const rows=students.filter(s=>!q||[s.name,s.code,s.student_phone,s.guardian_phone].some(v=>String(v||'').toLowerCase().includes(q))).slice(0,10);
+  target.hidden=false;
+  target.innerHTML=rows.map(s=>'<button type="button" class="attendance-search-result" data-attendance-pick="'+esc(s.id)+'"><b>'+esc(s.name)+'</b><small>'+esc(s.code||'—')+' · '+esc(groups.find(g=>g.id===s.group_id)?.name||'بدون مجموعة')+'</small><span>اختيار ←</span></button>').join('')||'<p class="attendance-no-results">لا يوجد طالب مطابق.</p>';
+  target.querySelectorAll('[data-attendance-pick]').forEach(b=>b.onclick=()=>selectAttendanceStudent(b.dataset.attendancePick));
+ };
+}
 async function markAttendanceFromCode(raw){
  const value=String(raw||'').trim().replace(/^ACADEMIA:/i,'').trim();
- const student=students.find(x=>x.id===value||String(x.code||'').toLowerCase()===value.toLowerCase());
- const feedback=$('scan-feedback');
- if(!student){if(feedback)feedback.textContent='لم يتم العثور على طالب بهذا الرمز. تأكد من البطاقة أو الكود.';return}
- const date=$('scan-session-date')?.value||localDate();
+ const student=students.find(x=>x.id===value||String(x.code||'').toLowerCase()===value.toLowerCase()||String(x.student_phone||'').replace(/\D/g,'')===value.replace(/\D/g,''));
+ const feedback=$('attendance-feedback');
+ if(!student){if(feedback)feedback.textContent='لم يتم العثور على طالب بهذا الكود. جرّب البحث بالاسم أو الهاتف.';return false}
+ selectAttendanceStudent(student.id);
+ if(feedback)feedback.textContent='تم التعرف على '+student.name+'. راجع البيانات ثم أكد تسجيل الحضور.';
+ return true;
+}
+async function registerSelectedAttendance(status){
+ const student=students.find(s=>s.id===attendanceSelectedStudentId),feedback=$('attendance-feedback');
+ if(!student){if(feedback)feedback.textContent='اختر الطالب أولًا بالكاميرا أو الباركود أو البحث.';return}
+ const date=$('attendance-session-date')?.value||localDate(),sessionName=$('attendance-session-name')?.value||'الجلسة الأولى';
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){if(feedback)feedback.textContent='اختر تاريخ جلسة صحيحًا.';return}
- const existing=attendance.find(x=>x.student_id===student.id&&x.session_date===date);
- if(existing){if(feedback)feedback.textContent='تم تسجيل '+student.name+' بالفعل في '+date+' بالحالة: '+existing.status;return}
+ const existing=attendance.find(x=>x.student_id===student.id&&x.session_date===date&&(x.session_name||'الجلسة الأولى')===sessionName);
+ if(existing){if(feedback)feedback.textContent='تم تسجيل الطالب في '+sessionName+' بتاريخ '+date+' بالفعل.';return}
+ const button=$('attendance-confirm');if(button){button.disabled=true;button.textContent='جارٍ التسجيل…'}
  try{
-  await run(db.from('attendance').insert({student_id:student.id,owner_id:ownerId||session.user.id,session_date:date,status:'حاضر'}));
-  if(feedback)feedback.textContent='✓ تم تسجيل حضور '+student.name;
-  await load(true);
-  msg('تم تسجيل حضور '+student.name+' بنجاح');
- }catch(e){if(feedback)feedback.textContent=e.code==='23505'?'تم تسجيل حضور هذا الطالب من قبل.':e.message;else msg(e.message)}
+  await run(db.from('attendance').insert({student_id:student.id,owner_id:ownerId||session.user.id,session_date:date,session_name:sessionName,status:status||'حاضر'}));
+  attendanceSelectedStudentId='';if($('attendance-selected'))$('attendance-selected').hidden=true;
+  if(feedback)feedback.textContent='✓ تم تسجيل '+(status||'حاضر')+' للطالب '+student.name;
+  await load(true);msg('تم تسجيل الحضور بنجاح.');
+ }catch(e){if(feedback)feedback.textContent=e.code==='23505'?'تم تسجيل الحضور مسبقًا.':e.message;else msg(e.message)}
+ finally{if(button?.isConnected){button.disabled=false;button.textContent='✓ تسجيل حضور'}}
 }
 async function startAttendanceCamera(){
  const box=$('camera-reader'),button=$('camera-scan-start');
  if(!box||!button)return;
  if(activeAttendanceScanner){await stopAttendanceCamera();return}
  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){msg('المسح بالكاميرا يحتاج فتح المنصة عبر HTTPS والسماح للمتصفح باستخدام الكاميرا.');return}
- button.disabled=true;button.textContent='جارٍ فتح الكاميرا…';box.hidden=false;const placeholder=$('attendance-camera-placeholder');if(placeholder)placeholder.hidden=true;
+ button.disabled=true;button.textContent='جارٍ فتح الكاميرا…';box.hidden=false;const placeholder=$('attendance-camera-placeholder');if(placeholder)placeholder.hidden=true;const placeholder=$('attendance-camera-placeholder');if(placeholder)placeholder.hidden=true;
  try{
   await ensureExternalScript('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js','Html5Qrcode');
   const formats=['QR_CODE','CODE_128','CODE_39','CODE_93','EAN_13','EAN_8','UPC_A','UPC_E','ITF','CODABAR'].map(k=>window.Html5QrcodeSupportedFormats?.[k]).filter(Number.isInteger);
@@ -186,7 +215,7 @@ if(tab==='ai-import'&&role==='owner'){
  $('content').innerHTML=`<section class="panel"><div class="panel-heading"><div><h3>المساعد الذكي لاستيراد الطلاب</h3><p>حلّل صورة أو PDF أو نصًا، ثم راجع كل سجل قبل حفظه.</p></div></div>
  <form id="ai-import-form" class="form-grid ai-import-form"><label>ملف صورة أو PDF<input id="ai-import-file" type="file" accept="image/*,application/pdf"></label><label>أو الصق قائمة الطلاب<textarea id="ai-import-text" rows="5" placeholder="مثال: أحمد محمد، هاتف 010...، رسوم 300"></textarea></label><button type="submit" class="ai-primary-btn">✦ تحليل واستخراج البيانات</button></form>
  <p id="ai-import-status" class="muted" aria-live="polite">لن يتم حفظ أي طالب قبل مراجعتك والضغط على زر الحفظ.</p><div id="ai-import-results"></div></section>`;
- $('ai-import-form').onsubmit=async e=>{e.preventDefault();const status=$('ai-import-status'),file=$('ai-import-file').files[0],text=$('ai-import-text').value.trim();status.classList.remove('ai-import-error');if(!file&&!text){status.textContent='اختر ملفًا أو اكتب بيانات الطلاب أولاً.';return}if(file&&file.size>12*1024*1024){status.textContent='حجم الملف أكبر من 12 ميجابايت.';return}const btn=e.currentTarget.querySelector('button[type="submit"]');btn.disabled=true;status.textContent='جارٍ تحليل البيانات…';try{let payload={text};if(file){const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=reject;reader.readAsDataURL(file)});payload.file={name:file.name,type:file.type,data}}const {data,error}=await db.functions.invoke('academia-ai-import',{body:payload});if(error)throw new Error(await edgeFunctionErrorText(error));if(data?.error)throw new Error(data.error);const rows=Array.isArray(data?.students)?data.students:[];if(!rows.length){status.textContent='لم يتم العثور على سجلات طلاب واضحة. جرّب ملفًا أوضح.';return}renderAIImportPreview(rows);status.textContent='تم استخراج '+rows.length+' سجلًا. راجع وعدّل البيانات قبل الحفظ.'}catch(x){status.textContent=x.message||'تعذر تحليل الملف.';status.classList.add('ai-import-error')}finally{btn.disabled=false}};
+ $('ai-import-form').onsubmit=async e=>{e.preventDefault();const status=$('ai-import-status'),file=$('ai-import-file').files[0],text=$('ai-import-text').value.trim();status.classList.remove('ai-import-error');status.classList.remove('ai-import-error');if(!file&&!text){status.textContent='اختر ملفًا أو اكتب بيانات الطلاب أولاً.';return}if(file&&file.size>12*1024*1024){status.textContent='حجم الملف أكبر من 12 ميجابايت.';return}const btn=e.currentTarget.querySelector('button[type="submit"]');btn.disabled=true;status.textContent='جارٍ تحليل البيانات…';try{let payload={text};if(file){const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]||'');reader.onerror=reject;reader.readAsDataURL(file)});payload.file={name:file.name,type:file.type,data}}const {data,error}=await db.functions.invoke('academia-ai-import',{body:payload});if(error)throw new Error(await edgeFunctionErrorText(error));if(data?.error)throw new Error(data.error);const rows=Array.isArray(data?.students)?data.students:[];if(!rows.length){status.textContent='لم يتم العثور على سجلات طلاب واضحة. جرّب ملفًا أوضح.';return}renderAIImportPreview(rows);status.textContent='تم استخراج '+rows.length+' سجلًا. راجع وعدّل البيانات قبل الحفظ.'}catch(x){status.textContent=x.message||'تعذر تحليل الملف.';status.classList.add('ai-import-error')}finally{btn.disabled=false}};
  return;
 }
 
