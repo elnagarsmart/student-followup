@@ -137,28 +137,44 @@ function applyTheme(theme){
  const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.setAttribute('content',mode==='dark'?'#0a1221':'#f3f6fc');
 }
 function applyAcademiaIdentity(){
- const name=String(academySettings?.profile?.academyName||'أكاديميا').trim()||'أكاديميا';
+ const profile=academySettings?.profile||DEFAULT_ACADEMY_SETTINGS.profile;
+ const name=String(profile.academyName||'أكاديميا').trim()||'أكاديميا';
  const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent=name;
- const logo=String(academySettings?.profile?.logoUrl||'').trim();let logoSrc='/icons/icon.svg';if(logo){try{const parsed=new URL(logo,window.location.origin);if(parsed.protocol==='https:')logoSrc=parsed.href}catch{}}
+ const brandCaption=document.querySelector('.sidebar .brand small');if(brandCaption)brandCaption.textContent='إدارة ومتابعة الطلاب';
+ const logo=String(profile.logoUrl||'').trim();let logoSrc='/icons/icon.svg';
+ if(logo){try{const parsed=new URL(logo,window.location.origin);if(parsed.protocol==='https:')logoSrc=parsed.href}catch{}}
  document.querySelectorAll('.brand-mark img').forEach(img=>{img.src=logoSrc;img.alt='شعار '+name;img.loading='lazy';});
  const footer=document.querySelector('.main footer');if(footer){const first=footer.childNodes[0];if(first&&first.nodeType===3)first.textContent=name+' · نظام متابعة الطلاب ';}
  const userLabel=$('user-email');
- if(userLabel&&session?.user){userLabel.textContent=academySettings?.profile?.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
+ if(userLabel&&session?.user){userLabel.textContent=profile.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
  document.title=name+' | إدارة ومتابعة الطلاب';
 }
-function applyAcademyAppearance(){
- const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
- applyTheme(appearance.theme);
- document.documentElement.dataset.skin=appearance.skin||'blue';
- document.documentElement.dataset.accent=appearance.accent||'violet';
- document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
- document.documentElement.dataset.density=appearance.density||'comfortable';
- document.documentElement.dataset.sidebar=appearance.sidebar||'expanded';
- applyAcademiaIdentity();
+async function saveAcademyPublicProfile(value,profileOwnerId=session?.user?.id){
+ if(!profileOwnerId||!session?.user?.id)throw new Error('تعذر تحديد مالك الأكاديمية لحفظ الهوية.');
+ const p=value?.profile||DEFAULT_ACADEMY_SETTINGS.profile;
+ const logo=String(p.logoUrl||'').trim();
+ if(logo){let parsed;try{parsed=new URL(logo,window.location.origin)}catch{throw new Error('رابط الشعار غير صالح. استخدم رابط HTTPS صحيحًا.')};if(parsed.protocol!=='https:')throw new Error('رابط الشعار يجب أن يبدأ بـ HTTPS.')}
+ await run(db.from('academy_public_profiles').upsert({
+  owner_id:profileOwnerId,
+  academy_name:String(p.academyName||'أكاديميا').trim()||'أكاديميا',
+  display_name:String(p.displayName||'').trim(),
+  contact_phone:String(p.contactPhone||'').trim(),
+  address:String(p.address||'').trim(),
+  logo_url:logo,
+  updated_at:new Date().toISOString()
+ },{onConflict:'owner_id'}));
+}
+function applyPortalThemePreference(){
+ const skin=localStorage.getItem('academia-portal-skin');
+ if(!['blue','green','violet','midnight','gold'].includes(skin))return;
+ document.documentElement.dataset.skin=skin;
+ document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
+ applyTheme(skin==='midnight'?'dark':'light');
 }
 async function saveAcademySettings(next){
- const value=mergeAcademySettings(next);
- await run(db.from('academy_settings').upsert({owner_id:ownerId||session.user.id,settings:value,updated_at:new Date().toISOString()},{onConflict:'owner_id'}));
+ const value=mergeAcademySettings(next),id=ownerId||session.user.id;
+ await run(db.from('academy_settings').upsert({owner_id:id,settings:value,updated_at:new Date().toISOString()},{onConflict:'owner_id'}));
+ await saveAcademyPublicProfile(value,id);
  academySettings=value;applyAcademyAppearance();
  return value;
 }
@@ -363,7 +379,26 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
    await run(db.from('app_owners').upsert({owner_id:uid},{onConflict:'owner_id',ignoreDuplicates:true}));
    isOwner=true;ownerId=uid;permissions={};
  }
- if(isOwner){role='owner';const row=await run(db.from('academy_settings').select('settings').eq('owner_id',uid).maybeSingle());academySettings=mergeAcademySettings(row?.settings);applyAcademyAppearance();}else{academySettings=mergeAcademySettings(null);applyAcademyAppearance();}
+ if(isOwner){
+   role='owner';
+   const row=await run(db.from('academy_settings').select('settings').eq('owner_id',uid).maybeSingle());
+   academySettings=mergeAcademySettings(row?.settings);
+   applyAcademyAppearance();
+   // Publish only the public-facing identity to accounts linked to this academy.
+   await saveAcademyPublicProfile(academySettings,uid);
+  }else{
+   const profileOwnerId=supervisor?.owner_id||mine[0]?.owner_id||null;
+   let publicProfile=null;
+   if(profileOwnerId){
+    publicProfile=await run(db.from('academy_public_profiles').select('academy_name,display_name,contact_phone,address,logo_url').eq('owner_id',profileOwnerId).maybeSingle());
+   }
+   academySettings=mergeAcademySettings({profile:publicProfile?{
+    academyName:publicProfile.academy_name,displayName:publicProfile.display_name,
+    contactPhone:publicProfile.contact_phone,address:publicProfile.address,logoUrl:publicProfile.logo_url
+   }:{}});
+   applyAcademyAppearance();
+   if(role==='student'||role==='guardian')applyPortalThemePreference();
+  }
   supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;
  if(!isOwner&&!supervisor){if(!mine.length){role='visitor';links=[];students=[];attendance=[];payments=[];}else{role=mine.some(x=>x.portal_role==='guardian')?'guardian':'student';links=mine;const ids=mine.map(x=>x.student_id);attendance=await run(db.from('attendance').select('*').in('student_id',ids).order('session_date',{ascending:false}));if(role==='guardian'){[payments,students]=await Promise.all([run(db.from('payments').select('*').in('student_id',ids).order('paid_at',{ascending:false})),run(db.from('students').select('id,name,code,monthly_fee,date_of_birth,photo_path,group_id,owner_id').in('id',ids))])}else{payments=[];students=await run(db.from('students').select('id,name,code,date_of_birth,photo_path,group_id,owner_id').in('id',ids))}const portalOwner=mine[0]?.owner_id;if(portalOwner){const groupIds=[...new Set(students.map(st=>st.group_id).filter(Boolean))];groups=groupIds.length?await run(db.from('student_groups').select('id,name').eq('owner_id',portalOwner).in('id',groupIds)):[]}else groups=[]}
  }else{
@@ -429,6 +464,8 @@ if(tab==='appearance'&&(role==='student'||role==='guardian')){
  $('content').querySelectorAll('[data-portal-skin]').forEach(button=>button.onclick=()=>{
   const skin=button.dataset.portalSkin,mode=skin==='midnight'?'dark':'light';
   localStorage.setItem('academia-portal-skin',skin);
+  document.documentElement.dataset.skin=skin;
+  document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
   document.documentElement.dataset.skin=skin;
   document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
   applyTheme(mode);
@@ -556,7 +593,7 @@ if(tab==='settings'&&role==='owner'){
   if(next.defaults.codePrefix&&!/^[A-Za-z0-9_-]{1,12}$/.test(next.defaults.codePrefix)){msg('بادئة الكود يجب أن تحتوي حروفًا إنجليزية أو أرقامًا أو شرطة فقط.');return}
   try{next.profile.whatsappSupportPhone='+201011960156';await saveAcademySettings(next);supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا. رقم الدعم موحّد لجميع المستخدمين.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
  });
- $('settings-reset-defaults').onclick=async()=>{if(!confirm('استعادة جميع إعدادات الأكاديمية الافتراضية؟'))return;try{await saveAcademySettings(mergeAcademySettings(null));msg('تمت استعادة الإعدادات الافتراضية.');render()}catch(x){msg(x.message)}};
+ $('settings-reset-defaults').onclick=async()=>{if(!confirm('استعادة إعدادات المظهر والرسائل والتنبيهات والطلاب إلى الوضع الافتراضي؟ ستظل هوية الأكاديمية وبيانات التواصل كما هي.'))return;try{const defaults=mergeAcademySettings({profile:academySettings?.profile||DEFAULT_ACADEMY_SETTINGS.profile});await saveAcademySettings(defaults);msg('تمت استعادة الإعدادات الافتراضية مع الاحتفاظ بهوية الأكاديمية.');render()}catch(x){msg(x.message)}};
  $('settings-email-form').onsubmit=lockForm(async e=>{
   e.preventDefault();
   const v=new FormData(e.currentTarget),newEmail=String(v.get('newEmail')||'').trim().toLowerCase(),currentPassword=String(v.get('currentPassword')||'');
