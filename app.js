@@ -12,6 +12,7 @@ const edgeFunctionErrorText=async error=>{try{const ctx=error?.context;if(ctx&&t
 function lockForm(handler){return async e=>{e.preventDefault();const form=e.currentTarget;if(form.dataset.busy==='true')return;form.dataset.busy='true';const button=form.querySelector('button[type="submit"],button:not([type])');const originalLabel=button?.textContent;if(button){button.disabled=true;button.textContent='جارٍ الحفظ…'}try{await handler(e)}finally{form.dataset.busy='false';if(button?.isConnected){button.disabled=false;button.textContent=originalLabel}}}}
 $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
 const themeToggle=$('theme-toggle');
+const authThemeToggle=$('auth-theme-toggle');
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',address:'',logoUrl:''},
  appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
@@ -39,6 +40,8 @@ function applyTheme(theme){
  document.documentElement.dataset.theme=mode;
  localStorage.setItem('academia-theme',mode);
  if(themeToggle)themeToggle.textContent=mode==='dark'?'☀️ الوضع الفاتح':'🌙 الوضع الداكن';
+ if(authThemeToggle)authThemeToggle.textContent=mode==='dark'?'☀️ الوضع الفاتح':'🌙 الوضع الداكن';
+ const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.setAttribute('content',mode==='dark'?'#0a1221':'#f3f6fc');
 }
 function applyAcademiaIdentity(){
  const name=String(academySettings?.profile?.academyName||'أكاديميا').trim()||'أكاديميا';
@@ -67,13 +70,15 @@ async function saveAcademySettings(next){
 }
 academySettings=mergeAcademySettings(null);
 applyTheme(localStorage.getItem('academia-theme')||'dark');
-if(themeToggle)themeToggle.onclick=async()=>{
+const toggleAcademiaTheme=async()=>{
  const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
  academySettings=mergeAcademySettings(academySettings);
  academySettings.appearance.theme=next;
  applyAcademyAppearance();
  if(isOwner&&ownerId){try{await saveAcademySettings(academySettings)}catch(e){msg('تم تغيير المظهر محليًا لكن تعذر حفظه في الحساب: '+e.message)}}
 };
+if(themeToggle)themeToggle.onclick=toggleAcademiaTheme;
+if(authThemeToggle)authThemeToggle.onclick=toggleAcademiaTheme;
 function updateAuthView(){const signup=authMode==='signup'&&authChannel!=='code';$('name-field').hidden=!signup;$('account-type-field').hidden=!signup;$('full-name').required=signup;$('email-field').hidden=authChannel!=='email';$('email').required=authChannel==='email';$('phone-field').hidden=authChannel!=='phone';$('phone-help').hidden=authChannel!=='phone'||authMode!=='signup';$('phone').required=authChannel==='phone';$('code-field').hidden=authChannel!=='code';$('student-code').required=authChannel==='code';$('password').autocomplete=signup?'new-password':'current-password';$('auth-submit').textContent=signup?'إنشاء حساب':'تسجيل الدخول';$('toggle-auth').hidden=authChannel==='code';$('toggle-auth').textContent=signup?'لديك حساب؟ تسجيل الدخول':'ليس لديك حساب؟ إنشاء حساب';$('forgot-password').hidden=signup||authChannel!=='email';document.querySelectorAll('.channel-btn').forEach(b=>b.classList.toggle('active',b.dataset.channel===authChannel));$('auth-form').hidden=false;$('otp-form').hidden=true}
 document.querySelectorAll('.channel-btn').forEach(b=>b.onclick=()=>{authChannel=b.dataset.channel;if(authChannel==='code')authMode='login';updateAuthView()});
 $('toggle-auth').onclick=()=>{authMode=authMode==='login'?'signup':'login';updateAuthView();$('auth-card').classList.remove('auth-switch');void $('auth-card').offsetWidth;$('auth-card').classList.add('auth-switch')};
