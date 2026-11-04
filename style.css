@@ -2066,4 +2066,11 @@ html[data-theme="dark"] .message-contact-list{scrollbar-color:#344763 #111d31}
  .message-bubble{max-width:92%}
  .message-conversation-panel{min-height:440px}
 }
+/* Academy identity banner shown to owners and verified linked portal accounts. */
+.academy-identity-strip{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin:-10px 0 18px;padding:9px 13px;border:1px solid #e0e7f0;border-radius:10px;background:#fff;color:#687791;font-size:11px;line-height:1.7}
+.academy-identity-strip[hidden]{display:none!important}
+.academy-identity-strip a{color:var(--academy-accent-strong);font-weight:800;text-decoration:none}
+.academy-identity-strip a:hover{text-decoration:underline}
+html[data-theme="dark"] .academy-identity-strip{background:#111d31;border-color:#293c58;color:#aab8d0}
+html[data-theme="dark"] .academy-identity-strip a{color:#b9b3ff}
 
