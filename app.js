@@ -7,6 +7,63 @@ const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG')
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const normalizePhone=raw=>{let p=String(raw||'').trim().replace(/[\s()-]/g,'');if(/^01[0125]\d{8}$/.test(p))p='+20'+p.slice(1);return p};
 const msg=t=>{clearTimeout(messageTimer);$('message').textContent=t;$('message').hidden=false;messageTimer=setTimeout(()=>$('message').hidden=true,6000)};
+
+function normalizeSupportWhatsAppNumber(raw){
+ let digits=String(raw||'').replace(/\\D/g,'');
+ if(digits.startsWith('00'))digits=digits.slice(2);
+ if(/^01[0125]\\d{8}$/.test(digits))digits='20'+digits.slice(1);
+ return digits;
+}
+function mountWhatsAppSupportWidget(){
+ if($('whatsapp-support-widget'))return;
+ document.body.insertAdjacentHTML('beforeend',`
+  <div id="whatsapp-support-widget" class="whatsapp-support-widget" hidden>
+   <section id="whatsapp-support-panel" class="whatsapp-support-panel" role="dialog" aria-label="التواصل مع دعم أكاديميا" hidden>
+    <header class="whatsapp-support-header"><div><b>مركز مساعدة أكاديميا</b><small>تواصل مع فريق الدعم عبر واتساب</small></div><button id="whatsapp-support-close" type="button" aria-label="إغلاق">×</button></header>
+    <p class="whatsapp-support-intro">اكتب المشكلة التي تواجهك، وسنجهز رسالة تحتوي على بيانات البرنامج وحسابك لتسهيل المساعدة.</p>
+    <label for="whatsapp-support-description">وصف المشكلة</label>
+    <textarea id="whatsapp-support-description" rows="4" maxlength="1500" placeholder="اشرح ما الذي حدث، وما الخطوة التي كنت تحاول تنفيذها…"></textarea>
+    <small class="whatsapp-support-privacy">لن نطلب منك كلمة المرور أو رمز التحقق. لا تكتب أي بيانات سرية في الرسالة.</small>
+    <button id="whatsapp-support-send" type="button" class="whatsapp-support-send">متابعة إلى واتساب <span>↗</span></button>
+   </section>
+   <button id="whatsapp-support-launcher" class="whatsapp-support-launcher" type="button" aria-expanded="false" aria-controls="whatsapp-support-panel">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3.2A12.7 12.7 0 0 0 5.1 22.4L3.5 28l5.8-1.5A12.8 12.8 0 1 0 16 3.2Zm0 23.1c-2 0-3.9-.5-5.5-1.5l-.4-.2-3.4.9.9-3.3-.3-.5A10.3 10.3 0 1 1 16 26.3Zm5.7-7.7c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.4 8.4 0 0 1-2.5-1.5 9.4 9.4 0 0 1-1.7-2.1c-.2-.3 0-.5.1-.6l.5-.6.3-.5c.1-.2 0-.4 0-.6l-1-2.3c-.3-.6-.6-.5-.8-.5h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.9 1.2 3.3 1.4 3.5 2.4 3.7 5.8 5.1c.8.3 1.4.5 1.9.6.8.2 1.5.2 2.1.1.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.1-.3-.2-.7-.4Z"/></svg>
+    <span>تواصل معنا</span>
+   </button>
+  </div>`);
+ const launcher=$('whatsapp-support-launcher'),panel=$('whatsapp-support-panel');
+ launcher.onclick=()=>{panel.hidden=!panel.hidden;launcher.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)$('whatsapp-support-description').focus()};
+ $('whatsapp-support-close').onclick=()=>{panel.hidden=true;launcher.setAttribute('aria-expanded','false')};
+ $('whatsapp-support-send').onclick=()=>{
+  const description=$('whatsapp-support-description').value.trim();
+  if(!description){msg('اكتب وصف المشكلة أولًا.');$('whatsapp-support-description').focus();return}
+  const phone=normalizeSupportWhatsAppNumber(supportWhatsappPhone);
+  if(!/^\\d{8,15}$/.test(phone)){msg('رقم واتساب الدعم غير مُضاف بعد. اطلب من مسؤول الأكاديمية إضافته من الإعدادات ← عام وهوية.');return}
+  const user=session?.user||{},metadata=user.user_metadata||{};
+  const linkedNames=(students||[]).map(student=>student.name).filter(Boolean).join('، ');
+  const personName=String(metadata.full_name||metadata.name||academySettings?.profile?.displayName|| (role==='student'&&linkedNames?linkedNames:role==='guardian'&&linkedNames?'ولي أمر '+linkedNames:'غير محدد')).trim();
+  const account=String(user.email||user.phone||'حساب مسجل');
+  const roleNames={owner:'مدير الأكاديمية',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر',visitor:'حساب عام'};
+  const currentPage=$('page-title')?.textContent||'المنصة';
+  const message=[
+   'مرحبًا، أحتاج إلى المساعدة بخصوص برنامج أكاديميا – نظام متابعة الطلاب.',
+   'اسم الشخص: '+personName,
+   'الحساب: '+account,
+   'نوع الحساب: '+(roleNames[role]||'مستخدم'),
+   'القسم الحالي: '+currentPage,
+   '',
+   'وصف المشكلة:',
+   description
+  ].join('\\n');
+  const link=document.createElement('a');
+  link.href='https://wa.me/'+phone+'?text='+encodeURIComponent(message);
+  link.target='_blank';link.rel='noopener noreferrer';
+  document.body.appendChild(link);link.click();link.remove();
+  panel.hidden=true;launcher.setAttribute('aria-expanded','false');
+ };
+}
+mountWhatsAppSupportWidget();
+
 const run=async q=>{const {data,error}=await q;if(error)throw error;return data};
 const edgeFunctionErrorText=async error=>{try{const ctx=error?.context;if(ctx&&typeof ctx.clone==='function'){const body=await ctx.clone().json();if(body?.error)return String(body.error)}}catch{}return String(error?.message||'تعذر الاتصال بالخدمة.')};
 function lockForm(handler){return async e=>{e.preventDefault();const form=e.currentTarget;if(form.dataset.busy==='true')return;form.dataset.busy='true';const button=form.querySelector('button[type="submit"],button:not([type])');const originalLabel=button?.textContent;if(button){button.disabled=true;button.textContent='جارٍ الحفظ…'}try{await handler(e)}finally{form.dataset.busy='false';if(button?.isConnected){button.disabled=false;button.textContent=originalLabel}}}}
