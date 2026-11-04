@@ -148,6 +148,16 @@ function applyAcademiaIdentity(){
  const userLabel=$('user-email');
  if(userLabel&&session?.user){userLabel.textContent=profile.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
  document.title=name+' | إدارة ومتابعة الطلاب';
+ const main=document.querySelector('.main'),topbar=document.querySelector('.topbar');
+ let identityStrip=$('academy-identity-strip');
+ if(main&&topbar&&!identityStrip){identityStrip=document.createElement('div');identityStrip.id='academy-identity-strip';identityStrip.className='academy-identity-strip';identityStrip.setAttribute('aria-label','بيانات التواصل مع الأكاديمية');topbar.insertAdjacentElement('afterend',identityStrip);}
+ if(identityStrip){
+  identityStrip.replaceChildren();
+  const phone=String(profile.contactPhone||'').trim(),address=String(profile.address||'').trim();
+  if(phone){const phoneLink=document.createElement('a');phoneLink.href='tel:'+phone.replace(/[^0-9+]/g,'');phoneLink.textContent='هاتف الأكاديمية: '+phone;phoneLink.dir='auto';identityStrip.append(phoneLink);}
+  if(address){const addressText=document.createElement('span');addressText.textContent='العنوان: '+address;identityStrip.append(addressText);}
+  identityStrip.hidden=!(phone||address);
+ }
 }
 async function saveAcademyPublicProfile(value,profileOwnerId=session?.user?.id){
  if(!profileOwnerId||!session?.user?.id)throw new Error('تعذر تحديد مالك الأكاديمية لحفظ الهوية.');
