@@ -12,19 +12,20 @@
 <main class="app-shell">
 <header class="topbar">
  <div class="brand"><img id="brand-mark" src="./icon.svg" alt="شعار أكاديميا"><div><small>ACADEMIA · CONTROL</small><h1>مركز تحكم أكاديميا</h1><p>إدارة المنصة والأكاديميات والحسابات من مكان واحد</p></div></div>
- <div class="top-actions"><button type="button" class="button ghost" id="install-app">＋ تثبيت / تنزيل التطبيق</button><span class="admin-pill" id="admin-name">مدير المنصة</span></div>
+ <div class="top-actions"><button type="button" class="button ghost" id="self-password-button">كلمة مرور الحساب</button><button type="button" class="button ghost" id="install-app">＋ تثبيت / تنزيل التطبيق</button><span class="admin-pill" id="admin-name">مدير المنصة</span></div>
 </header>
 <section id="login" class="login-layout card">
  <div class="login-art"><div class="art-orbit"></div><img src="./icon.svg" alt="شعار أكاديميا" class="login-logo"><div class="art-copy"><span>ACADEMIA CONTROL CENTER</span><h2>إدارة مركزية<br>بصورة أوضح.</h2><p>الحسابات، الأكاديميات، التنبيهات وسجل العمليات في لوحة واحدة.</p></div><div class="security-note"><span class="security-dot"></span> دخول محمي للحسابات الإدارية المعتمدة فقط</div></div>
  <div class="login-form-wrap"><div class="eyebrow">تسجيل دخول آمن</div><h2>مرحبًا بعودتك</h2><p class="muted">أدخل بريد مدير المنصة المعتمد لإرسال رمز تحقق لمرة واحدة.</p><form id="login-form" class="form-stack">
  <label>البريد الإلكتروني<input id="email" type="email" autocomplete="username" placeholder="admin@example.com" required dir="ltr"></label>
- <label id="otp-wrap" hidden>رمز التحقق<input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="12" placeholder="أدخل الرمز الذي وصلك" dir="ltr"></label>
- <button id="login-submit" class="button primary full" type="submit">إرسال رمز الدخول</button><p id="status" role="status" aria-live="polite"></p></form>
- <div class="login-foot">🔒 لا نعرض كلمات المرور أو مفاتيح النظام داخل لوحة التحكم.</div></div>
+ <label>كلمة المرور<input id="password" type="password" minlength="6" maxlength="72" autocomplete="current-password" placeholder="اكتب كلمة مرور حسابك" required dir="ltr"></label>
+ <div class="login-form-options"><button type="button" class="text-button" id="toggle-login-password">إظهار كلمة المرور</button><button type="button" class="text-button" id="forgot-password">نسيت كلمة المرور؟</button></div>
+ <button id="login-submit" class="button primary full" type="submit">تسجيل الدخول</button><p id="status" role="status" aria-live="polite"></p></form>
+ <div class="login-foot">🔒 الدخول بالبريد وكلمة المرور. استعادة الحساب متاحة عند نسيان كلمة المرور.</div></div>
 </section>
 <section id="dashboard" hidden>
  <div class="dashboard-head"><div><div class="eyebrow">لوحة الإدارة العليا</div><h2 id="page-title">نظرة عامة</h2><p class="muted">ملخص مباشر للبيانات التي تسمح صلاحيات الإدارة بعرضها.</p></div><div class="head-tools"><button class="button ghost" id="refresh" type="button">↻ تحديث البيانات</button><button class="button danger-soft" id="logout" type="button">تسجيل الخروج</button></div></div>
- <nav class="main-nav" aria-label="التنقل الرئيسي"><button type="button" data-page="overview" class="active"><span>▦</span> نظرة عامة</button><button type="button" data-page="users"><span>♙</span> الحسابات</button><button type="button" data-page="notices"><span>♢</span> الإنذارات</button><button type="button" data-page="audit"><span>≡</span> سجل العمليات</button></nav>
+ <nav class="main-nav" aria-label="التنقل الرئيسي"><button type="button" data-page="overview" class="active"><span>▦</span> نظرة عامة</button><button type="button" data-page="users"><span>♙</span> الحسابات</button><button type="button" data-page="notices"><span>♢</span> الإنذارات</button><button type="button" data-page="audit"><span>≡</span> سجل العمليات</button><button type="button" data-page="team"><span>♧</span> فريق الإدارة</button></nav>
  <section id="overview" class="page-section"><div class="section-heading"><div><h3>ملخص المنصة</h3><p>إجماليات الحسابات المسجلة في أكاديميا.</p></div><button type="button" id="download-summary" class="button ghost">⇩ تنزيل تقرير إحصائي</button></div>
  <div class="metrics">
  <article class="metric metric-blue"><div class="metric-icon">▥</div><div><span>الأكاديميات / المدرسون</span><b id="teachers">—</b><small>حسابات مالكي الأكاديميات</small></div></article>
@@ -37,8 +38,18 @@
  <section id="users" class="page-section" hidden><div class="section-heading"><div><h3>إدارة الحسابات</h3><p>استعرض حسابات المنصة على صفحات، وابحث داخل الصفحة الحالية، ثم افتح إدارة الحساب.</p></div><button type="button" class="button primary" data-create>＋ إنشاء حساب</button></div>
  <div class="toolbar panel"><input id="search" type="search" placeholder="بحث في الحسابات الظاهرة بالصفحة الحالية…" aria-label="بحث في الحسابات"><span class="muted" id="page-label">الصفحة 1</span><button class="button ghost" id="prev" type="button" disabled>السابق</button><button class="button ghost" id="next" type="button" disabled>التالي</button></div>
  <div class="table-panel panel"><div class="table-wrap"><table><thead><tr><th>الحساب وبيانات التواصل</th><th>النوع</th><th>تاريخ الإنشاء</th><th>آخر دخول</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="user-rows"><tr><td colspan="6" class="empty">جارٍ تحميل الحسابات…</td></tr></tbody></table></div><div class="table-note">تظهر الحسابات بترتيب خدمة المصادقة. استخدم السابق والتالي لاستعراض بقية الصفحات.</div></div><div id="content" aria-live="polite"></div></section>
- <section id="notices" class="page-section" hidden><div class="section-heading"><div><h3>الإنذارات والتنبيهات</h3><p>آخر 100 تنبيه مرسل من مركز الإدارة، مع حالة القراءة.</p></div><button type="button" class="button ghost" data-go="notices">↻ تحديث</button></div><div class="table-panel panel"><div class="table-wrap"><table><thead><tr><th>الحساب المستهدف</th><th>التنبيه</th><th>الأهمية</th><th>التاريخ</th><th>القراءة</th></tr></thead><tbody id="notice-rows"><tr><td colspan="5" class="empty">جارٍ تحميل التنبيهات…</td></tr></tbody></table></div></div></section>
+ <section id="notices" class="page-section" hidden><div class="section-heading"><div><h3>الإنذارات والتنبيهات</h3><p>إرسال تنبيه لحساب واحد أو إعلان إلى فئة كاملة، ثم متابعة حالة القراءة.</p></div><button type="button" class="button ghost" data-go="notices">↻ تحديث</button></div>
+ <form id="broadcast-form" class="panel broadcast-panel">
+ <div class="broadcast-title"><h3>إرسال تنبيه جماعي</h3><span class="live-pill">إشعار داخل المنصة</span></div>
+ <div class="broadcast-grid">
+ <label>عنوان التنبيه<input name="title" required maxlength="120" placeholder="مثال: تنبيه مهم للطلاب"></label>
+ <label>المستهدفون<select name="target_group"><option value="all">كل المستخدمين</option><option value="teachers">المدرسون</option><option value="students">الطلاب</option><option value="guardians">أولياء الأمور</option><option value="supervisors">المشرفون</option></select></label>
+ <label>الأهمية<select name="severity"><option value="info">معلومة</option><option value="warning" selected>تحذير</option><option value="critical">إنذار مهم</option></select></label>
+ <label class="span-all">نص التنبيه<textarea name="message" required maxlength="4000" rows="3" placeholder="اكتب نص التنبيه هنا…"></textarea></label>
+ </div><div class="broadcast-actions"><small class="muted">الإرسال الجماعي ينشئ إشعارًا داخل حسابات المستهدفين، وليس رسالة SMS أو واتساب.</small><button type="submit" class="button primary">إرسال التنبيه</button></div>
+ </form><div class="table-panel panel"><div class="table-wrap"><table><thead><tr><th>الحساب المستهدف</th><th>التنبيه</th><th>الأهمية</th><th>التاريخ</th><th>القراءة</th></tr></thead><tbody id="notice-rows"><tr><td colspan="5" class="empty">جارٍ تحميل التنبيهات…</td></tr></tbody></table></div></div></section>
  <section id="audit" class="page-section" hidden><div class="section-heading"><div><h3>سجل العمليات</h3><p>آخر 150 عملية إدارية مسجلة في النظام.</p></div><button type="button" class="button ghost" data-go="audit">↻ تحديث</button></div><div class="table-panel panel"><div class="table-wrap"><table><thead><tr><th>العملية</th><th>الحساب المستهدف</th><th>تفاصيل العملية</th><th>التاريخ</th></tr></thead><tbody id="audit-rows"><tr><td colspan="4" class="empty">جارٍ تحميل سجل العمليات…</td></tr></tbody></table></div></div></section>
+ <section id="team" class="page-section" hidden><div class="section-heading"><div><h3>فريق إدارة أكاديميا</h3><p>أضف أشخاصًا موثوقين وسلّم كل شخص الصلاحيات التي يحتاجها فقط.</p></div><button type="button" class="button primary" id="add-admin">＋ إضافة مدير مساعد</button></div><div class="table-panel panel"><div class="table-wrap"><table><thead><tr><th>الاسم والبريد</th><th>الدور</th><th>الصلاحيات الممنوحة</th><th>تاريخ الإضافة</th><th>الإجراء</th></tr></thead><tbody id="admin-rows"><tr><td colspan="5" class="empty">جارٍ تحميل فريق الإدارة…</td></tr></tbody></table></div></div></section>
  <div id="toast-area" class="toast-area" role="status" aria-live="polite"></div>
 </section>
 <footer class="footer"><span>ACADEMIA CONTROL</span><span>مركز الإدارة المركزي · بيانات مباشرة بصلاحيات محمية</span></footer>
@@ -52,5 +63,26 @@
  <div id="student-wrap" class="span-all" hidden><label>البحث عن طالب<input id="student-query" type="search" placeholder="اكتب اسم الطالب أو الكود"></label><div id="student-options" class="student-options"></div><input name="student_id" id="student-id" type="hidden"><p id="student-selected" class="muted">لم يتم اختيار طالب.</p></div>
  <label id="phone-wrap" hidden>هاتف المشرف<input name="phone" type="tel" dir="ltr"></label><p class="form-hint span-all">سيتم إنشاء الحساب من خلال خدمة الإدارة الآمنة. لا تُشارك كلمة المرور في رسائل عامة.</p>
  <button class="button primary span-all" type="submit">إنشاء الحساب</button><p id="create-status" class="span-all muted"></p>
+</form></dialog>
+<dialog id="own-password-modal" class="modal"><div class="modal-head"><div><div class="eyebrow">تأمين الحساب</div><h2>تعيين كلمة مرور الدخول</h2></div><button type="button" class="icon-button" data-close-own aria-label="إغلاق">×</button></div>
+<form id="own-password-form" class="dialog-body form-grid"><label class="span-all">كلمة المرور الجديدة<input name="password" type="password" minlength="6" maxlength="72" autocomplete="new-password" required placeholder="6 أحرف أو أرقام على الأقل"></label><label class="span-all">تأكيد كلمة المرور<input name="password_confirm" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label><p class="span-all form-hint">الحد الأقصى الفعلي 72 حرفًا بسبب طريقة حماية كلمات المرور في خدمة المصادقة.</p><button type="submit" class="button primary span-all">حفظ كلمة المرور</button></form></dialog>
+<dialog id="admin-modal" class="modal"><div class="modal-head"><div><div class="eyebrow">فريق المنصة</div><h2 id="admin-modal-title">إضافة مدير مساعد</h2></div><button type="button" class="icon-button" data-close-admin aria-label="إغلاق">×</button></div>
+<form id="admin-form" class="dialog-body form-grid">
+<input type="hidden" name="user_id">
+<div id="admin-create-fields" class="span-all form-grid">
+<label>اسم الشخص<input name="full_name" required minlength="2" maxlength="100" placeholder="الاسم الكامل"></label><label>البريد الإلكتروني<input name="email" type="email" required dir="ltr" placeholder="person@example.com"></label>
+<label class="span-all">كلمة مرور الدخول<div class="password-row"><input id="admin-password" name="password" type="password" minlength="6" maxlength="72" required autocomplete="new-password"><button type="button" class="button ghost" id="admin-generate">توليد كلمة مرور</button></div></label>
+</div>
+<label class="span-all">نوع الصلاحية<select name="admin_role"><option value="support">دعم فني محدود</option><option value="platform_admin">مدير مساعد</option></select></label>
+<fieldset id="admin-permissions" class="span-all permission-fieldset"><legend>الصلاحيات</legend>
+<label><input type="checkbox" name="permissions" value="view_dashboard" checked> مشاهدة النظرة العامة</label>
+<label><input type="checkbox" name="permissions" value="view_accounts"> مشاهدة الحسابات</label>
+<label><input type="checkbox" name="permissions" value="manage_accounts"> إنشاء وتعديل الحسابات وإيقافها</label>
+<label><input type="checkbox" name="permissions" value="send_notices"> إرسال التنبيهات</label>
+<label><input type="checkbox" name="permissions" value="view_notices"> مشاهدة سجل التنبيهات</label>
+<label><input type="checkbox" name="permissions" value="view_audit"> مشاهدة سجل العمليات</label>
+</fieldset>
+<p class="span-all form-hint">لا يمكن للمدير المساعد ترقية نفسه أو إضافة مديرين آخرين أو تعديل صلاحية المدير الأعلى.</p>
+<button type="submit" class="button primary span-all" id="admin-form-submit">حفظ المدير المساعد</button>
 </form></dialog>
 </body></html>
