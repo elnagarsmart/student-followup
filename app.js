@@ -441,7 +441,12 @@ if(tab==='settings'&&role==='owner'){
   if(!currentEmail){msg('هذا الحساب لا يحتوي على بريد إلكتروني لتغييره من هذه الصفحة.');return}
   if(!currentPassword){msg('أدخل كلمة المرور الحالية لتأكيد هويتك.');return}
   try{
-   const {error}=await db.auth.updateUser({email:newEmail,current_password:currentPassword},{emailRedirectTo:window.location.origin+window.location.pathname});
+   const identity=session?.user;
+   const credentials=identity?.email?{email:identity.email,password:currentPassword}:identity?.phone?{phone:identity.phone,password:currentPassword}:null;
+   if(!credentials)throw new Error('تعذر تحديد وسيلة تسجيل الدخول لهذا الحساب.');
+   const {data:verified,error:verifyError}=await db.auth.signInWithPassword(credentials);
+   if(verifyError||verified?.user?.id!==identity.id)throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم إرسال طلب تغيير البريد.');
+   const {error}=await db.auth.updateUser({email:newEmail},{emailRedirectTo:window.location.origin+window.location.pathname});
    if(error)throw error;
    e.currentTarget.reset();
    status.textContent='تم إرسال طلب تغيير البريد. افتح رسائل البريد الحالي والجديد وأكمل روابط التأكيد؛ سيظل البريد القديم مستخدمًا حتى اكتمال التحقق.';
