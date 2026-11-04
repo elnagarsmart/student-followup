@@ -1923,3 +1923,13 @@ html[data-skin="midnight"][data-theme="dark"] .sidebar{background:#050c17!import
 html[data-skin][data-theme="dark"] .nav-item.active{background:color-mix(in srgb,var(--skin-accent) 24%,#142238)!important}
 html[data-skin][data-theme="light"] .welcome{box-shadow:0 14px 34px color-mix(in srgb,var(--skin-accent) 18%,transparent)!important}
 html[data-skin] .settings-tabs button.active{border-color:var(--skin-accent)!important;color:var(--skin-strong)!important;background:var(--skin-soft)!important}
+
+
+/* Quick payment action in the student list and mobile cards. */
+.student-table-wrap .quick-payment-button,.student-mobile-actions .quick-payment-button{
+ color:#13845b!important;background:#e9f8f1!important;border:1px solid #b8e6d1!important;border-radius:8px!important;
+ padding:6px 9px!important;font-weight:800!important;text-decoration:none!important;white-space:nowrap;
+}
+.student-table-wrap .quick-payment-button:hover,.student-mobile-actions .quick-payment-button:hover{background:#d9f2e7!important;text-decoration:none!important}
+html[data-theme="dark"] .student-table-wrap .quick-payment-button,html[data-theme="dark"] .student-mobile-actions .quick-payment-button{color:#8be0b7!important;background:#17382f!important;border-color:#28644e!important}
+html[data-theme="dark"] .student-table-wrap .quick-payment-button:hover,html[data-theme="dark"] .student-mobile-actions .quick-payment-button:hover{background:#1d493c!important}
