@@ -1,0 +1,1 @@
+window.ACADEMIA_CONTROL_CONFIG=Object.freeze({supabaseUrl:'https://lzjibconoylkdgduvqlo.supabase.co',supabasePublishableKey:'sb_publishable_C5SkMwTdavpNhQtSeml9Ag_l2v20jQc'});
