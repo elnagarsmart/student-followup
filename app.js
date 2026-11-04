@@ -326,7 +326,7 @@ if(tab==='settings'&&role==='owner'){
  const s=mergeAcademySettings(academySettings),p=s.profile,a=s.appearance,m=s.messages,d=s.defaults;
  $('content').innerHTML=`<div class="settings-page">
   <div class="settings-intro"><div><p class="eyebrow">مركز التحكم</p><h2>إعدادات أكاديميا</h2><p>تحكم في هوية الأكاديمية والمظهر والرسائل والتنبيهات والأمان من مكان واحد.</p></div><span class="settings-saved-mark">⚙ إعدادات الحساب</span></div>
-  <nav id="settings-tabs" class="settings-tabs" aria-label="أقسام الإعدادات"><button type="button" data-settings-jump="settings-identity">عام وهوية</button><button type="button" data-settings-jump="settings-appearance">المظهر</button><button type="button" data-settings-jump="settings-messages">الرسائل</button><button type="button" data-settings-jump="settings-notifications">التنبيهات</button><button type="button" data-settings-jump="settings-defaults">الطلاب والحضور</button><button type="button" data-settings-jump="settings-security">الأمان</button></nav>
+  <nav id="settings-tabs" class="settings-tabs" aria-label="أقسام الإعدادات"><button type="button" data-settings-jump="settings-identity">⚙️ عام وهوية</button><button type="button" data-settings-jump="settings-appearance">🎨 المظهر</button><button type="button" data-settings-jump="settings-messages">✉️ الرسائل</button><button type="button" data-settings-jump="settings-notifications">🔔 التنبيهات</button><button type="button" data-settings-jump="settings-defaults">🎓 الطلاب والحضور</button><button type="button" data-settings-jump="settings-security">🔐 الأمان</button><button type="button" data-settings-jump="settings-data">💾 البيانات والنسخ الاحتياطي</button></nav>
   <form id="academy-settings-form" class="settings-form">
    <section id="settings-identity" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">▣</span><div><h3>هوية الأكاديمية والحساب</h3><p>الاسم الذي يظهر في القائمة والتذييل وملفات التواصل.</p></div></div>
@@ -379,7 +379,7 @@ if(tab==='settings'&&role==='owner'){
      <label class="settings-check"><input type="checkbox" name="autoGenerateCode" ${d.autoGenerateCode?'checked':''}> توليد كود تلقائي عند ترك خانة الكود فارغة</label>
     </div>
    </section>
-   <div class="settings-actions"><button type="submit" class="settings-save-button">حفظ كل الإعدادات</button><button type="button" id="settings-reset-defaults" class="settings-reset-button">استعادة الإعدادات الافتراضية</button></div>
+   <section id="settings-data" class="settings-card"><div class="settings-section-head"><span class="settings-section-icon">💾</span><div><h3>البيانات والنسخ الاحتياطي</h3><p>احتفظ بنسخة من سجلات الأكاديمية المهمة.</p></div></div><div class="settings-fields"><div class="settings-span-2"><b>نسخة احتياطية من بيانات الأكاديمية</b><p class="muted">تنزيل نسخة من بيانات الطلاب والمجموعات والحضور والمدفوعات وفق صلاحيات حسابك.</p><button type="button" id="settings-backup-now" class="settings-save-button">تنزيل نسخة احتياطية الآن</button></div><div class="settings-span-2"><b>نصائح لحماية بياناتك</b><ul><li>لا تشارك كلمة المرور أو رموز التحقق.</li><li>استخدم كلمة مرور قوية ومختلفة.</li><li>احتفظ بالنسخة الاحتياطية في مكان آمن.</li></ul></div></div></section><div class="settings-actions"><button type="submit" class="settings-save-button">حفظ إعدادات هذا القسم</button><button type="button" id="settings-reset-defaults" class="settings-reset-button">استعادة الإعدادات الافتراضية</button></div>
    <p id="settings-status" class="settings-status" aria-live="polite">إعداداتك محفوظة في حساب الأكاديمية وتظهر على أجهزتك بعد تسجيل الدخول.</p>
   </form>
   <section id="settings-security" class="settings-card settings-security-card">
@@ -409,7 +409,11 @@ if(tab==='settings'&&role==='owner'){
  const form=$('academy-settings-form');
  const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
- $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>$(button.dataset.settingsJump)?.scrollIntoView({behavior:'smooth',block:'start'}));
+ const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
+ const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
+ $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
+ showSettingsSection('settings-identity');
+ $('settings-backup-now').onclick=backup;
  $('settings-enable-notifications').onclick=async()=>{if(!('Notification' in window)){msg('متصفحك لا يدعم إشعارات النظام.');return}try{const permission=await Notification.requestPermission();$('settings-notification-permission').textContent='حالة إذن المتصفح: '+permission;if(permission==='granted'){form.elements.browserAlerts.checked=true;msg('تم السماح بإشعارات المتصفح. اضغط حفظ كل الإعدادات لتطبيق التفضيل.')}else msg('لم يتم السماح بإشعارات المتصفح. يمكنك تفعيلها لاحقًا من إعدادات المتصفح.')}catch(e){msg('تعذر طلب إذن الإشعارات: '+e.message)}};
  $('settings-preview-theme').onclick=()=>{const el=form.elements.theme;el.value=el.value==='dark'?'light':'dark';preview()};
  form.onsubmit=lockForm(async e=>{
@@ -450,10 +454,15 @@ if(tab==='settings'&&role==='owner'){
   if(currentPassword.length<1){msg('أدخل كلمة المرور الحالية.');return}
   if(password.length<6){msg('كلمة المرور الجديدة يجب ألا تقل عن 6 أحرف. لا يوجد شرط لنوع الحروف أو الأرقام.');return}
   if(password!==confirmPassword){msg('تأكيد كلمة المرور غير مطابق.');return}
-  if(password===currentPassword){msg('اختر كلمة مرور جديدة مختلفة عن الحالية.');return}
+  if(password===currentPassword){msg('كلمة المرور الجديدة مطابقة للحالية. اكتب كلمة مرور مختلفة.');return}
   try{
-   const {error}=await db.auth.updateUser({password,current_password:currentPassword});
-   if(error)throw new Error(/current password|invalid.*password|password.*incorrect/i.test(error.message)?'كلمة المرور الحالية غير صحيحة؛ لم يتم تحديث كلمة المرور.':error.message);
+   const identity=session?.user;
+   if(!identity?.email&&!identity?.phone)throw new Error('تعذر تحديد وسيلة تسجيل الدخول لهذا الحساب.');
+   const credentials=identity.email?{email:identity.email,password:currentPassword}:{phone:identity.phone,password:currentPassword};
+   const {data:verified,error:verifyError}=await db.auth.signInWithPassword(credentials);
+   if(verifyError||verified?.user?.id!==identity.id)throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم تحديث كلمة المرور.');
+   const {error}=await db.auth.updateUser({password});
+   if(error)throw error;
    e.currentTarget.reset();msg('تم التحقق من كلمة المرور الحالية وتحديث كلمة المرور بنجاح.');
   }catch(x){msg(x.message||'تعذر تحديث كلمة المرور.')}
  });
