@@ -1809,3 +1809,19 @@ html[data-theme="dark"] .student-table-avatar{background:#262957;color:#c1baff}
 html[data-theme="light"] .student-table-identity>img,
 html[data-theme="light"] .student-mobile-person>img{border-color:#dce4ef;background:#f5f7fc}
 html[data-theme="light"] .student-table-avatar{background:#ebeaff;color:#514ab2}
+
+
+/* Student / guardian portal profile cards */
+.portal-student-profiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:15px 0 18px}
+.portal-student-profile{display:flex;align-items:center;gap:13px;min-width:0;padding:14px;border-radius:14px;border:1px solid var(--academy-border,#dfe6f0);background:var(--academy-surface,#fff);box-shadow:0 6px 20px #1c31510b}
+.portal-student-profile>img{width:68px;height:68px;flex:0 0 68px;object-fit:cover;border-radius:50%;background:#e9edfa;border:2px solid var(--academy-accent,#675df0)}
+.portal-student-profile>div{display:grid;gap:4px;min-width:0}
+.portal-student-profile p{margin:0;font-size:10px;color:var(--academy-muted,#8490a5)}
+.portal-student-profile h3{margin:0;color:var(--academy-ink,#26344f);font-size:15px;overflow-wrap:anywhere}
+.portal-student-profile span{font-size:10px;color:var(--academy-secondary,#65738b)}
+html[data-theme="dark"] .portal-student-profile{background:#142239;border-color:#2a3d5b;box-shadow:none}
+html[data-theme="dark"] .portal-student-profile h3{color:#edf2fb}
+html[data-theme="dark"] .portal-student-profile span{color:#aab8d0}
+html[data-theme="dark"] .portal-student-profile p{color:#899bb8}
+html[data-theme="light"] .portal-student-profile{background:#fff;border-color:#e1e8f1}
+@media(max-width:700px){.portal-student-profiles{grid-template-columns:minmax(0,1fr)}.portal-student-profile{padding:12px}.portal-student-profile>img{width:58px;height:58px;flex-basis:58px}}
