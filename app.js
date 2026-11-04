@@ -164,11 +164,21 @@ async function saveAcademyPublicProfile(value,profileOwnerId=session?.user?.id){
   updated_at:new Date().toISOString()
  },{onConflict:'owner_id'}));
 }
+function applyAcademyAppearance(){
+ const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
+ applyTheme(appearance.theme);
+ document.documentElement.dataset.skin=appearance.skin||'blue';
+ document.documentElement.dataset.accent=appearance.accent||'violet';
+ document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
+ document.documentElement.dataset.density=appearance.density||'comfortable';
+ document.documentElement.dataset.sidebar=appearance.sidebar||'expanded';
+ applyAcademiaIdentity();
+}
 function applyPortalThemePreference(){
  const skin=localStorage.getItem('academia-portal-skin');
  if(!['blue','green','violet','midnight','gold'].includes(skin))return;
  document.documentElement.dataset.skin=skin;
- document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
+ document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
  applyTheme(skin==='midnight'?'dark':'light');
 }
 async function saveAcademySettings(next){
@@ -465,9 +475,9 @@ if(tab==='appearance'&&(role==='student'||role==='guardian')){
   const skin=button.dataset.portalSkin,mode=skin==='midnight'?'dark':'light';
   localStorage.setItem('academia-portal-skin',skin);
   document.documentElement.dataset.skin=skin;
-  document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
+  document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
   document.documentElement.dataset.skin=skin;
-  document.documentElement.dataset.accent=skin==='violet'?'violet':skin==='gold'?'gold':skin==='green'?'green':'blue';
+  document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
   applyTheme(mode);
   $('content').querySelectorAll('[data-portal-skin]').forEach(x=>x.classList.toggle('active',x===button));
  });
@@ -570,7 +580,7 @@ if(tab==='settings'&&role==='owner'){
  const form=$('academy-settings-form');
  const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
-  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
+  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
  const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
  const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
  $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
