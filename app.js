@@ -239,66 +239,97 @@ async function renderMessages(){
  if(messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}
  const view=++messageViewVersion;
  $('content').innerHTML=`<section class="panel message-panel">
-  <div class="panel-heading"><div><h3>الرسائل والمحادثات</h3><p>محادثات خاصة بين إدارة الأكاديمية والمشرفين والطلاب وأولياء الأمور</p></div><button id="message-refresh" class="text-button" type="button">↻ تحديث</button></div>
-  <div class="message-toolbar"><label>اختر المحادثة<select id="message-contact"><option>جار تحميل جهات الاتصال…</option></select></label></div>
-  <div id="message-thread" class="message-thread"><p class="empty-row">جار تحميل الرسائل…</p></div>
-  <form id="message-send-form" class="message-compose"><label for="message-body">اكتب رسالتك</label><textarea id="message-body" name="message_body" rows="3" maxlength="4000" required placeholder="اكتب رسالتك هنا…"></textarea><button type="submit">إرسال الرسالة</button></form>
-  <p id="message-help" class="muted">الرسائل تظهر داخل حساب أكاديميا للطرف الآخر. لا يتم إرسال SMS أو واتساب أو بريد تلقائيًا.</p>
+  <div class="message-page-heading">
+   <div><p class="eyebrow">صندوق الوارد</p><h2>الرسائل والمحادثات</h2><p class="muted">محادثات خاصة مع أولياء الأمور والطلاب والمشرفين</p></div>
+   <button id="message-refresh" class="message-refresh-button" type="button"><span>↻</span> تحديث</button>
+  </div>
+  <div class="messages-layout">
+   <aside class="message-contacts-panel">
+    <div class="message-section-heading"><h3>جهات الاتصال</h3><span id="message-contact-count">—</span></div>
+    <div id="message-contact-list" class="message-contact-list"><p class="empty-row">جار تحميل جهات الاتصال…</p></div>
+   </aside>
+   <section class="message-conversation-panel">
+    <header class="message-conversation-header">
+     <div class="message-peer-avatar" id="message-peer-avatar">؟</div>
+     <div class="message-peer-identity"><h3 id="message-peer-name">اختر محادثة</h3><p id="message-peer-role">ستظهر الرسائل هنا</p></div>
+     <span class="message-online-mark" aria-hidden="true"></span>
+    </header>
+    <div id="message-thread" class="message-thread"><p class="empty-row">اختر جهة اتصال لعرض المحادثة.</p></div>
+    <form id="message-send-form" class="message-compose" hidden>
+     <label class="message-compose-label" for="message-body">اكتب رسالتك</label>
+     <div class="message-compose-row"><textarea id="message-body" name="message_body" rows="2" maxlength="4000" required placeholder="اكتب رسالتك هنا…"></textarea><button type="submit" aria-label="إرسال الرسالة">إرسال <span>↗</span></button></div>
+    </form>
+    <p id="message-help" class="message-help">الرسائل تظهر داخل حساب أكاديميا للطرف الآخر. لا يتم إرسال SMS أو واتساب أو بريد تلقائيًا.</p>
+   </section>
+  </div>
  </section>`;
  try{
   const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'contacts'}});
   if(error)throw error;if(data?.error)throw new Error(data.error);
   if(view!==messageViewVersion||tab!=='messages')return;
   messageContacts=Array.isArray(data?.contacts)?data.contacts:[];unreadBySender=data?.unread_by_sender||unreadBySender;unreadTotal=Number(data?.unread_total??unreadTotal);drawNav();
-  const select=$('message-contact');
+  const roleLabels={owner:'الإدارة',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر'};
+  const contactList=$('message-contact-list');
+  $('message-contact-count').textContent=String(messageContacts.length);
   if(!messageContacts.length){
-   select.innerHTML='<option value="">لا توجد جهات اتصال متاحة</option>';
-   $('message-thread').innerHTML='<p class="empty-row">لا توجد محادثات متاحة حتى الآن. أضف مشرفًا بحساب فعّال، أو أنشئ حساب دخول للطالب من صفحة الطلاب، ثم ستظهر جهات الاتصال هنا.</p>';
+   contactList.innerHTML='<p class="message-empty-contacts">لا توجد جهات اتصال متاحة حاليًا.</p>';
+   $('message-thread').innerHTML='<div class="message-welcome-empty"><span>✉</span><b>لا توجد محادثات بعد</b><p>أضف مشرفًا بحساب فعّال، أو أنشئ حساب دخول للطالب أو اربط حساب بوابة.</p></div>';
    $('message-send-form').hidden=true;
-   $('message-help').textContent='لا يظهر الطالب هنا إلا بعد إنشاء حساب دخول له أو ربط حساب بوابة فعّال.';
+   $('message-help').textContent='لن تظهر جهة الاتصال إلا بعد إنشاء حساب دخول أو ربط حساب بوابة فعّال.';
    $('message-refresh').onclick=()=>renderMessages();
    return;
   }
   if(!messageContacts.some(c=>c.id===activeMessagePeerId))activeMessagePeerId=messageContacts[0].id;
-  const roleLabels={owner:'الإدارة',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر'};
-  select.innerHTML=messageContacts.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.name)+' — '+esc(roleLabels[c.role]||'حساب')+(c.unread_count?' · '+c.unread_count+' غير مقروء':'')+'</option>').join('');
-  select.value=activeMessagePeerId;
-  select.onchange=()=>{activeMessagePeerId=select.value;void loadMessageThread(view);};
+  const drawContacts=()=>{
+   contactList.innerHTML=messageContacts.map(c=>{
+    const selected=c.id===activeMessagePeerId,letter=String(c.name||'؟').trim().charAt(0)||'؟';
+    return '<button type="button" class="message-contact-item '+(selected?'active':'')+'" data-message-peer="'+esc(c.id)+'"><span class="message-contact-avatar">'+esc(letter)+'</span><span class="message-contact-copy"><b>'+esc(c.name||'حساب أكاديميا')+'</b><small>'+esc(roleLabels[c.role]||'حساب')+'</small></span>'+(Number(c.unread_count)>0?'<span class="message-unread-badge">'+Math.min(99,Number(c.unread_count))+'</span>':'')+'</button>';
+   }).join('');
+   contactList.querySelectorAll('[data-message-peer]').forEach(button=>button.onclick=()=>{
+    activeMessagePeerId=button.dataset.messagePeer;drawContacts();void loadMessageThread(view);
+   });
+  };
+  drawContacts();
   $('message-refresh').onclick=()=>loadMessageThread(view);
   await loadMessageThread(view);
   messageRefreshTimer=setInterval(()=>{if(tab==='messages'&&!document.hidden){void loadMessageThread(view).catch(e=>msg('تعذر تحديث المحادثة: '+e.message));void refreshUnreadCounts();}},5000);
  }catch(e){
   if(view!==messageViewVersion)return;
-  $('message-thread').innerHTML='<p class="empty-row">'+esc(e.message||'تعذر تحميل جهات الاتصال')+'</p>';
-  $('message-help').textContent='تأكد من تسجيل الدخول وتحديث الصفحة. لو استمرت المشكلة راجع إعدادات المراسلة في Supabase.';
+  $('message-thread').innerHTML='<div class="message-welcome-empty"><span>!</span><b>تعذر تحميل المحادثات</b><p>'+esc(e.message||'حاول تحديث الصفحة.')+'</p></div>';
+  $('message-help').textContent='تحقق من الاتصال ثم حاول مرة أخرى.';
  }
 }
 async function loadMessageThread(view){
- const peerId=$('message-contact')?.value||activeMessagePeerId;
+ const peerId=activeMessagePeerId;
  if(!peerId)return;
  const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'list',peer_id:peerId}});
  if(error)throw error;if(data?.error)throw new Error(data.error);
  if(view!==messageViewVersion||tab!=='messages')return;
  const peer=messageContacts.find(c=>c.id===peerId);
+ if(peer){
+  $('message-peer-name').textContent=peer.name||'حساب أكاديميا';
+  $('message-peer-role').textContent=({owner:'الإدارة',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر'}[peer.role]||'حساب');
+  $('message-peer-avatar').textContent=String(peer.name||'؟').trim().charAt(0)||'؟';
+ }
  const rows=Array.isArray(data?.messages)?data.messages:[];
  $('message-thread').innerHTML=rows.length?rows.map(m=>{
   const mine=m.sender_id===session?.user?.id;
   const stamp=m.created_at?new Date(m.created_at).toLocaleString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
-  const receipt=mine?(m.read_at?'✓✓ تمت القراءة':'✓ تم الإرسال'):'';
-  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><div class="message-meta"><b>'+esc(mine?'أنت':peer?.name||'الطرف الآخر')+'</b><time>'+esc(stamp)+'</time></div><p>'+esc(m.body)+'</p>'+(mine?'<small class="message-receipt">'+receipt+'</small>':'')+'</article>';
- }).join(''):'<p class="empty-row">لا توجد رسائل في هذه المحادثة بعد. ابدأ برسالة جديدة.</p>';
+  const receipt=mine?(m.read_at?'✓ تمت القراءة':'✓ تم الإرسال'):'';
+  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><time class="message-time">'+esc(stamp)+'</time><p>'+esc(m.body)+'</p>'+(mine?'<small class="message-receipt">'+receipt+'</small>':'')+'</article>';
+ }).join(''):'<div class="message-welcome-empty"><span>✉</span><b>ابدأ المحادثة</b><p>لا توجد رسائل هنا بعد. اكتب أول رسالة في الأسفل.</p></div>';
  $('message-thread').scrollTop=$('message-thread').scrollHeight;
  const form=$('message-send-form');form.hidden=false;
  form.onsubmit=async e=>{
   e.preventDefault();if(form.dataset.busy==='true')return;
   const input=$('message-body'),body=input.value.trim();if(!body)return;
-  form.dataset.busy='true';const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.textContent='جار الإرسال…';
+  form.dataset.busy='true';const btn=form.querySelector('button[type="submit"]');btn.disabled=true;btn.innerHTML='جار الإرسال…';
   try{
    const {data:sent,error:sendError}=await db.functions.invoke('academia-messages',{body:{action:'send',peer_id:peerId,message:body}});
    if(sendError)throw sendError;if(sent?.error)throw new Error(sent.error);
    input.value='';await loadMessageThread(view);await refreshUnreadCounts();
   }catch(x){msg(x.message||'تعذر إرسال الرسالة');}
-  finally{form.dataset.busy='false';if(btn.isConnected){btn.disabled=false;btn.textContent='إرسال الرسالة';}}
+  finally{form.dataset.busy='false';if(btn.isConnected){btn.disabled=false;btn.innerHTML='إرسال <span>↗</span>';}}
  };
 }
 
