@@ -1825,3 +1825,14 @@ html[data-theme="dark"] .portal-student-profile span{color:#aab8d0}
 html[data-theme="dark"] .portal-student-profile p{color:#899bb8}
 html[data-theme="light"] .portal-student-profile{background:#fff;border-color:#e1e8f1}
 @media(max-width:700px){.portal-student-profiles{grid-template-columns:minmax(0,1fr)}.portal-student-profile{padding:12px}.portal-student-profile>img{width:58px;height:58px;flex-basis:58px}}
+
+/* Settings now behave as separate pages instead of a long scrolling form. */
+.settings-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;position:static;border:0;padding:0;background:transparent}
+.settings-tabs button{min-height:46px!important;text-align:right!important;border-radius:12px!important;padding:10px 13px!important;white-space:normal!important}
+.settings-tabs button.active{background:var(--academy-accent-soft)!important;border-color:var(--academy-accent)!important;color:var(--academy-accent-strong)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--academy-accent) 12%,transparent)!important}
+.settings-card[hidden]{display:none!important}
+.settings-page .settings-card{min-height:230px}
+.settings-page .settings-fields ul{margin:8px 0 0;padding-inline-start:22px;color:var(--academy-secondary);font-size:11px;line-height:2}
+.settings-page .settings-fields p{font-size:11px;line-height:1.8}
+html[data-theme="dark"] .settings-tabs button.active{background:#292c58!important;color:#dedcff!important}
+@media(max-width:760px){.settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.settings-tabs button{min-height:43px!important;font-size:10px!important;padding:8px!important}}
