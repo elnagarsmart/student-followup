@@ -1590,3 +1590,25 @@ html[data-theme="light"] .settings-permission-row{color:#7b879d!important}
  .seo-features{grid-template-columns:minmax(0,1fr)}
  .settings-intro h2{font-size:20px}
 }
+
+
+/* Theme control on public login / landing */
+.auth-shell{position:relative}
+.auth-top-actions{
+ position:fixed;top:calc(14px + env(safe-area-inset-top));left:18px;z-index:50;
+ display:flex;align-items:center;gap:8px;
+}
+.auth-top-actions .theme-toggle{
+ min-height:38px;padding:8px 12px;border-radius:10px!important;
+ font-size:11px;font-weight:800;
+}
+html[data-theme="dark"] .auth-top-actions .theme-toggle{
+ background:#15243a!important;color:#d6def0!important;border:1px solid #30415e!important;
+}
+html[data-theme="light"] .auth-top-actions .theme-toggle{
+ background:#fff!important;color:#4f5d76!important;border:1px solid #dfe6f0!important;
+}
+@media(max-width:760px){
+ .auth-top-actions{top:calc(9px + env(safe-area-inset-top));left:10px}
+ .auth-top-actions .theme-toggle{min-height:34px;padding:6px 9px;font-size:10px}
+}
