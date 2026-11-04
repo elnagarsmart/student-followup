@@ -9,9 +9,9 @@ const normalizePhone=raw=>{let p=String(raw||'').trim().replace(/[\s()-]/g,'');i
 const msg=t=>{clearTimeout(messageTimer);$('message').textContent=t;$('message').hidden=false;messageTimer=setTimeout(()=>$('message').hidden=true,6000)};
 
 function normalizeSupportWhatsAppNumber(raw){
- let digits=String(raw||'').replace(/\\D/g,'');
+ let digits=String(raw||'').replace(/\D/g,'');
  if(digits.startsWith('00'))digits=digits.slice(2);
- if(/^01[0125]\\d{8}$/.test(digits))digits='20'+digits.slice(1);
+ if(/^01[0125]\d{8}$/.test(digits))digits='20'+digits.slice(1);
  return digits;
 }
 function mountWhatsAppSupportWidget(){
@@ -38,7 +38,7 @@ function mountWhatsAppSupportWidget(){
   const description=$('whatsapp-support-description').value.trim();
   if(!description){msg('اكتب وصف المشكلة أولًا.');$('whatsapp-support-description').focus();return}
   const phone=normalizeSupportWhatsAppNumber(supportWhatsappPhone);
-  if(!/^\\d{8,15}$/.test(phone)){msg('رقم واتساب الدعم غير مُضاف بعد. اطلب من مسؤول الأكاديمية إضافته من الإعدادات ← عام وهوية.');return}
+  if(!/^\d{8,15}$/.test(phone)){msg('رقم واتساب الدعم غير مُضاف بعد. اطلب من مسؤول الأكاديمية إضافته من الإعدادات ← عام وهوية.');return}
   const user=session?.user||{},metadata=user.user_metadata||{};
   const linkedNames=(students||[]).map(student=>student.name).filter(Boolean).join('، ');
   const personName=String(metadata.full_name||metadata.name||academySettings?.profile?.displayName|| (role==='student'&&linkedNames?linkedNames:role==='guardian'&&linkedNames?'ولي أمر '+linkedNames:'غير محدد')).trim();
@@ -54,7 +54,7 @@ function mountWhatsAppSupportWidget(){
    '',
    'وصف المشكلة:',
    description
-  ].join('\\n');
+  ].join('\n');
   const link=document.createElement('a');
   link.href='https://wa.me/'+phone+'?text='+encodeURIComponent(message);
   link.target='_blank';link.rel='noopener noreferrer';
