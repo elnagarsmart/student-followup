@@ -13,7 +13,7 @@ function lockForm(handler){return async e=>{e.preventDefault();const form=e.curr
 $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
 const themeToggle=$('theme-toggle');
 const DEFAULT_ACADEMY_SETTINGS={
- profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',address:''},
+ profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',address:'',logoUrl:''},
  appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
@@ -21,6 +21,7 @@ const DEFAULT_ACADEMY_SETTINGS={
   payment:'السلام عليكم، نذكّركم بمتابعة رسوم الطالب {{student}} بمبلغ {{amount}}. {{academy}}',
   welcome:'أهلًا بكم في {{academy}}. يسعدنا انضمام الطالب {{student}}، ونتمنى له التوفيق.'
  }},
+ notifications:{messageBadges:true,browserAlerts:false,vibration:false},
  defaults:{monthlyFee:0,groupId:'',codePrefix:'ST-',autoGenerateCode:true,attendanceSession:'الجلسة الأولى'}
 };
 function mergeAcademySettings(value){
@@ -29,6 +30,7 @@ function mergeAcademySettings(value){
   profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
   appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{})},
   messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
+  notifications:{...DEFAULT_ACADEMY_SETTINGS.notifications,...(v.notifications||{})},
   defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
  };
 }
@@ -41,6 +43,8 @@ function applyTheme(theme){
 function applyAcademiaIdentity(){
  const name=String(academySettings?.profile?.academyName||'أكاديميا').trim()||'أكاديميا';
  const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent=name;
+ const logo=String(academySettings?.profile?.logoUrl||'').trim();let logoSrc='/icons/icon.svg';if(logo){try{const parsed=new URL(logo,window.location.origin);if(['https:','http:'].includes(parsed.protocol))logoSrc=parsed.href}catch{}}
+ document.querySelectorAll('.brand-mark img').forEach(img=>{img.src=logoSrc;img.alt='شعار '+name;img.loading='lazy';});
  const footer=document.querySelector('.main footer');if(footer){const first=footer.childNodes[0];if(first&&first.nodeType===3)first.textContent=name+' · نظام متابعة الطلاب ';}
  const userLabel=$('user-email');
  if(userLabel&&session?.user){userLabel.textContent=academySettings?.profile?.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
@@ -259,8 +263,24 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
  }
  if(currentLoad!==loadVersion||session?.user?.id!==userId)return;loadedUserId=userId;$('role-label').textContent=role==='owner'?'مدرس مستقل':role==='supervisor'?'مشرف':role==='guardian'?'بوابة ولي الأمر':role==='student'?'بوابة الطالب':'حساب عام';drawNav();render();startUnreadRefresh();
  }catch(e){if(currentLoad===loadVersion){role='unknown';$('dashboard').hidden=true;$('auth').hidden=false;$('auth-message').textContent=e.message;}}finally{if(currentLoad===loadVersion){loadingUserId=null;if($('message').textContent==='جار تحميل البيانات…')$('message').hidden=true}}}
-function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;drawNav();render()})}
-async function refreshUnreadCounts(){if(!session?.user?.id)return;try{const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'unread'}});if(error||data?.error)throw error||new Error(data?.error);const next=Number(data?.unread_total||0);unreadBySender=data?.unread_by_sender||{};if(next>unreadTotal&&academySettings?.messages?.soundNotifications&&document.hidden&&navigator.vibrate)navigator.vibrate(70);if(next!==unreadTotal){unreadTotal=next;drawNav()}}catch(e){console.warn('Unread message refresh failed:',e.message)}}
+function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;drawNav();render()})}
+async function refreshUnreadCounts(){
+ if(!session?.user?.id)return;
+ try{
+  const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'unread'}});
+  if(error||data?.error)throw error||new Error(data?.error);
+  const next=Number(data?.unread_total||0),previous=unreadTotal;
+  unreadBySender=data?.unread_by_sender||{};
+  if(next>previous){
+   const prefs=academySettings?.notifications||DEFAULT_ACADEMY_SETTINGS.notifications;
+   if(prefs.vibration&&navigator.vibrate)navigator.vibrate(60);
+   if(prefs.browserAlerts&&document.hidden&&'Notification' in window&&Notification.permission==='granted'){
+    try{new Notification(academySettings?.profile?.academyName||'أكاديميا',{body:'لديك '+(next-previous)+' رسالة جديدة.',icon:'/icons/icon.svg',tag:'academia-message-'+Date.now()})}catch{}
+   }
+  }
+  if(next!==previous){unreadTotal=next;drawNav()}
+ }catch(e){console.warn('Unread message refresh failed:',e.message)}
+}
 function startUnreadRefresh(){if(unreadRefreshTimer)clearInterval(unreadRefreshTimer);void refreshUnreadCounts();unreadRefreshTimer=setInterval(()=>{if(!document.hidden&&session?.user?.id)void refreshUnreadCounts()},15000)}
 function table(rows,kind){if(!rows.length)return '<p class="empty-row">لا توجد سجلات حتى الآن</p>';const manage=kind==='attendance'?can('manage_attendance'):can('manage_payments');let heads=kind==='attendance'?'<th>الطالب</th><th>التاريخ</th><th>الحالة</th>':'<th>الطالب</th><th>التاريخ</th><th>المبلغ</th><th>ملاحظة</th>';if(manage)heads+='<th>إجراءات</th>';let body=rows.map(r=>{let student=students.find(s=>s.id===r.student_id),name=student?.name||'طالب';const actions=manage?'<td><button class="text-button" data-record-edit="'+kind+'" data-record-id="'+r.id+'">تعديل</button> <button class="text-button danger-action" data-record-delete="'+kind+'" data-record-id="'+r.id+'">حذف</button>'+(kind==='attendance'?(student?.guardian_phone?'<br><a class="text-button whatsapp-action" target="_blank" rel="noopener noreferrer" href="'+whatsAppFollowupUrl(student,r)+'">واتساب ولي الأمر</a>':'<br><small class="muted">لا يوجد رقم ولي أمر</small>'):'')+'</td>':'';return kind==='attendance'?'<tr><td>'+esc(name)+'</td><td>'+dateText(r.session_date)+'</td><td><span class="status '+(r.status==='حاضر'?'good':r.status==='غائب'?'bad':'warn')+'">'+esc(r.status)+'</span></td>'+actions+'</tr>':'<tr><td>'+esc(name)+'</td><td>'+dateText(r.paid_at)+'</td><td><b>'+money(r.amount)+'</b></td><td>'+esc(r.note||'—')+'</td>'+actions+'</tr>'}).join('');return '<div class="table-wrap"><table><thead><tr>'+heads+'</tr></thead><tbody>'+body+'</tbody></table></div>'}
 function fillAcademyTemplate(template,values={}){let text=String(template||'');for(const [key,value] of Object.entries(values))text=text.replace(new RegExp('{{'+key+'}}','g'),String(value??''));return text.replace(/\\s{2,}/g,' ').trim()}\nfunction whatsAppFollowupUrl(student,record){let phone=String(student?.guardian_phone||'').replace(/[^0-9+]/g,'');if(/^01[0125]\\d{8}$/.test(phone))phone='20'+phone.slice(1);phone=phone.replace(/\\D/g,'');if(!phone)return '#';const status=record.status||'الحضور';const template=academySettings?.messages?.templates?.attendance||DEFAULT_ACADEMY_SETTINGS.messages.templates.attendance;let text=fillAcademyTemplate(template,{academy:academySettings?.profile?.academyName||'أكاديميا',student:student.name,status,date:record.session_date,session:record.session_name||'الجلسة الأولى',amount:record.amount||''});const signature=academySettings?.messages?.signature;if(signature)text+='\\n'+signature;return 'https://wa.me/'+phone+'?text='+encodeURIComponent(text)}
@@ -269,19 +289,21 @@ function render(){if(role==='visitor'){$('page-title').textContent='مرحبًا
 if(tab==='settings'&&role==='owner'){
  const s=mergeAcademySettings(academySettings),p=s.profile,a=s.appearance,m=s.messages,d=s.defaults;
  $('content').innerHTML=`<div class="settings-page">
-  <div class="settings-intro"><div><p class="eyebrow">مركز التحكم</p><h2>إعدادات أكاديميا</h2><p>خصص اسم الأكاديمية والمظهر والرسائل وطريقة إضافة الطلاب من مكان واحد.</p></div><span class="settings-saved-mark">⚙ إعدادات الحساب</span></div>
+  <div class="settings-intro"><div><p class="eyebrow">مركز التحكم</p><h2>إعدادات أكاديميا</h2><p>تحكم في هوية الأكاديمية والمظهر والرسائل والتنبيهات والأمان من مكان واحد.</p></div><span class="settings-saved-mark">⚙ إعدادات الحساب</span></div>
+  <nav id="settings-tabs" class="settings-tabs" aria-label="أقسام الإعدادات"><button type="button" data-settings-jump="settings-identity">عام وهوية</button><button type="button" data-settings-jump="settings-appearance">المظهر</button><button type="button" data-settings-jump="settings-messages">الرسائل</button><button type="button" data-settings-jump="settings-notifications">التنبيهات</button><button type="button" data-settings-jump="settings-defaults">الطلاب والحضور</button><button type="button" data-settings-jump="settings-security">الأمان</button></nav>
   <form id="academy-settings-form" class="settings-form">
-   <section class="settings-card">
+   <section id="settings-identity" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">▣</span><div><h3>هوية الأكاديمية والحساب</h3><p>الاسم الذي يظهر في القائمة والتذييل وملفات التواصل.</p></div></div>
     <div class="settings-fields">
      <label>اسم الأكاديمية<input name="academyName" maxlength="80" required value="${esc(p.academyName)}" placeholder="أكاديميا"></label>
      <label>اسم صاحب الحساب<input name="displayName" maxlength="80" value="${esc(p.displayName)}" placeholder="الاسم الظاهر في الحساب"></label>
      <label>هاتف التواصل<input name="contactPhone" type="tel" maxlength="25" value="${esc(p.contactPhone)}" placeholder="01xxxxxxxxx"></label>
      <label>عنوان الأكاديمية<input name="address" maxlength="180" value="${esc(p.address)}" placeholder="المدينة أو العنوان المختصر"></label>
+     <label class="settings-span-2">رابط شعار الأكاديمية<input name="logoUrl" type="url" maxlength="500" value="${esc(p.logoUrl||'')}" placeholder="https://example.com/logo.png"><small>اتركه فارغًا لاستخدام الشعار الافتراضي. استخدم رابط صورة HTTPS.</small></label>
      <label class="settings-readonly">بريد تسجيل الدخول<input value="${esc(session?.user?.email||'')}" readonly><small>تغيير البريد يحتاج خطوة تحقق منفصلة من الحساب.</small></label>
     </div>
    </section>
-   <section class="settings-card">
+   <section id="settings-appearance" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">◐</span><div><h3>المظهر والتصميم</h3><p>اختَر شكل الواجهة وحجم الخط وكثافة العناصر.</p></div></div>
     <div class="settings-fields">
      <label>السمة<select name="theme"><option value="dark" ${a.theme==='dark'?'selected':''}>داكنة — كحلي</option><option value="light" ${a.theme==='light'?'selected':''}>فاتحة — نظيفة</option></select></label>
@@ -292,7 +314,7 @@ if(tab==='settings'&&role==='owner'){
     </div>
     <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
    </section>
-   <section class="settings-card">
+   <section id="settings-messages" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">✉</span><div><h3>إعدادات الرسائل وقوالب التواصل</h3><p>عدّل النصوص الجاهزة التي تستخدمها مع أولياء الأمور والطلاب. لا يتم إرسال شيء تلقائيًا.</p></div></div>
     <div class="settings-fields">
      <label class="settings-span-2">توقيع الرسائل<input name="messageSignature" maxlength="180" value="${esc(m.signature)}" placeholder="مع تحيات إدارة أكاديميا"></label>
@@ -303,7 +325,16 @@ if(tab==='settings'&&role==='owner'){
      <label class="settings-check"><input type="checkbox" name="soundNotifications" ${m.soundNotifications?'checked':''}> اهتزاز خفيف عند وصول رسالة جديدة (إذا كان الجهاز يدعمه)</label>
     </div>
    </section>
-   <section class="settings-card">
+   <section id="settings-notifications" class="settings-card">
+    <div class="settings-section-head"><span class="settings-section-icon">♧</span><div><h3>التنبيهات والإشعارات</h3><p>تحكم في مؤشرات الرسائل والتنبيهات أثناء استخدام أكاديميا.</p></div></div>
+    <div class="settings-fields settings-notification-grid">
+     <label class="settings-check"><span><b>عداد الرسائل غير المقروءة</b><small>إظهار عدد الرسائل الجديدة بجوار الرسائل في القائمة.</small></span><input type="checkbox" name="messageBadges" ${s.notifications.messageBadges?'checked':''}></label>
+     <label class="settings-check"><span><b>اهتزاز عند وصول رسالة</b><small>يعمل إذا كان الجهاز والمتصفح يدعمان الاهتزاز.</small></span><input type="checkbox" name="vibration" ${s.notifications.vibration?'checked':''}></label>
+     <label class="settings-check settings-span-2"><span><b>إشعارات المتصفح</b><small>إظهار تنبيه على الجهاز عند وصول رسالة جديدة والصفحة في الخلفية.</small></span><input type="checkbox" name="browserAlerts" ${s.notifications.browserAlerts?'checked':''}></label>
+     <div class="settings-span-2 settings-permission-row"><span id="settings-notification-permission">${'Notification' in window?('حالة إذن المتصفح: '+Notification.permission):'هذا المتصفح لا يدعم إشعارات النظام.'}</span><button type="button" id="settings-enable-notifications" class="settings-reset-button">السماح بإشعارات المتصفح</button></div>
+    </div>
+   </section>
+   <section id="settings-defaults" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">♙</span><div><h3>الإعدادات الافتراضية للطلاب والحضور</h3><p>تستخدم تلقائيًا عند إضافة طالب أو بدء تسجيل جلسة.</p></div></div>
     <div class="settings-fields">
      <label>الرسوم الشهرية الافتراضية<input name="monthlyFee" type="number" min="0" step="0.01" value="${Number(d.monthlyFee||0)}"></label>
@@ -328,14 +359,17 @@ if(tab==='settings'&&role==='owner'){
  const form=$('academy-settings-form');
  const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
+ $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>$(button.dataset.settingsJump)?.scrollIntoView({behavior:'smooth',block:'start'}));
+ $('settings-enable-notifications').onclick=async()=>{if(!('Notification' in window)){msg('متصفحك لا يدعم إشعارات النظام.');return}try{const permission=await Notification.requestPermission();$('settings-notification-permission').textContent='حالة إذن المتصفح: '+permission;if(permission==='granted'){form.elements.browserAlerts.checked=true;msg('تم السماح بإشعارات المتصفح. اضغط حفظ كل الإعدادات لتطبيق التفضيل.')}else msg('لم يتم السماح بإشعارات المتصفح. يمكنك تفعيلها لاحقًا من إعدادات المتصفح.')}catch(e){msg('تعذر طلب إذن الإشعارات: '+e.message)}};
  $('settings-preview-theme').onclick=()=>{const el=form.elements.theme;el.value=el.value==='dark'?'light':'dark';preview()};
  form.onsubmit=lockForm(async e=>{
   e.preventDefault();const v=new FormData(form),monthlyFee=Number(v.get('monthlyFee'));
   if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
   const next=mergeAcademySettings({
-   profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),address:String(v.get('address')||'').trim()},
+   profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
    appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
    messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
+   notifications:{messageBadges:v.get('messageBadges')==='on',vibration:v.get('vibration')==='on',browserAlerts:v.get('browserAlerts')==='on'},
    defaults:{monthlyFee,groupId:String(v.get('defaultGroup')||''),codePrefix:String(v.get('codePrefix')||'ST-').trim(),attendanceSession:String(v.get('attendanceSession')||'الجلسة الأولى').trim()||'الجلسة الأولى',autoGenerateCode:v.get('autoGenerateCode')==='on'}
   });
   if(!next.profile.academyName){msg('اسم الأكاديمية مطلوب.');return}
