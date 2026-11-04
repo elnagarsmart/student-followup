@@ -309,6 +309,7 @@ async function refreshUnreadCounts(){
   if(next>previous){
    const prefs=academySettings?.notifications||DEFAULT_ACADEMY_SETTINGS.notifications;
    if(prefs.vibration&&navigator.vibrate)navigator.vibrate(60);
+   if(academySettings?.messages?.soundNotifications){try{const AudioContextClass=window.AudioContext||window.webkitAudioContext;if(AudioContextClass){const audio=new AudioContextClass(),osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=740;gain.gain.setValueAtTime(0.0001,audio.currentTime);gain.gain.exponentialRampToValueAtTime(0.08,audio.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.0001,audio.currentTime+0.18);osc.connect(gain);gain.connect(audio.destination);osc.start();osc.stop(audio.currentTime+0.2);osc.onended=()=>audio.close()}}catch{}}
    if(prefs.browserAlerts&&document.hidden&&'Notification' in window&&Notification.permission==='granted'){
     try{new Notification(academySettings?.profile?.academyName||'أكاديميا',{body:'لديك '+(next-previous)+' رسالة جديدة.',icon:'/icons/icon.svg',tag:'academia-message-'+Date.now()})}catch{}
    }
