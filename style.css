@@ -1861,3 +1861,7 @@ html[data-theme="dark"] .whatsapp-support-header small,html[data-theme="dark"] .
 html[data-theme="dark"] .whatsapp-support-header button{background:#21364a!important;border-color:#344b5c!important;color:#d6e5dc!important}
 html[data-theme="dark"] .whatsapp-support-panel textarea{background:#0f1b2d;border-color:#354b5c;color:#edf6f1}
 @media(max-width:700px){.whatsapp-support-widget{left:13px;bottom:calc(105px + env(safe-area-inset-bottom))}.whatsapp-support-launcher{min-height:50px;padding:0 15px!important;font-size:12px}.whatsapp-support-panel{bottom:62px;width:min(360px,calc(100vw - 26px));padding:14px}}
+
+.whatsapp-support-panel input[type="text"]{display:block;width:100%;min-height:40px;margin:0 0 12px;border:1px solid #dce8e1;border-radius:10px;background:#fbfdfc;color:#20372d;padding:9px 11px;font:inherit;font-size:12px;outline:none}
+.whatsapp-support-panel input[type="text"]:focus{border-color:#159b68;box-shadow:0 0 0 3px #159b681c}
+html[data-theme="dark"] .whatsapp-support-panel input[type="text"]{background:#0f1b2d;border-color:#354b5c;color:#edf6f1}
