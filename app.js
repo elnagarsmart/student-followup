@@ -1,7 +1,7 @@
 const {createClient} = supabase;
 const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'academia-auth-session',experimental:{passkey:true}}});
 let session=null, role='unknown', isOwner=false, ownerId=null, supervisor=null, permissions={}, students=[], groups=[], attendance=[], attendanceSelectedStudentId='', attendanceMode='camera', payments=[], links=[], supervisors=[], tab='overview', authMode='login', authChannel='email', pendingPhone='', pendingEmail='', otpPurpose='';
-let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='';
+let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='', academySettings=null;
 let messageContacts=[], activeMessagePeerId='', messageRefreshTimer=null, messageViewVersion=0, unreadRefreshTimer=null, unreadBySender={}, unreadTotal=0;
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG').format(Number(n||0))+' ج.م', dateText=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ar-EG'):'—';
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
@@ -12,9 +12,64 @@ const edgeFunctionErrorText=async error=>{try{const ctx=error?.context;if(ctx&&t
 function lockForm(handler){return async e=>{e.preventDefault();const form=e.currentTarget;if(form.dataset.busy==='true')return;form.dataset.busy='true';const button=form.querySelector('button[type="submit"],button:not([type])');const originalLabel=button?.textContent;if(button){button.disabled=true;button.textContent='جارٍ الحفظ…'}try{await handler(e)}finally{form.dataset.busy='false';if(button?.isConnected){button.disabled=false;button.textContent=originalLabel}}}}
 $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
 const themeToggle=$('theme-toggle');
-function applyTheme(theme){document.documentElement.dataset.theme=theme;if(themeToggle)themeToggle.textContent=theme==='dark'?'☀️ الوضع الفاتح':'🌙 الوضع الداكن';}
+const DEFAULT_ACADEMY_SETTINGS={
+ profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',address:''},
+ appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
+ messages:{signature:'',soundNotifications:false,templates:{
+  attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
+  absence:'السلام عليكم، نود إبلاغكم بغياب الطالب {{student}} عن جلسة {{session}} بتاريخ {{date}}. برجاء المتابعة. {{academy}}',
+  payment:'السلام عليكم، نذكّركم بمتابعة رسوم الطالب {{student}} بمبلغ {{amount}}. {{academy}}',
+  welcome:'أهلًا بكم في {{academy}}. يسعدنا انضمام الطالب {{student}}، ونتمنى له التوفيق.'
+ }},
+ defaults:{monthlyFee:0,groupId:'',codePrefix:'ST-',autoGenerateCode:true,attendanceSession:'الجلسة الأولى'}
+};
+function mergeAcademySettings(value){
+ const v=value&&typeof value==='object'?value:{};
+ return {
+  profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
+  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{})},
+  messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
+  defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
+ };
+}
+function applyTheme(theme){
+ const mode=theme==='light'?'light':'dark';
+ document.documentElement.dataset.theme=mode;
+ localStorage.setItem('academia-theme',mode);
+ if(themeToggle)themeToggle.textContent=mode==='dark'?'☀️ الوضع الفاتح':'🌙 الوضع الداكن';
+}
+function applyAcademiaIdentity(){
+ const name=String(academySettings?.profile?.academyName||'أكاديميا').trim()||'أكاديميا';
+ const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent=name;
+ const footer=document.querySelector('.main footer');if(footer){const first=footer.childNodes[0];if(first&&first.nodeType===3)first.textContent=name+' · نظام متابعة الطلاب ';}
+ const userLabel=$('user-email');
+ if(userLabel&&session?.user){userLabel.textContent=academySettings?.profile?.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
+ document.title=name+' | إدارة ومتابعة الطلاب';
+}
+function applyAcademyAppearance(){
+ const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
+ applyTheme(appearance.theme);
+ document.documentElement.dataset.accent=appearance.accent||'violet';
+ document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
+ document.documentElement.dataset.density=appearance.density||'comfortable';
+ document.documentElement.dataset.sidebar=appearance.sidebar||'expanded';
+ applyAcademiaIdentity();
+}
+async function saveAcademySettings(next){
+ const value=mergeAcademySettings(next);
+ await run(db.from('academy_settings').upsert({owner_id:ownerId||session.user.id,settings:value,updated_at:new Date().toISOString()},{onConflict:'owner_id'}));
+ academySettings=value;applyAcademyAppearance();
+ return value;
+}
+academySettings=mergeAcademySettings(null);
 applyTheme(localStorage.getItem('academia-theme')||'dark');
-if(themeToggle)themeToggle.onclick=()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';localStorage.setItem('academia-theme',next);applyTheme(next)};
+if(themeToggle)themeToggle.onclick=async()=>{
+ const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
+ academySettings=mergeAcademySettings(academySettings);
+ academySettings.appearance.theme=next;
+ applyAcademyAppearance();
+ if(isOwner&&ownerId){try{await saveAcademySettings(academySettings)}catch(e){msg('تم تغيير المظهر محليًا لكن تعذر حفظه في الحساب: '+e.message)}}
+};
 function updateAuthView(){const signup=authMode==='signup'&&authChannel!=='code';$('name-field').hidden=!signup;$('account-type-field').hidden=!signup;$('full-name').required=signup;$('email-field').hidden=authChannel!=='email';$('email').required=authChannel==='email';$('phone-field').hidden=authChannel!=='phone';$('phone-help').hidden=authChannel!=='phone'||authMode!=='signup';$('phone').required=authChannel==='phone';$('code-field').hidden=authChannel!=='code';$('student-code').required=authChannel==='code';$('password').autocomplete=signup?'new-password':'current-password';$('auth-submit').textContent=signup?'إنشاء حساب':'تسجيل الدخول';$('toggle-auth').hidden=authChannel==='code';$('toggle-auth').textContent=signup?'لديك حساب؟ تسجيل الدخول':'ليس لديك حساب؟ إنشاء حساب';$('forgot-password').hidden=signup||authChannel!=='email';document.querySelectorAll('.channel-btn').forEach(b=>b.classList.toggle('active',b.dataset.channel===authChannel));$('auth-form').hidden=false;$('otp-form').hidden=true}
 document.querySelectorAll('.channel-btn').forEach(b=>b.onclick=()=>{authChannel=b.dataset.channel;if(authChannel==='code')authMode='login';updateAuthView()});
 $('toggle-auth').onclick=()=>{authMode=authMode==='login'?'signup':'login';updateAuthView();$('auth-card').classList.remove('auth-switch');void $('auth-card').offsetWidth;$('auth-card').classList.add('auth-switch')};
@@ -81,7 +136,7 @@ db.auth.getSession().then(async ({error})=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
 });
-function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];attendance=[];payments=[];links=[];supervisors=[];tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
+function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];attendance=[];payments=[];links=[];supervisors=[];academySettings=mergeAcademySettings(null);applyAcademyAppearance();tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
 const can=key=>isOwner||permissions[key]===true;
 function ageLabel(dob){
  if(!dob)return 'غير مسجل';
@@ -192,7 +247,7 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
    await run(db.from('app_owners').upsert({owner_id:uid},{onConflict:'owner_id',ignoreDuplicates:true}));
    isOwner=true;ownerId=uid;permissions={};
  }
- if(isOwner)role='owner';
+ if(isOwner){role='owner';const row=await run(db.from('academy_settings').select('settings').eq('owner_id',uid).maybeSingle());academySettings=mergeAcademySettings(row?.settings);applyAcademyAppearance();}else{academySettings=mergeAcademySettings(null);applyAcademyAppearance();}
  if(!isOwner&&!supervisor){if(!mine.length){role='visitor';links=[];students=[];attendance=[];payments=[];}else{role=mine.some(x=>x.portal_role==='guardian')?'guardian':'student';links=mine;const ids=mine.map(x=>x.student_id);attendance=await run(db.from('attendance').select('*').in('student_id',ids).order('session_date',{ascending:false}));if(role==='guardian'){[payments,students]=await Promise.all([run(db.from('payments').select('*').in('student_id',ids).order('paid_at',{ascending:false})),run(db.from('students').select('id,name,code,monthly_fee,date_of_birth').in('id',ids))])}else{payments=[];students=await run(db.from('students').select('id,name,code,date_of_birth').in('id',ids))}}
  }else{
  if(isOwner)supervisors=await run(db.from('supervisor_access').select('*').eq('owner_id',ownerId).order('created_at',{ascending:false}));
@@ -204,13 +259,99 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
  }
  if(currentLoad!==loadVersion||session?.user?.id!==userId)return;loadedUserId=userId;$('role-label').textContent=role==='owner'?'مدرس مستقل':role==='supervisor'?'مشرف':role==='guardian'?'بوابة ولي الأمر':role==='student'?'بوابة الطالب':'حساب عام';drawNav();render();startUnreadRefresh();
  }catch(e){if(currentLoad===loadVersion){role='unknown';$('dashboard').hidden=true;$('auth').hidden=false;$('auth-message').textContent=e.message;}}finally{if(currentLoad===loadVersion){loadingUserId=null;if($('message').textContent==='جار تحميل البيانات…')$('message').hidden=true}}}
-function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;drawNav();render()})}
+function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;drawNav();render()})}
 async function refreshUnreadCounts(){if(!session?.user?.id)return;try{const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'unread'}});if(error||data?.error)throw error||new Error(data?.error);const next=Number(data?.unread_total||0);unreadBySender=data?.unread_by_sender||{};if(next!==unreadTotal){unreadTotal=next;drawNav()}}catch(e){console.warn('Unread message refresh failed:',e.message)}}
 function startUnreadRefresh(){if(unreadRefreshTimer)clearInterval(unreadRefreshTimer);void refreshUnreadCounts();unreadRefreshTimer=setInterval(()=>{if(!document.hidden&&session?.user?.id)void refreshUnreadCounts()},15000)}
 function table(rows,kind){if(!rows.length)return '<p class="empty-row">لا توجد سجلات حتى الآن</p>';const manage=kind==='attendance'?can('manage_attendance'):can('manage_payments');let heads=kind==='attendance'?'<th>الطالب</th><th>التاريخ</th><th>الحالة</th>':'<th>الطالب</th><th>التاريخ</th><th>المبلغ</th><th>ملاحظة</th>';if(manage)heads+='<th>إجراءات</th>';let body=rows.map(r=>{let student=students.find(s=>s.id===r.student_id),name=student?.name||'طالب';const actions=manage?'<td><button class="text-button" data-record-edit="'+kind+'" data-record-id="'+r.id+'">تعديل</button> <button class="text-button danger-action" data-record-delete="'+kind+'" data-record-id="'+r.id+'">حذف</button>'+(kind==='attendance'?(student?.guardian_phone?'<br><a class="text-button whatsapp-action" target="_blank" rel="noopener noreferrer" href="'+whatsAppFollowupUrl(student,r)+'">واتساب ولي الأمر</a>':'<br><small class="muted">لا يوجد رقم ولي أمر</small>'):'')+'</td>':'';return kind==='attendance'?'<tr><td>'+esc(name)+'</td><td>'+dateText(r.session_date)+'</td><td><span class="status '+(r.status==='حاضر'?'good':r.status==='غائب'?'bad':'warn')+'">'+esc(r.status)+'</span></td>'+actions+'</tr>':'<tr><td>'+esc(name)+'</td><td>'+dateText(r.paid_at)+'</td><td><b>'+money(r.amount)+'</b></td><td>'+esc(r.note||'—')+'</td>'+actions+'</tr>'}).join('');return '<div class="table-wrap"><table><thead><tr>'+heads+'</tr></thead><tbody>'+body+'</tbody></table></div>'}
 function whatsAppFollowupUrl(student,record){let phone=String(student?.guardian_phone||'').replace(/[^0-9+]/g,'');if(/^01[0125]\d{8}$/.test(phone))phone='20'+phone.slice(1);phone=phone.replace(/\D/g,'');if(!phone)return '#';const status=record.status||'الحضور';const text='السلام عليكم، نتابع معكم من أكاديميا بخصوص '+student.name+'. تم تسجيل حالة '+status+' بتاريخ '+record.session_date+'. برجاء متابعة الأمر مع الأكاديمية. شكراً لكم.';return 'https://wa.me/'+phone+'?text='+encodeURIComponent(text)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function render(){if(role==='visitor'){$('page-title').textContent='مرحبًا بك في أكاديميا';$('content').innerHTML='<section class="panel"><h2>حسابك جاهز 🎉</h2><p>أنت الآن في الوضع العام. لعرض بيانات طالب أو تسجيل الحضور، اطلب من إدارة الأكاديمية ربط بريدك الإلكتروني بملف الطالب.</p><p class="muted">حسابات الطلاب وأولياء الأمور لا ترى إلا السجلات المرتبطة بها.</p><button type="button" id="visitor-signout" class="text-button">تسجيل الخروج</button></section>';$('visitor-signout').onclick=async()=>{await db.auth.signOut()};return;}const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات','ai-import':'المساعد الذكي'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length;
+function render(){if(role==='visitor'){$('page-title').textContent='مرحبًا بك في أكاديميا';$('content').innerHTML='<section class="panel"><h2>حسابك جاهز 🎉</h2><p>أنت الآن في الوضع العام. لعرض بيانات طالب أو تسجيل الحضور، اطلب من إدارة الأكاديمية ربط بريدك الإلكتروني بملف الطالب.</p><p class="muted">حسابات الطلاب وأولياء الأمور لا ترى إلا السجلات المرتبطة بها.</p><button type="button" id="visitor-signout" class="text-button">تسجيل الخروج</button></section>';$('visitor-signout').onclick=async()=>{await db.auth.signOut()};return;}const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length;
+if(tab==='settings'&&role==='owner'){
+ const s=mergeAcademySettings(academySettings),p=s.profile,a=s.appearance,m=s.messages,d=s.defaults;
+ $('content').innerHTML=`<div class="settings-page">
+  <div class="settings-intro"><div><p class="eyebrow">مركز التحكم</p><h2>إعدادات أكاديميا</h2><p>خصص اسم الأكاديمية والمظهر والرسائل وطريقة إضافة الطلاب من مكان واحد.</p></div><span class="settings-saved-mark">⚙ إعدادات الحساب</span></div>
+  <form id="academy-settings-form" class="settings-form">
+   <section class="settings-card">
+    <div class="settings-section-head"><span class="settings-section-icon">▣</span><div><h3>هوية الأكاديمية والحساب</h3><p>الاسم الذي يظهر في القائمة والتذييل وملفات التواصل.</p></div></div>
+    <div class="settings-fields">
+     <label>اسم الأكاديمية<input name="academyName" maxlength="80" required value="${esc(p.academyName)}" placeholder="أكاديميا"></label>
+     <label>اسم صاحب الحساب<input name="displayName" maxlength="80" value="${esc(p.displayName)}" placeholder="الاسم الظاهر في الحساب"></label>
+     <label>هاتف التواصل<input name="contactPhone" type="tel" maxlength="25" value="${esc(p.contactPhone)}" placeholder="01xxxxxxxxx"></label>
+     <label>عنوان الأكاديمية<input name="address" maxlength="180" value="${esc(p.address)}" placeholder="المدينة أو العنوان المختصر"></label>
+     <label class="settings-readonly">بريد تسجيل الدخول<input value="${esc(session?.user?.email||'')}" readonly><small>تغيير البريد يحتاج خطوة تحقق منفصلة من الحساب.</small></label>
+    </div>
+   </section>
+   <section class="settings-card">
+    <div class="settings-section-head"><span class="settings-section-icon">◐</span><div><h3>المظهر والتصميم</h3><p>اختَر شكل الواجهة وحجم الخط وكثافة العناصر.</p></div></div>
+    <div class="settings-fields">
+     <label>السمة<select name="theme"><option value="dark" ${a.theme==='dark'?'selected':''}>داكنة — كحلي</option><option value="light" ${a.theme==='light'?'selected':''}>فاتحة — نظيفة</option></select></label>
+     <label>اللون الأساسي<select name="accent"><option value="violet" ${a.accent==='violet'?'selected':''}>بنفسجي</option><option value="blue" ${a.accent==='blue'?'selected':''}>أزرق</option><option value="teal" ${a.accent==='teal'?'selected':''}>تركواز</option><option value="rose" ${a.accent==='rose'?'selected':''}>وردي</option><option value="amber" ${a.accent==='amber'?'selected':''}>ذهبي</option></select></label>
+     <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
+     <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
+     <label>القائمة الجانبية<select name="sidebar"><option value="expanded" ${a.sidebar==='expanded'?'selected':''}>كاملة</option><option value="compact" ${a.sidebar==='compact'?'selected':''}>أيقونات فقط على الكمبيوتر</option></select></label>
+    </div>
+    <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
+   </section>
+   <section class="settings-card">
+    <div class="settings-section-head"><span class="settings-section-icon">✉</span><div><h3>إعدادات الرسائل وقوالب التواصل</h3><p>عدّل النصوص الجاهزة التي تستخدمها مع أولياء الأمور والطلاب. لا يتم إرسال شيء تلقائيًا.</p></div></div>
+    <div class="settings-fields">
+     <label class="settings-span-2">توقيع الرسائل<input name="messageSignature" maxlength="180" value="${esc(m.signature)}" placeholder="مع تحيات إدارة أكاديميا"></label>
+     <label class="settings-span-2">رسالة متابعة الحضور<textarea name="attendanceTemplate" rows="3" maxlength="1000">${esc(m.templates.attendance)}</textarea><small>متغيرات متاحة: {{academy}}، {{student}}، {{status}}، {{date}}</small></label>
+     <label class="settings-span-2">رسالة الغياب<textarea name="absenceTemplate" rows="3" maxlength="1000">${esc(m.templates.absence)}</textarea><small>متغيرات متاحة: {{academy}}، {{student}}، {{session}}، {{date}}</small></label>
+     <label class="settings-span-2">تذكير الرسوم<textarea name="paymentTemplate" rows="3" maxlength="1000">${esc(m.templates.payment)}</textarea><small>متغيرات متاحة: {{academy}}، {{student}}، {{amount}}</small></label>
+     <label class="settings-span-2">رسالة ترحيب<textarea name="welcomeTemplate" rows="3" maxlength="1000">${esc(m.templates.welcome)}</textarea><small>متغيرات متاحة: {{academy}}، {{student}}</small></label>
+     <label class="settings-check"><input type="checkbox" name="soundNotifications" ${m.soundNotifications?'checked':''}> اهتزاز خفيف عند وصول رسالة جديدة (إذا كان الجهاز يدعمه)</label>
+    </div>
+   </section>
+   <section class="settings-card">
+    <div class="settings-section-head"><span class="settings-section-icon">♙</span><div><h3>الإعدادات الافتراضية للطلاب والحضور</h3><p>تستخدم تلقائيًا عند إضافة طالب أو بدء تسجيل جلسة.</p></div></div>
+    <div class="settings-fields">
+     <label>الرسوم الشهرية الافتراضية<input name="monthlyFee" type="number" min="0" step="0.01" value="${Number(d.monthlyFee||0)}"></label>
+     <label>المجموعة الافتراضية<select name="defaultGroup"><option value="">بدون مجموعة</option>${groups.map(g=>'<option value="'+esc(g.id)+'" '+(d.groupId===g.id?'selected':'')+'>'+esc(g.name)+'</option>').join('')}</select></label>
+     <label>بادئة كود الطالب<input name="codePrefix" maxlength="12" pattern="[A-Za-z0-9_-]*" value="${esc(d.codePrefix)}" placeholder="ST-"></label>
+     <label>جلسة الحضور الافتراضية<input name="attendanceSession" maxlength="60" value="${esc(d.attendanceSession)}" placeholder="الجلسة الأولى"></label>
+     <label class="settings-check"><input type="checkbox" name="autoGenerateCode" ${d.autoGenerateCode?'checked':''}> توليد كود تلقائي عند ترك خانة الكود فارغة</label>
+    </div>
+   </section>
+   <div class="settings-actions"><button type="submit" class="settings-save-button">حفظ كل الإعدادات</button><button type="button" id="settings-reset-defaults" class="settings-reset-button">استعادة الإعدادات الافتراضية</button></div>
+   <p id="settings-status" class="settings-status" aria-live="polite">إعداداتك محفوظة في حساب الأكاديمية وتظهر على أجهزتك بعد تسجيل الدخول.</p>
+  </form>
+  <section class="settings-card settings-security-card">
+   <div class="settings-section-head"><span class="settings-section-icon">⌑</span><div><h3>أمان الحساب</h3><p>تغيير كلمة مرور الحساب الحالي.</p></div></div>
+   <form id="settings-password-form" class="settings-fields">
+    <label>كلمة المرور الجديدة<input name="newPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+    <label>تأكيد كلمة المرور<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+    <div class="settings-span-2"><button type="submit" class="settings-save-button">تحديث كلمة المرور</button></div>
+   </form>
+  </section>
+ </div>`;
+ const form=$('academy-settings-form');
+ const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
+ form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
+ $('settings-preview-theme').onclick=()=>{const el=form.elements.theme;el.value=el.value==='dark'?'light':'dark';preview()};
+ form.onsubmit=lockForm(async e=>{
+  e.preventDefault();const v=new FormData(form),monthlyFee=Number(v.get('monthlyFee'));
+  if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
+  const next=mergeAcademySettings({
+   profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),address:String(v.get('address')||'').trim()},
+   appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
+   messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
+   defaults:{monthlyFee,groupId:String(v.get('defaultGroup')||''),codePrefix:String(v.get('codePrefix')||'ST-').trim(),attendanceSession:String(v.get('attendanceSession')||'الجلسة الأولى').trim()||'الجلسة الأولى',autoGenerateCode:v.get('autoGenerateCode')==='on'}
+  });
+  if(!next.profile.academyName){msg('اسم الأكاديمية مطلوب.');return}
+  if(next.defaults.codePrefix&&!/^[A-Za-z0-9_-]{1,12}$/.test(next.defaults.codePrefix)){msg('بادئة الكود يجب أن تحتوي حروفًا إنجليزية أو أرقامًا أو شرطة فقط.');return}
+  try{await saveAcademySettings(next);$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
+ });
+ $('settings-reset-defaults').onclick=()=>{if(!confirm('استعادة جميع إعدادات الأكاديمية الافتراضية؟'))return;academySettings=mergeAcademySettings(null);render()};
+ $('settings-password-form').onsubmit=lockForm(async e=>{
+  e.preventDefault();const v=new FormData(e.currentTarget),password=String(v.get('newPassword')||''),confirmPassword=String(v.get('confirmPassword')||'');
+  if(password.length<8){msg('كلمة المرور يجب ألا تقل عن 8 أحرف.');return}
+  if(password!==confirmPassword){msg('تأكيد كلمة المرور غير مطابق.');return}
+  try{const {error}=await db.auth.updateUser({password});if(error)throw error;e.currentTarget.reset();msg('تم تحديث كلمة مرور الحساب.')}catch(x){msg(x.message)}
+ });
+ return;
+}
+
 if(tab==='ai-import'&&role==='owner'){
  $('content').innerHTML=`<section class="panel"><div class="panel-heading"><div><h3>المساعد الذكي لاستيراد الطلاب</h3><p>حلّل صورة أو PDF أو نصًا، ثم راجع كل سجل قبل حفظه.</p></div></div>
  <form id="ai-import-form" class="form-grid ai-import-form"><label>ملف صورة أو PDF<input id="ai-import-file" type="file" accept="image/*,application/pdf"></label><label>أو الصق قائمة الطلاب<textarea id="ai-import-text" rows="5" placeholder="مثال: أحمد محمد، هاتف 010...، رسوم 300"></textarea></label><button type="submit" class="ai-primary-btn">✦ تحليل واستخراج البيانات</button></form>
