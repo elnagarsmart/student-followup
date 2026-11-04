@@ -13,6 +13,19 @@ function lockForm(handler){return async e=>{e.preventDefault();const form=e.curr
 $('today').textContent=new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
 const themeToggle=$('theme-toggle');
 const authThemeToggle=$('auth-theme-toggle');
+const mobileNavToggle=$('mobile-nav-toggle');
+const mobileNavBackdrop=$('mobile-nav-backdrop');
+function closeMobileNav(){ $('dashboard')?.classList.remove('mobile-nav-open');mobileNavToggle?.setAttribute('aria-expanded','false'); }
+function toggleMobileNav(){
+ if(!mobileNavToggle)return;
+ const opening=!$('dashboard').classList.contains('mobile-nav-open');
+ $('dashboard').classList.toggle('mobile-nav-open',opening);
+ mobileNavToggle.setAttribute('aria-expanded',String(opening));
+}
+if(mobileNavToggle)mobileNavToggle.onclick=toggleMobileNav;
+if(mobileNavBackdrop)mobileNavBackdrop.onclick=closeMobileNav;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
+window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',address:'',logoUrl:''},
  appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
@@ -268,7 +281,7 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
  }
  if(currentLoad!==loadVersion||session?.user?.id!==userId)return;loadedUserId=userId;$('role-label').textContent=role==='owner'?'مدرس مستقل':role==='supervisor'?'مشرف':role==='guardian'?'بوابة ولي الأمر':role==='student'?'بوابة الطالب':'حساب عام';drawNav();render();startUnreadRefresh();
  }catch(e){if(currentLoad===loadVersion){role='unknown';$('dashboard').hidden=true;$('auth').hidden=false;$('auth-message').textContent=e.message;}}finally{if(currentLoad===loadVersion){loadingUserId=null;if($('message').textContent==='جار تحميل البيانات…')$('message').hidden=true}}}
-function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;drawNav();render()})}
+function drawNav(){const items=role==='visitor'?[['overview','الرئيسية','⌂']]:role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','✉'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','✉']]:[['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','✉']];$('nav').innerHTML=items.map(([id,n,i])=>{const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:0;return `<button class="nav-item ${tab===id?'active':''}" data-tab="${id}" title="${esc(n)}" aria-label="${esc(n)}"><span>${i}</span>${n}${count?`<b class="nav-count" aria-label="${count} رسائل غير مقروءة">${count>99?'99+':count}</b>`:''}</button>`}).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;closeMobileNav();drawNav();render()})}
 async function refreshUnreadCounts(){
  if(!session?.user?.id)return;
  try{
@@ -353,12 +366,27 @@ if(tab==='settings'&&role==='owner'){
    <p id="settings-status" class="settings-status" aria-live="polite">إعداداتك محفوظة في حساب الأكاديمية وتظهر على أجهزتك بعد تسجيل الدخول.</p>
   </form>
   <section id="settings-security" class="settings-card settings-security-card">
-   <div class="settings-section-head"><span class="settings-section-icon">⌑</span><div><h3>أمان الحساب</h3><p>تغيير كلمة مرور الحساب الحالي.</p></div></div>
-   <form id="settings-password-form" class="settings-fields">
-    <label>كلمة المرور الجديدة<input name="newPassword" type="password" minlength="8" autocomplete="new-password" required></label>
-    <label>تأكيد كلمة المرور<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required></label>
-    <div class="settings-span-2"><button type="submit" class="settings-save-button">تحديث كلمة المرور</button></div>
-   </form>
+   <div class="settings-section-head"><span class="settings-section-icon">⌑</span><div><h3>أمان الحساب وتأكيد الهوية</h3><p>تغييرات البريد وكلمة المرور لا تتم بمجرد تعديل الحقول؛ يلزم تحقق من الحساب.</p></div></div>
+   <div class="settings-security-block">
+    <div class="settings-security-title"><b>تغيير البريد الإلكتروني</b><small>سنرسل روابط تأكيد إلى البريد الحالي والبريد الجديد. يظل بريد الدخول الحالي فعالًا حتى إتمام التأكيد.</small></div>
+    <form id="settings-email-form" class="settings-fields">
+     <label>البريد الحالي<input value="${esc(session?.user?.email||'')}" readonly></label>
+     <label>البريد الجديد<input name="newEmail" type="email" autocomplete="email" required placeholder="name@example.com"></label>
+     <label class="settings-span-2">كلمة المرور الحالية<input name="currentPassword" type="password" autocomplete="current-password" required minlength="8" placeholder="أكد هويتك قبل طلب تغيير البريد"></label>
+     <div class="settings-span-2"><button type="submit" class="settings-save-button">إرسال طلب تغيير البريد والتحقق</button></div>
+     <p id="settings-email-status" class="settings-status settings-span-2" aria-live="polite">لن يتغير بريد الحساب حتى تؤكد روابط التحقق المطلوبة عبر البريد.</p>
+    </form>
+   </div>
+   <div class="settings-security-block">
+    <div class="settings-security-title"><b>تغيير كلمة المرور</b><small>أدخل كلمة المرور الحالية أولًا. لن يتم حفظ الجديدة إلا بعد قبول التحقق.</small></div>
+    <form id="settings-password-form" class="settings-fields">
+     <label>كلمة المرور الحالية<input name="currentPassword" type="password" autocomplete="current-password" minlength="8" required></label>
+     <label>كلمة المرور الجديدة<input name="newPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+     <label>تأكيد كلمة المرور<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required></label>
+     <div class="settings-span-2"><button type="submit" class="settings-save-button">تحقق ثم تحديث كلمة المرور</button></div>
+     <p class="settings-status settings-span-2">تغيير كلمة المرور يستخدم التحقق من كلمة المرور الحالية على خادم المصادقة.</p>
+    </form>
+   </div>
   </section>
  </div>`;
  const form=$('academy-settings-form');
@@ -382,11 +410,37 @@ if(tab==='settings'&&role==='owner'){
   try{await saveAcademySettings(next);$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
  });
  $('settings-reset-defaults').onclick=async()=>{if(!confirm('استعادة جميع إعدادات الأكاديمية الافتراضية؟'))return;try{await saveAcademySettings(mergeAcademySettings(null));msg('تمت استعادة الإعدادات الافتراضية.');render()}catch(x){msg(x.message)}};
+ $('settings-email-form').onsubmit=lockForm(async e=>{
+  e.preventDefault();
+  const v=new FormData(e.currentTarget),newEmail=String(v.get('newEmail')||'').trim().toLowerCase(),currentPassword=String(v.get('currentPassword')||'');
+  const currentEmail=String(session?.user?.email||'').trim().toLowerCase();
+  const status=$('settings-email-status');
+  if(!/^\\S+@\\S+\\.\\S+$/.test(newEmail)){msg('اكتب بريدًا إلكترونيًا صحيحًا.');return}
+  if(newEmail===currentEmail){msg('البريد الجديد هو نفسه البريد الحالي.');return}
+  if(!currentEmail){msg('هذا الحساب لا يحتوي على بريد إلكتروني لتغييره من هذه الصفحة.');return}
+  if(!currentPassword){msg('أدخل كلمة المرور الحالية لتأكيد هويتك.');return}
+  try{
+   const reauth=await db.auth.signInWithPassword({email:currentEmail,password:currentPassword});
+   if(reauth.error)throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم إرسال طلب التغيير.');
+   const {error}=await db.auth.updateUser({email:newEmail},{emailRedirectTo:window.location.origin+window.location.pathname});
+   if(error)throw error;
+   e.currentTarget.reset();
+   status.textContent='تم إرسال طلب تغيير البريد. افتح رسائل البريد الحالي والجديد وأكمل روابط التأكيد؛ سيظل البريد القديم مستخدمًا حتى اكتمال التحقق.';
+   msg('أرسلنا روابط تأكيد تغيير البريد. لم يتغير بريد الدخول بعد.');
+  }catch(x){status.textContent=x.message||'تعذر إرسال طلب تغيير البريد.';msg(status.textContent)}
+ });
  $('settings-password-form').onsubmit=lockForm(async e=>{
-  e.preventDefault();const v=new FormData(e.currentTarget),password=String(v.get('newPassword')||''),confirmPassword=String(v.get('confirmPassword')||'');
-  if(password.length<8){msg('كلمة المرور يجب ألا تقل عن 8 أحرف.');return}
+  e.preventDefault();
+  const v=new FormData(e.currentTarget),currentPassword=String(v.get('currentPassword')||''),password=String(v.get('newPassword')||''),confirmPassword=String(v.get('confirmPassword')||'');
+  if(currentPassword.length<1){msg('أدخل كلمة المرور الحالية.');return}
+  if(password.length<8){msg('كلمة المرور الجديدة يجب ألا تقل عن 8 أحرف.');return}
   if(password!==confirmPassword){msg('تأكيد كلمة المرور غير مطابق.');return}
-  try{const {error}=await db.auth.updateUser({password});if(error)throw error;e.currentTarget.reset();msg('تم تحديث كلمة مرور الحساب.')}catch(x){msg(x.message)}
+  if(password===currentPassword){msg('اختر كلمة مرور جديدة مختلفة عن الحالية.');return}
+  try{
+   const {error}=await db.auth.updateUser({password,current_password:currentPassword});
+   if(error)throw new Error(/current password|invalid.*password|password.*incorrect/i.test(error.message)?'كلمة المرور الحالية غير صحيحة؛ لم يتم تحديث كلمة المرور.':error.message);
+   e.currentTarget.reset();msg('تم التحقق من كلمة المرور الحالية وتحديث كلمة المرور بنجاح.');
+  }catch(x){msg(x.message||'تعذر تحديث كلمة المرور.')}
  });
  return;
 }
