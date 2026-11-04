@@ -89,7 +89,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
- appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
+ appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
   absence:'السلام عليكم، نود إبلاغكم بغياب الطالب {{student}} عن جلسة {{session}} بتاريخ {{date}}. برجاء المتابعة. {{academy}}',
@@ -103,7 +103,7 @@ function mergeAcademySettings(value){
  const v=value&&typeof value==='object'?value:{};
  return {
   profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
-  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{})},
+  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
   messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
   notifications:{...DEFAULT_ACADEMY_SETTINGS.notifications,...(v.notifications||{})},
   defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
@@ -130,6 +130,7 @@ function applyAcademiaIdentity(){
 function applyAcademyAppearance(){
  const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
  applyTheme(appearance.theme);
+ document.documentElement.dataset.skin=appearance.skin||'blue';
  document.documentElement.dataset.accent=appearance.accent||'violet';
  document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
  document.documentElement.dataset.density=appearance.density||'comfortable';
@@ -406,7 +407,15 @@ if(tab==='settings'&&role==='owner'){
    <section id="settings-appearance" class="settings-card">
     <div class="settings-section-head"><span class="settings-section-icon">◐</span><div><h3>المظهر والتصميم</h3><p>اختَر شكل الواجهة وحجم الخط وكثافة العناصر.</p></div></div>
     <div class="settings-fields">
-     <label>السمة<select name="theme"><option value="dark" ${a.theme==='dark'?'selected':''}>داكنة — كحلي</option><option value="light" ${a.theme==='light'?'selected':''}>فاتحة — نظيفة</option></select></label>
+      <input type="hidden" name="skin" value="${esc(a.skin||'blue')}">
+      <div class="settings-span-2"><div class="theme-presets-heading"><b>ثيمات أكاديميا</b><small>اختر تصميمًا جاهزًا، وسيتم تطبيقه على الواجهة بالكامل.</small></div><div class="theme-preset-grid" role="group" aria-label="اختيار ثيم الواجهة">
+       <button type="button" class="theme-preset ${a.skin==='blue'?'active':''}" data-theme-preset="blue"><span class="theme-preset-preview preset-blue"><i></i><i></i><i></i></span><b>1. أزرق عصري</b><small>واضح وعملي</small></button>
+       <button type="button" class="theme-preset ${a.skin==='green'?'active':''}" data-theme-preset="green"><span class="theme-preset-preview preset-green"><i></i><i></i><i></i></span><b>2. أخضر هادئ</b><small>مريح للعين</small></button>
+       <button type="button" class="theme-preset ${a.skin==='violet'?'active':''}" data-theme-preset="violet"><span class="theme-preset-preview preset-violet"><i></i><i></i><i></i></span><b>3. بنفسجي أنيق</b><small>عصري وناعم</small></button>
+       <button type="button" class="theme-preset ${a.skin==='midnight'?'active':''}" data-theme-preset="midnight"><span class="theme-preset-preview preset-midnight"><i></i><i></i><i></i></span><b>4. داكن احترافي</b><small>كحلي مريح</small></button>
+       <button type="button" class="theme-preset ${a.skin==='gold'?'active':''}" data-theme-preset="gold"><span class="theme-preset-preview preset-gold"><i></i><i></i><i></i></span><b>5. أبيض وذهبي</b><small>هادئ وفخم</small></button>
+      </div></div>
+      <label>الوضع<select name="theme"><option value="light" ${a.theme==='light'?'selected':''}>فاتح</option><option value="dark" ${a.theme==='dark'?'selected':''}>داكن</option></select></label>
      <label>اللون الأساسي<select name="accent"><option value="violet" ${a.accent==='violet'?'selected':''}>بنفسجي</option><option value="blue" ${a.accent==='blue'?'selected':''}>أزرق</option><option value="teal" ${a.accent==='teal'?'selected':''}>تركواز</option><option value="rose" ${a.accent==='rose'?'selected':''}>وردي</option><option value="amber" ${a.accent==='amber'?'selected':''}>ذهبي</option></select></label>
      <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
      <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
@@ -473,8 +482,9 @@ if(tab==='settings'&&role==='owner'){
   </section>
  </div>`;
  const form=$('academy-settings-form');
- const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
+ const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
+  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
  const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
  const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
  $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
@@ -488,7 +498,7 @@ if(tab==='settings'&&role==='owner'){
   if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
   const next=mergeAcademySettings({
    profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),whatsappSupportPhone:String(v.get('whatsappSupportPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
-   appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
+   appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
    messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
    notifications:{messageBadges:v.get('messageBadges')==='on',vibration:v.get('vibration')==='on',browserAlerts:v.get('browserAlerts')==='on'},
    defaults:{monthlyFee,groupId:String(v.get('defaultGroup')||''),codePrefix:String(v.get('codePrefix')||'ST-').trim(),attendanceSession:String(v.get('attendanceSession')||'الجلسة الأولى').trim()||'الجلسة الأولى',autoGenerateCode:v.get('autoGenerateCode')==='on'}
