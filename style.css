@@ -645,3 +645,274 @@ html[data-theme="dark"] .ai-import-error{color:#ffabb4!important;background:#3b2
  html[data-theme="dark"] .attendance-barcode-form{grid-template-columns:minmax(0,1fr)}
  html[data-theme="dark"] .attendance-barcode-form button{width:100%}
 }
+
+
+/* Sidebar refresh: compact RTL navigation with native button borders removed */
+.sidebar,
+.sidebar *{
+ -webkit-tap-highlight-color:transparent;
+}
+.sidebar button.nav-item{
+ appearance:none!important;
+ -webkit-appearance:none!important;
+ border:0!important;
+ outline:0;
+ box-shadow:none!important;
+ text-decoration:none!important;
+}
+.sidebar nav .nav-item{
+ width:100%;
+ min-width:0;
+ min-height:44px;
+ display:flex;
+ align-items:center;
+ gap:11px;
+ padding:10px 12px;
+ border-radius:9px;
+ background:transparent!important;
+ color:#aab8d0;
+ font-size:12px;
+ line-height:1.4;
+ text-align:right;
+ white-space:nowrap;
+ transform:none!important;
+}
+.sidebar nav .nav-item span{
+ width:22px;
+ flex:0 0 22px;
+ display:inline-grid;
+ place-items:center;
+ color:#8799b8;
+ font-size:17px;
+ line-height:1;
+}
+.sidebar nav .nav-item:hover{
+ color:#edf2ff!important;
+ background:#192943!important;
+}
+.sidebar nav .nav-item.active{
+ color:#f0efff!important;
+ background:#202d50!important;
+ box-shadow:inset -3px 0 #8878ff!important;
+}
+.sidebar nav .nav-item.active span{color:#a69dff!important}
+.sidebar .sidebar-bottom .nav-item{
+ appearance:none!important;
+ -webkit-appearance:none!important;
+ border:0!important;
+ outline:0;
+ box-shadow:none!important;
+ display:flex;
+ align-items:center;
+ justify-content:flex-start;
+ gap:9px;
+ min-height:38px;
+ padding:8px 11px;
+ border-radius:8px;
+ background:transparent!important;
+ color:#9cabc5!important;
+ font-size:11px;
+ font-weight:600;
+ text-align:right;
+}
+.sidebar .sidebar-bottom .nav-item:hover{
+ background:#1a2942!important;
+ color:#eef2ff!important;
+ transform:none!important;
+ box-shadow:none!important;
+}
+.sidebar .sidebar-bottom .logout{color:#e58c99!important}
+.sidebar .sidebar-bottom .logout:hover{background:#332333!important;color:#ffb3bf!important}
+.sidebar .sidebar-bottom .passkey-register{color:#b8b4ff!important}
+.sidebar .sidebar-bottom .passkey-register::before,
+.sidebar .sidebar-bottom .logout::before{display:inline-block!important;content:none!important}
+.sidebar .profile{min-width:0}
+.sidebar .profile b{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-theme="dark"] .sidebar{
+ background:#101b30!important;
+ border-left:1px solid #263650!important;
+ box-shadow:none!important;
+}
+html[data-theme="dark"] .sidebar .brand{
+ border-bottom:1px solid #24344d;
+}
+html[data-theme="dark"] .sidebar .profile{
+ border-color:#24344d;
+}
+html[data-theme="dark"] .sidebar nav .nav-item{
+ border:0!important;
+ outline:0;
+}
+html[data-theme="dark"] .sidebar nav .nav-item:focus-visible,
+html[data-theme="dark"] .sidebar .sidebar-bottom .nav-item:focus-visible{
+ outline:2px solid #8d81ff!important;
+ outline-offset:2px;
+}
+
+/* Phone/tablet: retain a real side rail rather than stretching the menu over the whole page. */
+@media(max-width:760px){
+ html[data-theme="dark"] .sidebar{
+  position:fixed!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:auto!important;
+  width:218px!important;
+  height:100vh!important;
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  padding:17px 11px calc(12px + env(safe-area-inset-bottom))!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+  z-index:30!important;
+ }
+ html[data-theme="dark"] .sidebar .brand{
+  display:flex!important;
+  align-items:center;
+  gap:9px;
+  padding:2px 5px 14px!important;
+  margin:0 0 8px;
+ }
+ html[data-theme="dark"] .sidebar .brand-mark.small{
+  width:34px;height:34px;flex:0 0 34px;
+ }
+ html[data-theme="dark"] .sidebar .brand b{font-size:14px}
+ html[data-theme="dark"] .sidebar .brand small{font-size:9px}
+ html[data-theme="dark"] .sidebar .profile{
+  display:flex!important;
+  min-width:0;
+  gap:8px;
+  padding:11px 3px!important;
+  margin:0 0 9px!important;
+  align-items:center;
+ }
+ html[data-theme="dark"] .sidebar .profile>div:last-child{display:block!important;min-width:0;flex:1}
+ html[data-theme="dark"] .sidebar .profile b{
+  display:block!important;
+  max-width:145px!important;
+  font-size:10px!important;
+ }
+ html[data-theme="dark"] .sidebar .profile small{font-size:9px}
+ html[data-theme="dark"] .sidebar .avatar{width:31px;height:31px;flex:0 0 31px}
+ html[data-theme="dark"] .sidebar nav{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+  align-content:start;
+  align-items:stretch;
+  justify-content:stretch;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  min-width:0!important;
+  gap:3px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  padding:3px 0 10px;
+  scrollbar-width:thin;
+  scrollbar-color:#344766 transparent;
+ }
+ html[data-theme="dark"] .sidebar nav .nav-item{
+  display:flex!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:42px!important;
+  height:42px!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:9px!important;
+  padding:8px 10px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:transparent!important;
+  color:#aab8d0!important;
+  font-size:11px!important;
+  line-height:1.3!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  transform:none!important;
+ }
+ html[data-theme="dark"] .sidebar nav .nav-item span{
+  display:inline-grid!important;
+  width:21px!important;
+  min-width:21px!important;
+  flex:0 0 21px!important;
+  font-size:16px!important;
+  line-height:1!important;
+  color:#8799b8!important;
+ }
+ html[data-theme="dark"] .sidebar nav .nav-item::before{display:none!important;content:none!important}
+ html[data-theme="dark"] .sidebar nav .nav-item.active{
+  color:#f1efff!important;
+  background:#202d50!important;
+  box-shadow:inset -3px 0 #8a7bff!important;
+ }
+ html[data-theme="dark"] .sidebar nav .nav-item.active span{color:#aaa1ff!important}
+ html[data-theme="dark"] .sidebar .sidebar-bottom{
+  position:static!important;
+  inset:auto!important;
+  z-index:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr);
+  gap:2px!important;
+  flex:0 0 auto!important;
+  margin:8px 0 0!important;
+  padding:9px 0 0!important;
+  border-top:1px solid #263650!important;
+  background:transparent!important;
+  box-shadow:none!important;
+ }
+ html[data-theme="dark"] .sidebar .sidebar-bottom .nav-item{
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  min-height:34px!important;
+  height:34px!important;
+  flex:0 0 auto!important;
+  justify-content:flex-start!important;
+  padding:6px 10px!important;
+  border:0!important;
+  border-radius:7px!important;
+  background:transparent!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  color:#aab8d0!important;
+  white-space:nowrap!important;
+  box-shadow:none!important;
+  transform:none!important;
+ }
+ html[data-theme="dark"] .sidebar .sidebar-bottom .logout{color:#e88f9c!important}
+ html[data-theme="dark"] .sidebar .sidebar-bottom .passkey-register{color:#b5b0ff!important}
+ html[data-theme="dark"] .main{
+  width:calc(100% - 218px)!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0 218px 0 0!important;
+  padding:17px 12px 28px!important;
+ }
+ html[data-theme="dark"] .main footer{display:block;line-height:1.8}
+ html[data-theme="dark"] .main footer span{display:block}
+}
+@media(max-width:430px){
+ html[data-theme="dark"] .sidebar{
+  width:188px!important;
+  padding-inline:8px!important;
+ }
+ html[data-theme="dark"] .sidebar .profile b{max-width:120px!important}
+ html[data-theme="dark"] .main{
+  width:calc(100% - 188px)!important;
+  margin-right:188px!important;
+  padding-inline:9px!important;
+ }
+ html[data-theme="dark"] .sidebar nav .nav-item{
+  min-height:40px!important;height:40px!important;padding-inline:8px!important;font-size:10px!important;
+ }
+}
