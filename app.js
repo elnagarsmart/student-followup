@@ -1,7 +1,8 @@
 const {createClient} = supabase;
 const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'academia-auth-session',experimental:{passkey:true}}});
 let session=null, role='unknown', isOwner=false, ownerId=null, supervisor=null, permissions={}, students=[], groups=[], attendance=[], studentPhotoUrls={}, attendanceSelectedStudentId='', attendanceMode='camera', payments=[], links=[], supervisors=[], tab='overview', authMode='login', authChannel='email', pendingPhone='', pendingEmail='', otpPurpose='';
-let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='', academySettings=null, supportWhatsappPhone='';
+const GLOBAL_SUPPORT_WHATSAPP='201011960156'; // Unified support line for every account and academy.
+let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='', academySettings=null, supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;
 let messageContacts=[], activeMessagePeerId='', messageRefreshTimer=null, messageViewVersion=0, unreadRefreshTimer=null, unreadBySender={}, unreadTotal=0;
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG').format(Number(n||0))+' ج.م', dateText=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ar-EG'):'—';
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
@@ -37,7 +38,7 @@ function mountWhatsAppSupportWidget(){
  $('whatsapp-support-send').onclick=()=>{
   const description=$('whatsapp-support-description').value.trim();
   if(!description){msg('اكتب وصف المشكلة أولًا.');$('whatsapp-support-description').focus();return}
-  const phone=normalizeSupportWhatsAppNumber(supportWhatsappPhone);
+  const phone=GLOBAL_SUPPORT_WHATSAPP;
   if(!/^\d{8,15}$/.test(phone)){msg('رقم واتساب الدعم غير مُضاف بعد. اطلب من مسؤول الأكاديمية إضافته من الإعدادات ← عام وهوية.');return}
   const user=session?.user||{},metadata=user.user_metadata||{};
   const linkedNames=(students||[]).map(student=>student.name).filter(Boolean).join('، ');
@@ -84,7 +85,7 @@ if(mobileNavBackdrop)mobileNavBackdrop.onclick=closeMobileNav;
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
- profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'',address:'',logoUrl:''},
+ profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
  appearance:{theme:'dark',accent:'violet',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
@@ -215,7 +216,7 @@ db.auth.getSession().then(async ({error})=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
 });
-function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;const supportWidget=$('whatsapp-support-widget');if(supportWidget)supportWidget.hidden=!authenticated;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];attendance=[];studentPhotoUrls={};payments=[];links=[];supervisors=[];academySettings=mergeAcademySettings(null);applyAcademyAppearance();tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
+function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;const supportWidget=$('whatsapp-support-widget');if(supportWidget)supportWidget.hidden=false;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];attendance=[];studentPhotoUrls={};payments=[];links=[];supervisors=[];academySettings=mergeAcademySettings(null);applyAcademyAppearance();tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
 const can=key=>isOwner||permissions[key]===true;
 function ageLabel(dob){
  if(!dob)return 'غير مسجل';
@@ -340,8 +341,7 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
    isOwner=true;ownerId=uid;permissions={};
  }
  if(isOwner){role='owner';const row=await run(db.from('academy_settings').select('settings').eq('owner_id',uid).maybeSingle());academySettings=mergeAcademySettings(row?.settings);applyAcademyAppearance();}else{academySettings=mergeAcademySettings(null);applyAcademyAppearance();}
-  const supportOwnerId=isOwner?uid:(supervisor?.owner_id||mine[0]?.owner_id||null);supportWhatsappPhone='';
-  if(supportOwnerId){try{const contact=await run(db.from('academy_support_contacts').select('whatsapp_phone').eq('owner_id',supportOwnerId).maybeSingle());supportWhatsappPhone=String(contact?.whatsapp_phone||'');}catch(contactError){console.warn('WhatsApp support contact unavailable:',contactError.message)}}
+  supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;
  if(!isOwner&&!supervisor){if(!mine.length){role='visitor';links=[];students=[];attendance=[];payments=[];}else{role=mine.some(x=>x.portal_role==='guardian')?'guardian':'student';links=mine;const ids=mine.map(x=>x.student_id);attendance=await run(db.from('attendance').select('*').in('student_id',ids).order('session_date',{ascending:false}));if(role==='guardian'){[payments,students]=await Promise.all([run(db.from('payments').select('*').in('student_id',ids).order('paid_at',{ascending:false})),run(db.from('students').select('id,name,code,monthly_fee,date_of_birth,photo_path,group_id,owner_id').in('id',ids))])}else{payments=[];students=await run(db.from('students').select('id,name,code,date_of_birth,photo_path,group_id,owner_id').in('id',ids))}const portalOwner=mine[0]?.owner_id;if(portalOwner){const groupIds=[...new Set(students.map(st=>st.group_id).filter(Boolean))];groups=groupIds.length?await run(db.from('student_groups').select('id,name').eq('owner_id',portalOwner).in('id',groupIds)):[]}else groups=[]}
  }else{
  if(isOwner)supervisors=await run(db.from('supervisor_access').select('*').eq('owner_id',ownerId).order('created_at',{ascending:false}));
@@ -394,7 +394,7 @@ if(tab==='settings'&&role==='owner'){
      <label>اسم الأكاديمية<input name="academyName" maxlength="80" required value="${esc(p.academyName)}" placeholder="أكاديميا"></label>
      <label>اسم صاحب الحساب<input name="displayName" maxlength="80" value="${esc(p.displayName)}" placeholder="الاسم الظاهر في الحساب"></label>
      <label>هاتف التواصل<input name="contactPhone" type="tel" maxlength="25" value="${esc(p.contactPhone)}" placeholder="01xxxxxxxxx"></label>
-     <label>رقم واتساب الدعم<input name="whatsappSupportPhone" type="tel" maxlength="25" value="${esc(p.whatsappSupportPhone||'')}" placeholder="+2010xxxxxxxx" dir="ltr"><small>رقم واتساب الذي يستقبل رسائل الدعم، مع مفتاح الدولة. مثال مصر: +20 ثم رقم الهاتف.</small></label>
+     <label>رقم واتساب الدعم الموحد<input name="whatsappSupportPhone" type="tel" value="+201011960156" dir="ltr" readonly><small>هذا الرقم موحّد لجميع المعلمين والمعلمات والطلاب والطالبات وأولياء الأمور، ولا يتغير حسب الأكاديمية.</small></label>
      <label>عنوان الأكاديمية<input name="address" maxlength="180" value="${esc(p.address)}" placeholder="المدينة أو العنوان المختصر"></label>
      <label class="settings-span-2">رابط شعار الأكاديمية<input name="logoUrl" type="url" maxlength="500" value="${esc(p.logoUrl||'')}" placeholder="https://example.com/logo.png"><small>اتركه فارغًا لاستخدام الشعار الافتراضي. استخدم رابط صورة HTTPS.</small></label>
      <label class="settings-readonly">بريد تسجيل الدخول<input value="${esc(session?.user?.email||'')}" readonly><small>تغيير البريد يحتاج خطوة تحقق منفصلة من الحساب.</small></label>
@@ -492,9 +492,7 @@ if(tab==='settings'&&role==='owner'){
   });
   if(!next.profile.academyName){msg('اسم الأكاديمية مطلوب.');return}
   if(next.defaults.codePrefix&&!/^[A-Za-z0-9_-]{1,12}$/.test(next.defaults.codePrefix)){msg('بادئة الكود يجب أن تحتوي حروفًا إنجليزية أو أرقامًا أو شرطة فقط.');return}
-  const supportDigits=normalizeSupportWhatsAppNumber(next.profile.whatsappSupportPhone);
-  if(next.profile.whatsappSupportPhone&&!/^\d{8,15}$/.test(supportDigits)){msg('رقم واتساب الدعم غير صحيح. اكتب الرقم مع مفتاح الدولة مثل +2010xxxxxxxx.');return}
-  try{await saveAcademySettings(next);await run(db.from('academy_support_contacts').upsert({owner_id:ownerId||session.user.id,whatsapp_phone:supportDigits,updated_at:new Date().toISOString()},{onConflict:'owner_id'}));supportWhatsappPhone=supportDigits;$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا ورقم واتساب الدعم.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
+  try{next.profile.whatsappSupportPhone='+201011960156';await saveAcademySettings(next);supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا. رقم الدعم موحّد لجميع المستخدمين.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
  });
  $('settings-reset-defaults').onclick=async()=>{if(!confirm('استعادة جميع إعدادات الأكاديمية الافتراضية؟'))return;try{await saveAcademySettings(mergeAcademySettings(null));msg('تمت استعادة الإعدادات الافتراضية.');render()}catch(x){msg(x.message)}};
  $('settings-email-form').onsubmit=lockForm(async e=>{
