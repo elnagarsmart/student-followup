@@ -1836,3 +1836,28 @@ html[data-theme="light"] .portal-student-profile{background:#fff;border-color:#e
 .settings-page .settings-fields p{font-size:11px;line-height:1.8}
 html[data-theme="dark"] .settings-tabs button.active{background:#292c58!important;color:#dedcff!important}
 @media(max-width:760px){.settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.settings-tabs button{min-height:43px!important;font-size:10px!important;padding:8px!important}}
+
+/* Floating WhatsApp help widget */
+.whatsapp-support-widget{position:fixed;left:22px;bottom:24px;z-index:80;direction:rtl;font-family:inherit}
+.whatsapp-support-launcher{display:flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:0 18px!important;border:0!important;border-radius:999px!important;background:#159b68!important;color:#fff!important;box-shadow:0 10px 28px #0c6b473d!important;font-size:13px;font-weight:800}
+.whatsapp-support-launcher svg{width:25px;height:25px;flex:0 0 25px}
+.whatsapp-support-launcher:hover{background:#108557!important;box-shadow:0 13px 32px #0c6b4752!important}
+.whatsapp-support-panel{position:absolute;left:0;bottom:66px;width:min(365px,calc(100vw - 30px));padding:17px;border:1px solid #dfe8e4;border-radius:18px;background:#fff;color:#1f2d3d;box-shadow:0 18px 55px #102b2033}
+.whatsapp-support-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.whatsapp-support-header>div{display:grid;gap:3px}
+.whatsapp-support-header b{font-size:14px;color:#162d26}
+.whatsapp-support-header small{font-size:10px;color:#73877f}
+.whatsapp-support-header button{width:32px;height:32px;padding:0!important;border:1px solid #e2ece7!important;border-radius:9px!important;background:#f6faf8!important;color:#4b6258!important;font-size:22px;line-height:1}
+.whatsapp-support-intro{margin:8px 0 12px;color:#63756e;font-size:11px;line-height:1.8}
+.whatsapp-support-panel label{display:block;margin-bottom:7px;color:#29443a;font-size:11px;font-weight:800}
+.whatsapp-support-panel textarea{display:block;width:100%;min-height:96px;resize:vertical;border:1px solid #dce8e1;border-radius:11px;background:#fbfdfc;color:#20372d;padding:11px;font:inherit;font-size:12px;line-height:1.7;outline:none}
+.whatsapp-support-panel textarea:focus{border-color:#159b68;box-shadow:0 0 0 3px #159b681c}
+.whatsapp-support-privacy{display:block;margin:8px 0 12px;color:#87968f;font-size:9px;line-height:1.65}
+.whatsapp-support-send{width:100%;min-height:44px;border:0!important;border-radius:10px!important;background:#159b68!important;color:#fff!important;font-size:12px;font-weight:800}
+.whatsapp-support-send span{margin-inline-start:5px;font-size:15px}
+html[data-theme="dark"] .whatsapp-support-panel{background:#142238;border-color:#2e4552;color:#e6f1eb}
+html[data-theme="dark"] .whatsapp-support-header b,html[data-theme="dark"] .whatsapp-support-panel label{color:#e2f4e9}
+html[data-theme="dark"] .whatsapp-support-header small,html[data-theme="dark"] .whatsapp-support-intro,html[data-theme="dark"] .whatsapp-support-privacy{color:#a4b8ae}
+html[data-theme="dark"] .whatsapp-support-header button{background:#21364a!important;border-color:#344b5c!important;color:#d6e5dc!important}
+html[data-theme="dark"] .whatsapp-support-panel textarea{background:#0f1b2d;border-color:#354b5c;color:#edf6f1}
+@media(max-width:700px){.whatsapp-support-widget{left:13px;bottom:calc(105px + env(safe-area-inset-bottom))}.whatsapp-support-launcher{min-height:50px;padding:0 15px!important;font-size:12px}.whatsapp-support-panel{bottom:62px;width:min(360px,calc(100vw - 26px));padding:14px}}
