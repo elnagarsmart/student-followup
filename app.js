@@ -424,7 +424,7 @@ if(tab==='settings'&&role==='owner'){
   e.preventDefault();const v=new FormData(form),monthlyFee=Number(v.get('monthlyFee'));
   if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
   const next=mergeAcademySettings({
-   profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
+   profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),whatsappSupportPhone:String(v.get('whatsappSupportPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
    appearance:{theme:v.get('theme'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
    messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
    notifications:{messageBadges:v.get('messageBadges')==='on',vibration:v.get('vibration')==='on',browserAlerts:v.get('browserAlerts')==='on'},
@@ -432,7 +432,9 @@ if(tab==='settings'&&role==='owner'){
   });
   if(!next.profile.academyName){msg('اسم الأكاديمية مطلوب.');return}
   if(next.defaults.codePrefix&&!/^[A-Za-z0-9_-]{1,12}$/.test(next.defaults.codePrefix)){msg('بادئة الكود يجب أن تحتوي حروفًا إنجليزية أو أرقامًا أو شرطة فقط.');return}
-  try{await saveAcademySettings(next);$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
+  const supportDigits=normalizeSupportWhatsAppNumber(next.profile.whatsappSupportPhone);
+  if(next.profile.whatsappSupportPhone&&!/^\\d{8,15}$/.test(supportDigits)){msg('رقم واتساب الدعم غير صحيح. اكتب الرقم مع مفتاح الدولة مثل +2010xxxxxxxx.');return}
+  try{await saveAcademySettings(next);await run(db.from('academy_support_contacts').upsert({owner_id:ownerId||session.user.id,whatsapp_phone:supportDigits,updated_at:new Date().toISOString()},{onConflict:'owner_id'}));supportWhatsappPhone=supportDigits;$('settings-status').textContent='✓ تم حفظ الإعدادات بنجاح.';msg('تم حفظ إعدادات أكاديميا ورقم واتساب الدعم.')}catch(x){$('settings-status').textContent='تعذر الحفظ: '+x.message;msg(x.message)}
  });
  $('settings-reset-defaults').onclick=async()=>{if(!confirm('استعادة جميع إعدادات الأكاديمية الافتراضية؟'))return;try{await saveAcademySettings(mergeAcademySettings(null));msg('تمت استعادة الإعدادات الافتراضية.');render()}catch(x){msg(x.message)}};
  $('settings-email-form').onsubmit=lockForm(async e=>{
