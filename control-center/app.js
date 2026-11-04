@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const db=client(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:"academia-control-center"}});
 const state={page:"overview",users:[],pageNumber:1,hasMore:false,selected:null,academies:[],studentId:"",adminRole:null,permissions:{},platformAdmins:[]};
 const roles={teacher:"مدرس / مالك",supervisor:"مشرف",student:"طالب",guardian:"ولي أمر",general:"حساب عام"};
-const actions={user_created:"إنشاء حساب",user_updated:"تعديل بيانات",password_reset_by_admin:"تغيير كلمة مرور",user_blocked:"إيقاف حساب",user_unblocked:"إعادة تفعيل",notice_sent:"إرسال تنبيه"};
+const actions={user_created:"إنشاء حساب",user_updated:"تعديل بيانات",password_reset_by_admin:"تغيير كلمة مرور",user_blocked:"إيقاف حساب",user_unblocked:"إعادة تفعيل",notice_sent:"إرسال تنبيه",broadcast_notice_sent:"تنبيه جماعي",platform_admin_created:"إضافة مدير مساعد",platform_admin_permissions_updated:"تعديل صلاحيات مدير",platform_admin_access_revoked:"إلغاء صلاحية مدير"};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>v?new Date(v).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:"short"}):"—";
 function status(message,error=false){$("status").textContent=message||"";$("status").style.color=error?"#b64b5a":"#16805e"}
@@ -39,7 +39,19 @@ async function navigate(name){
  if(name==="audit")await loadAudit();if(name==="team")await loadAdmins();
 }
 async function loadUsers(page=state.pageNumber){const r=await api("list_users",{page,perPage:100});state.users=r.users||[];state.pageNumber=r.page;state.hasMore=r.hasMore;$("page-label").textContent="الصفحة "+r.page;$("prev").disabled=r.page<=1;$("next").disabled=!r.hasMore;drawUsers()}
-function drawUsers(){const q=$("search").value.trim().toLowerCase();const list=state.users.filter(u=>[u.email,u.phone,u.full_name,...(u.roles||[])].join(" ").toLowerCase().includes(q));$("user-rows").innerHTML=list.length?list.map(u=>{const blocked=u.banned_until&&new Date(u.banned_until)>new Date();return '<tr><td><b>'+esc(u.full_name||"بدون اسم")+'</b><br><small dir="ltr">'+esc(u.email||"بدون بريد")+'</small><br><small dir="ltr">'+esc(u.phone||"")+'</small></td><td>'+((u.roles||["general"]).map(r=>esc(roles[r]||r).replace(/^(.+)$/,'<span class="notice">$1</span>')).join(" "))+'</td><td>'+esc(fmt(u.created_at))+'</td><td>'+esc(fmt(u.last_sign_in_at))+'</td><td>'+(blocked?'<span style="color:#ff8f9e">موقوف</span>':'<span style="color:#5ad5a0">نشط</span>')+(u.email_confirmed?'<br><small style="color:#5ad5a0">بريد مؤكد</small>':'<br><small style="color:#ffbd70">بريد غير مؤكد</small>')+'</td><td>'+(u.is_admin?'<span class="muted">إدارة محمية</span>':'<button class="row-btn" data-manage="'+esc(u.id)+'">إدارة</button>')+'</td></tr>'}).join(""):'<tr><td colspan="6" class="empty">لا توجد نتائج في هذه الصفحة.</td></tr>'}
+function drawUsers(){
+ const q=$("search").value.trim().toLowerCase();
+ const list=state.users.filter(u=>[u.email,u.phone,u.full_name,...(u.roles||[])].join(" ").toLowerCase().includes(q));
+ const canManage=state.adminRole==="super_admin"||state.permissions.manage_accounts;
+ $("user-rows").innerHTML=list.length?list.map(u=>{
+  const blocked=u.banned_until&&new Date(u.banned_until)>new Date();
+  const fakeEmail=String(u.email||"").endsWith("@login.academia.invalid");
+  const shownEmail=fakeEmail?"دخول بالكود المخصص":(u.email||"بدون بريد");
+  const chips=(u.roles||["general"]).map(r=>'<span class="role-chip">'+esc(roles[r]||r)+'</span>').join(" ");
+  return '<tr><td><b>'+esc(u.full_name||"بدون اسم")+'</b><br><small dir="ltr">'+esc(shownEmail)+'</small><br><small dir="ltr">'+esc(u.phone||"")+'</small></td><td>'+chips+'</td><td>'+esc(fmt(u.created_at))+'</td><td>'+esc(fmt(u.last_sign_in_at))+'</td><td>'+(blocked?'<span class="state-bad">موقوف</span>':'<span class="state-good">نشط</span>')+(u.email_confirmed?'<br><small class="state-good">بريد مؤكد</small>':'<br><small class="state-warn">بريد غير مؤكد</small>')+'</td><td>'+(u.is_admin?'<span class="muted">إدارة محمية</span>':(canManage?'<button class="row-btn" data-manage="'+esc(u.id)+'">إدارة</button>':'<span class="muted">عرض فقط</span>'))+'</td></tr>';
+ }).join(""):'<tr><td colspan="6" class="empty">لا توجد نتائج في هذه الصفحة.</td></tr>';
+ if($("[data-create]"))$("[data-create]").hidden=!canManage;
+}
 function openManage(id){
  const u=state.users.find(x=>x.id===id);if(!u||u.is_admin)return;state.selected=u;
  const blocked=u.banned_until&&new Date(u.banned_until)>new Date(),email=String(u.email||"");
@@ -56,8 +68,11 @@ function openManage(id){
  $("ban-form").onsubmit=e=>runForm(e,async f=>{const h=Number(f.get("duration_hours"));if(!confirm(h===0?"إعادة تفعيل هذا الحساب؟":"إيقاف هذا الحساب؟"))return;await api("set_ban",{user_id:u.id,duration_hours:h});await loadUsers();$("content").innerHTML="";});
  $("notice-form").onsubmit=e=>runForm(e,async f=>{const result=await api("send_notice",{user_id:u.id,title:f.get("title"),message:f.get("message"),severity:f.get("severity")});e.target.reset();toast(result.message||"تم إرسال التنبيه.");if(state.permissions.view_notices||state.adminRole==="super_admin")await loadNotices();});
 }
-async function runForm(e,fn){e.preventDefault();const b=e.submitter;b.disabled=true;const label=b.textContent;b.textContent="جارٍ التنفيذ…";try{await fn(new FormData(e.target));toast("تمت العملية بنجاح.")}catch(err){toast(err.message)}finally{b.disabled=false;b.textContent=label}}
-async function loadNotices(){const r=await api("list_notices");$("notice-rows").innerHTML=(r.notices||[]).map(n=>'<tr><td><code>'+esc(n.user_id)+'</code></td><td><b>'+esc(n.title)+'</b><br>'+esc(n.message)+'</td><td>'+esc(n.severity)+'</td><td>'+esc(fmt(n.created_at))+'</td><td>'+(n.read_at?"تمت القراءة":"لم تُقرأ")+'</td></tr>').join("")||'<tr><td colspan="5" class="empty">لا توجد تنبيهات حتى الآن.</td></tr>'}
+async function runForm(e,fn){e.preventDefault();const b=e.submitter;const label=b?.textContent||"";if(b){b.disabled=true;b.textContent="جارٍ التنفيذ…"}try{await fn(new FormData(e.target));toast("تمت العملية بنجاح.")}catch(err){toast(err.message)}finally{if(b){b.disabled=false;b.textContent=label}}}
+async function loadNotices(){
+ const r=await api("list_notices");
+ $("notice-rows").innerHTML=(r.notices||[]).map(n=>'<tr><td><b>'+esc(n.recipient_name||"مستخدم")+'</b><br><small dir="ltr">'+esc(n.recipient_email||"")+'</small></td><td><b>'+esc(n.title)+'</b><br>'+esc(n.message)+'</td><td>'+esc(n.severity)+'</td><td>'+esc(fmt(n.created_at))+'</td><td>'+(n.read_at?"تمت القراءة":"لم تُقرأ")+'</td></tr>').join("")||'<tr><td colspan="5" class="empty">لا توجد تنبيهات حتى الآن.</td></tr>';
+}
 async function loadAudit(){const r=await api("list_audit");$("audit-rows").innerHTML=(r.logs||[]).map(x=>'<tr><td>'+esc(actions[x.action]||x.action)+'</td><td><code>'+esc(x.target_user_id||"—")+'</code></td><td>'+esc(JSON.stringify(x.details||{}))+'</td><td>'+esc(fmt(x.created_at))+'</td></tr>').join("")||'<tr><td colspan="4" class="empty">لا توجد عمليات مسجلة.</td></tr>'}
 async function loadAcademies(){const r=await api("list_academies");state.academies=r.academies||[];$("academy-select").innerHTML='<option value="">اختر الأكاديمية</option>'+state.academies.map(a=>'<option value="'+esc(a.owner_id)+'">'+esc(a.name)+'</option>').join("")}
 async function openCreate(){state.studentId="";$("create-form").reset();$("student-id").value="";$("student-selected").textContent="لم يتم اختيار طالب.";$("student-options").innerHTML="";$("create-status").textContent="";await loadAcademies();toggleRole();$("create-modal").showModal()}
@@ -81,6 +96,81 @@ $("generate").onclick=()=>{const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopq
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 document.querySelectorAll("[data-close-create]").forEach(b=>b.onclick=()=>$("create-modal").close());
 db.auth.getSession().then(({data})=>data.session?enter(data.session):loginView()).catch(()=>loginView());
-db.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")loginView()});
+db.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT")loginView();if(event==="PASSWORD_RECOVERY"&&session)enter(session).then(()=>openOwnPassword()).catch(e=>toast(e.message))});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
+
+function makeRandomPassword(length=18){
+ const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+ const bytes=new Uint32Array(length);crypto.getRandomValues(bytes);
+ return Array.from(bytes,n=>chars[n%chars.length]).join("");
+}
+function openOwnPassword(){const d=$("own-password-modal");if(d)d.showModal()}
+async function loadAdmins(){
+ const r=await api("list_admins");state.platformAdmins=r.admins||[];
+ const labels={super_admin:"مدير المنصة الأعلى",platform_admin:"مدير مساعد",support:"دعم فني"};
+ const permissionNames={view_dashboard:"النظرة العامة",view_accounts:"عرض الحسابات",manage_accounts:"إدارة الحسابات",send_notices:"إرسال التنبيهات",view_notices:"عرض التنبيهات",view_audit:"سجل العمليات"};
+ $("admin-rows").innerHTML=state.platformAdmins.map(a=>{
+  const chips=Object.entries(a.permissions||{}).filter(([k,v])=>v&&permissionNames[k]).map(([k])=>'<span class="role-chip">'+esc(permissionNames[k])+'</span>').join(" ");
+  const action=a.is_current||a.admin_role==="super_admin"?'<span class="muted">حساب محمي</span>':'<button type="button" class="row-btn" data-edit-admin="'+esc(a.user_id)+'">الصلاحيات</button> <button type="button" class="row-btn danger" data-remove-admin="'+esc(a.user_id)+'">إزالة</button>';
+  return '<tr><td><b>'+esc(a.full_name||"مدير")+'</b><br><small dir="ltr">'+esc(a.email)+'</small></td><td>'+esc(labels[a.admin_role]||a.admin_role)+'</td><td>'+(chips||'<span class="muted">لا توجد صلاحيات إضافية</span>')+'</td><td>'+esc(fmt(a.created_at))+'</td><td>'+action+'</td></tr>';
+ }).join("")||'<tr><td colspan="5" class="empty">لا يوجد مديرون مساعدين بعد.</td></tr>';
+}
+function openAdminEditor(admin=null){
+ const form=$("admin-form");form.reset();const edit=!!admin;
+ form.elements.user_id.value=admin?.user_id||"";
+ $("admin-modal-title").textContent=edit?"تعديل صلاحيات المدير المساعد":"إضافة مدير مساعد";
+ $("admin-form-submit").textContent=edit?"حفظ الصلاحيات":"إنشاء حساب المدير المساعد";
+ $("admin-create-fields").hidden=edit;
+ ["full_name","email","password"].forEach(n=>{form.elements[n].required=!edit;form.elements[n].disabled=edit});
+ form.elements.admin_role.value=admin?.admin_role||"support";
+ document.querySelectorAll('#admin-permissions input[name="permissions"]').forEach(c=>{c.checked=admin?admin.permissions?.[c.value]===true:c.value==="view_dashboard"});
+ $("admin-modal").showModal();
+}
+$("login-form").onsubmit=async e=>{
+ e.preventDefault();const email=$("email").value.trim().toLowerCase(),password=$("password").value;
+ if(!email||!password){status("اكتب البريد الإلكتروني وكلمة المرور.",true);return}
+ status("جارٍ التحقق من بيانات الدخول…");$("login-submit").disabled=true;
+ try{const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;if(!data.session)throw new Error("لم تكتمل جلسة الدخول.");await enter(data.session)}
+ catch(err){status(err.message||"تعذر تسجيل الدخول. راجع البريد وكلمة المرور.",true)}
+ finally{$("login-submit").disabled=false}
+};
+$("forgot-password").onclick=async()=>{
+ const email=$("email").value.trim().toLowerCase();if(!email){status("اكتب بريدك الإلكتروني أولًا.",true);return}
+ status("جارٍ إرسال رابط استعادة كلمة المرور…");
+ try{const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin});if(error)throw error;status("تم إرسال رابط الاستعادة إلى البريد. افتحه ثم عيّن كلمة مرور جديدة.")}
+ catch(err){status(err.message,true)}
+};
+$("toggle-login-password").onclick=()=>{const input=$("password");input.type=input.type==="password"?"text":"password";$("toggle-login-password").textContent=input.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور"};
+$("self-password-button").onclick=()=>openOwnPassword();
+$("own-password-form").onsubmit=e=>runForm(e,async f=>{
+ const p=String(f.get("password")||""),confirmP=String(f.get("password_confirm")||"");
+ if(p.length<6||p.length>72)throw new Error("كلمة المرور يجب أن تكون من 6 إلى 72 حرفًا.");
+ if(p!==confirmP)throw new Error("تأكيد كلمة المرور غير مطابق.");
+ const {error}=await db.auth.updateUser({password:p});if(error)throw error;
+ $("own-password-modal").close();e.target.reset();toast("تم تعيين كلمة مرور الدخول لحسابك الحالي.");
+});
+$("broadcast-form").onsubmit=e=>runForm(e,async f=>{
+ const target=f.get("target_group");
+ if(target==="all"&&!confirm("سيتم إرسال هذا التنبيه إلى جميع حسابات المستخدمين العادية. هل تريد المتابعة؟"))return;
+ const result=await api("send_broadcast_notice",{title:f.get("title"),message:f.get("message"),severity:f.get("severity"),target_group:target});
+ e.target.reset();toast(result.message||"تم إرسال التنبيه.");
+ if(state.permissions.view_notices||state.adminRole==="super_admin")await loadNotices();
+});
+$("add-admin").onclick=()=>openAdminEditor();
+$("admin-form").onsubmit=e=>runForm(e,async f=>{
+ const permissions={};document.querySelectorAll('#admin-permissions input[name="permissions"]').forEach(c=>permissions[c.value]=c.checked);
+ const id=f.get("user_id");let result;
+ if(id)result=await api("update_admin_access",{user_id:id,admin_role:f.get("admin_role"),permissions});
+ else result=await api("create_admin",{full_name:f.get("full_name"),email:f.get("email"),password:f.get("password"),admin_role:f.get("admin_role"),permissions});
+ $("admin-modal").close();e.target.reset();toast(result.message||"تم حفظ الصلاحيات.");await loadAdmins();
+});
+$("admin-generate").onclick=()=>{$("admin-password").value=makeRandomPassword(18);$("admin-password").type="text"};
+$("admin-rows").onclick=async e=>{
+ const edit=e.target.closest("[data-edit-admin]"),remove=e.target.closest("[data-remove-admin]");
+ if(edit){const item=state.platformAdmins.find(x=>x.user_id===edit.dataset.editAdmin);if(item)openAdminEditor(item)}
+ if(remove){const id=remove.dataset.removeAdmin;if(!confirm("إلغاء صلاحيات هذا الشخص في مركز التحكم؟ سيظل حسابه موجودًا."))return;try{const result=await api("remove_admin_access",{user_id:id});toast(result.message);await loadAdmins()}catch(err){toast(err.message)}}
+};
+document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
+document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
+
 })();
