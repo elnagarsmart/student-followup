@@ -51,4 +51,5 @@ document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest("di
 document.querySelectorAll("[data-close-create]").forEach(b=>b.onclick=()=>$("create-modal").close());
 db.auth.getSession().then(({data})=>data.session?enter(data.session):loginView()).catch(()=>loginView());
 db.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")loginView()});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}
 })();
