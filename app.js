@@ -365,6 +365,7 @@ if(tab==='settings'&&role==='owner'){
     <div class="settings-fields settings-notification-grid">
      <label class="settings-check"><span><b>عداد الرسائل غير المقروءة</b><small>إظهار عدد الرسائل الجديدة بجوار الرسائل في القائمة.</small></span><input type="checkbox" name="messageBadges" ${s.notifications.messageBadges?'checked':''}></label>
      <label class="settings-check"><span><b>اهتزاز عند وصول رسالة</b><small>يعمل إذا كان الجهاز والمتصفح يدعمان الاهتزاز.</small></span><input type="checkbox" name="vibration" ${s.notifications.vibration?'checked':''}></label>
+    <label class="settings-check"><span><b>صوت الرسائل</b><small>تنبيه صوتي عند وصول رسالة جديدة.</small></span><input type="checkbox" name="soundNotifications" ${m.soundNotifications?'checked':''}></label>
      <label class="settings-check settings-span-2"><span><b>إشعارات المتصفح</b><small>إظهار تنبيه على الجهاز عند وصول رسالة جديدة والصفحة في الخلفية.</small></span><input type="checkbox" name="browserAlerts" ${s.notifications.browserAlerts?'checked':''}></label>
      <div class="settings-span-2 settings-permission-row"><span id="settings-notification-permission">${'Notification' in window?('حالة إذن المتصفح: '+Notification.permission):'هذا المتصفح لا يدعم إشعارات النظام.'}</span><button type="button" id="settings-enable-notifications" class="settings-reset-button">السماح بإشعارات المتصفح</button></div>
     </div>
@@ -404,6 +405,7 @@ if(tab==='settings'&&role==='owner'){
      <p class="settings-status settings-span-2">تغيير كلمة المرور يستخدم التحقق من كلمة المرور الحالية على خادم المصادقة.</p>
     </form>
    </div>
+   <div class="settings-security-block"><div class="settings-security-title"><b>الدخول بالبصمة أو مفتاح المرور</b><small>فعّل مفتاح مرور على جهازك إذا كان المتصفح يدعمه.</small></div><div class="settings-fields"><div class="settings-span-2"><button type="button" id="settings-passkey-enable" class="settings-save-button">تفعيل مفتاح المرور لهذا الجهاز</button></div></div></div>
   </section>
  </div>`;
  const form=$('academy-settings-form');
@@ -414,6 +416,7 @@ if(tab==='settings'&&role==='owner'){
  $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
  showSettingsSection('settings-identity');
  $('settings-backup-now').onclick=backup;
+  $('settings-passkey-enable').onclick=async()=>{const button=$('settings-passkey-enable');if(!window.PublicKeyCredential){msg('هذا المتصفح أو الجهاز لا يدعم مفاتيح المرور.');return}button.disabled=true;button.textContent='جارٍ التفعيل…';try{const {error}=await db.auth.registerPasskey();if(error)throw error;msg('تم تفعيل مفتاح المرور لهذا الجهاز.')}catch(e){msg(/email_not_confirmed/i.test(String(e.message))?'أكد بريدك الإلكتروني أولًا، ثم فعّل مفتاح المرور.':e.message)}finally{button.disabled=false;button.textContent='تفعيل مفتاح المرور لهذا الجهاز'}};
  $('settings-enable-notifications').onclick=async()=>{if(!('Notification' in window)){msg('متصفحك لا يدعم إشعارات النظام.');return}try{const permission=await Notification.requestPermission();$('settings-notification-permission').textContent='حالة إذن المتصفح: '+permission;if(permission==='granted'){form.elements.browserAlerts.checked=true;msg('تم السماح بإشعارات المتصفح. اضغط حفظ كل الإعدادات لتطبيق التفضيل.')}else msg('لم يتم السماح بإشعارات المتصفح. يمكنك تفعيلها لاحقًا من إعدادات المتصفح.')}catch(e){msg('تعذر طلب إذن الإشعارات: '+e.message)}};
  $('settings-preview-theme').onclick=()=>{const el=form.elements.theme;el.value=el.value==='dark'?'light':'dark';preview()};
  form.onsubmit=lockForm(async e=>{
