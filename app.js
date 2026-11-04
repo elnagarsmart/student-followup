@@ -22,6 +22,8 @@ function mountWhatsAppSupportWidget(){
    <section id="whatsapp-support-panel" class="whatsapp-support-panel" role="dialog" aria-label="التواصل مع دعم أكاديميا" hidden>
     <header class="whatsapp-support-header"><div><b>مركز مساعدة أكاديميا</b><small>تواصل مع فريق الدعم عبر واتساب</small></div><button id="whatsapp-support-close" type="button" aria-label="إغلاق">×</button></header>
     <p class="whatsapp-support-intro">اكتب المشكلة التي تواجهك، وسنجهز رسالة تحتوي على بيانات البرنامج وحسابك لتسهيل المساعدة.</p>
+    <label for="whatsapp-support-name">اسمك (للحسابات التي لا تسجل الدخول)</label>
+    <input id="whatsapp-support-name" type="text" maxlength="80" placeholder="اكتب اسمك" autocomplete="name">
     <label for="whatsapp-support-description">وصف المشكلة</label>
     <textarea id="whatsapp-support-description" rows="4" maxlength="1500" placeholder="اشرح ما الذي حدث، وما الخطوة التي كنت تحاول تنفيذها…"></textarea>
     <small class="whatsapp-support-privacy">لن نطلب منك كلمة المرور أو رمز التحقق. لا تكتب أي بيانات سرية في الرسالة.</small>
@@ -42,12 +44,13 @@ function mountWhatsAppSupportWidget(){
   if(!/^\d{8,15}$/.test(phone)){msg('رقم واتساب الدعم غير مُضاف بعد. اطلب من مسؤول الأكاديمية إضافته من الإعدادات ← عام وهوية.');return}
   const user=session?.user||{},metadata=user.user_metadata||{};
   const linkedNames=(students||[]).map(student=>student.name).filter(Boolean).join('، ');
-  const personName=String(metadata.full_name||metadata.name||academySettings?.profile?.displayName|| (role==='student'&&linkedNames?linkedNames:role==='guardian'&&linkedNames?'ولي أمر '+linkedNames:'غير محدد')).trim();
-  const account=String(user.email||user.phone||'حساب مسجل');
+  const typedName=$('whatsapp-support-name').value.trim();
+  const personName=String(metadata.full_name||metadata.name||supervisor?.supervisor_name||academySettings?.profile?.displayName||(role==='student'&&linkedNames?linkedNames:role==='guardian'&&linkedNames?'ولي أمر '+linkedNames:typedName||'غير محدد')).trim();
+  const account=String(user.email||user.phone||'زائر غير مسجل');
   const roleNames={owner:'مدير الأكاديمية',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر',visitor:'حساب عام'};
   const currentPage=$('page-title')?.textContent||'المنصة';
   const message=[
-   'مرحبًا، أحتاج إلى المساعدة بخصوص برنامج أكاديميا – نظام متابعة الطلاب.',
+   'مرحبًا، أحتاج إلى المساعدة بخصوص برنامج '+(academySettings?.profile?.academyName||'أكاديميا')+' – نظام متابعة الطلاب.',
    'اسم الشخص: '+personName,
    'الحساب: '+account,
    'نوع الحساب: '+(roleNames[role]||'مستخدم'),
