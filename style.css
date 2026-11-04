@@ -1786,3 +1786,26 @@ html[data-theme="dark"] .settings-security-title small{color:#91a2bd}
 html[data-theme="light"] .settings-security-block{border-color:#e3e9f1}
 html[data-theme="light"] .settings-security-title b{color:#293750}
 html[data-theme="light"] .settings-security-title small{color:#7a879c}
+
+
+/* Student profile photo: private signed-image thumbnails, mobile cards and print card */
+.student-table-identity{display:inline-flex;align-items:center;gap:9px;min-width:0}
+.student-table-identity>img,.student-mobile-person>img{
+ width:38px;height:38px;flex:0 0 38px;object-fit:cover;border-radius:50%;
+ border:1px solid var(--academy-border,#dfe6f0);background:var(--academy-surface-2,#f3f6fb);
+}
+.student-table-avatar{
+ width:38px;height:38px;flex:0 0 38px;display:inline-grid;place-items:center;
+ border-radius:50%;background:#e8e7ff;color:#5c55c5;font-size:14px;font-weight:800;
+}
+.student-mobile-person{display:inline-flex;align-items:center;gap:9px;min-width:0}
+.student-mobile-person>b{min-width:0;overflow-wrap:anywhere}
+.student-photo-upload-label{min-width:0}
+.student-photo-upload-label input[type="file"]{max-width:100%;font-size:11px}
+.student-photo-upload-label small{font-size:10px;color:var(--academy-muted,#8994aa)}
+html[data-theme="dark"] .student-table-identity>img,
+html[data-theme="dark"] .student-mobile-person>img{border-color:#354867;background:#14233a}
+html[data-theme="dark"] .student-table-avatar{background:#262957;color:#c1baff}
+html[data-theme="light"] .student-table-identity>img,
+html[data-theme="light"] .student-mobile-person>img{border-color:#dce4ef;background:#f5f7fc}
+html[data-theme="light"] .student-table-avatar{background:#ebeaff;color:#514ab2}
