@@ -587,7 +587,7 @@ if(tab==='settings'&&role==='owner'){
     <form id="settings-email-form" class="settings-fields">
      <label>البريد الحالي<input value="${esc(session?.user?.email||'')}" readonly></label>
      <label>البريد الجديد<input name="newEmail" type="email" autocomplete="email" required placeholder="name@example.com"></label>
-     <label class="settings-span-2">كلمة المرور الحالية<input name="currentPassword" type="password" autocomplete="current-password" required placeholder="أكد هويتك قبل طلب تغيير البريد"></label>
+     <label class="settings-span-2">كلمة المرور الحالية<input name="currentPassword" type="password" maxlength="72" autocomplete="current-password" required placeholder="أكد هويتك قبل طلب تغيير البريد"></label>
      <div class="settings-span-2"><button type="submit" class="settings-save-button">إرسال طلب تغيير البريد والتحقق</button></div>
      <p id="settings-email-status" class="settings-status settings-span-2" aria-live="polite">لن يتغير بريد الحساب حتى تؤكد روابط التحقق المطلوبة عبر البريد.</p>
     </form>
@@ -595,9 +595,9 @@ if(tab==='settings'&&role==='owner'){
    <div class="settings-security-block">
     <div class="settings-security-title"><b>تغيير كلمة المرور</b><small>أدخل كلمة المرور الحالية أولًا. لن يتم حفظ الجديدة إلا بعد قبول التحقق.</small></div>
     <form id="settings-password-form" class="settings-fields">
-     <label>كلمة المرور الحالية<input name="currentPassword" type="password" autocomplete="current-password" required></label>
-     <label>كلمة المرور الجديدة<input name="newPassword" type="password" minlength="6" autocomplete="new-password" required></label>
-     <label>تأكيد كلمة المرور<input name="confirmPassword" type="password" minlength="6" autocomplete="new-password" required></label>
+     <label>كلمة المرور الحالية<input name="currentPassword" type="password" maxlength="72" autocomplete="current-password" required></label>
+     <label>كلمة المرور الجديدة<input name="newPassword" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label>
+     <label>تأكيد كلمة المرور<input name="confirmPassword" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label>
      <div class="settings-span-2"><button type="submit" class="settings-save-button">تحقق ثم تحديث كلمة المرور</button></div>
      <p class="settings-status settings-span-2">تغيير كلمة المرور يستخدم التحقق من كلمة المرور الحالية على خادم المصادقة.</p>
     </form>
@@ -662,14 +662,13 @@ if(tab==='settings'&&role==='owner'){
   if(password!==confirmPassword){msg('تأكيد كلمة المرور غير مطابق.');return}
   if(password===currentPassword){msg('كلمة المرور الجديدة مطابقة للحالية. اكتب كلمة مرور مختلفة.');return}
   try{
-   const identity=session?.user;
-   if(!identity?.email&&!identity?.phone)throw new Error('تعذر تحديد وسيلة تسجيل الدخول لهذا الحساب.');
-   const credentials=identity.email?{email:identity.email,password:currentPassword}:{phone:identity.phone,password:currentPassword};
-   const {data:verified,error:verifyError}=await db.auth.signInWithPassword(credentials);
-   if(verifyError||verified?.user?.id!==identity.id)throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم تحديث كلمة المرور.');
-   const {error}=await db.auth.updateUser({password});
-   if(error)throw error;
-   e.currentTarget.reset();msg('تم التحقق من كلمة المرور الحالية وتحديث كلمة المرور بنجاح.');
+   if(password.length>72)throw new Error('كلمة المرور يجب ألا تتجاوز 72 حرفًا.');
+   const {error}=await db.auth.updateUser({password,currentPassword});
+   if(error){
+    if(/current password|invalid.*password|password.*incorrect/i.test(String(error.message||'')))throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم تغيير كلمة المرور.');
+    throw error;
+   }
+   e.currentTarget.reset();msg('تم التحقق من كلمة المرور الحالية وتحديث كلمة المرور بنجاح. استخدم كلمة المرور الجديدة في الدخول القادم.');
   }catch(x){msg(x.message||'تعذر تحديث كلمة المرور.')}
  });
  return;
