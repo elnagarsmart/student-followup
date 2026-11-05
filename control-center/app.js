@@ -9,8 +9,32 @@ const actions={user_created:"إنشاء حساب",user_updated:"تعديل بي�
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>v?new Date(v).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:"short"}):"—";
 function status(message,error=false){$("status").textContent=message||"";$("status").style.color=error?"#b64b5a":"#16805e"}
-function toast(message){const area=$("toast-area")||$("content");if(!area)return;area.insertAdjacentHTML("afterbegin",'<p class="notice">'+esc(message)+'</p>');}
-async function api(action,payload={}){const {data,error}=await db.functions.invoke("academia-control-center",{body:{action,...payload}});if(error){let m=error.message||"تعذر الاتصال";try{const x=await error.context.json();m=x.error||m}catch{}throw new Error(m)}if(data?.error)throw new Error(data.error);return data}
+let toastSequence=0;
+function toast(message,type="info"){
+ const area=$("toast-area"),list=$("toast-list");if(!area||!list)return;
+ const item=document.createElement("div");item.className="toast-item toast-"+(type==="error"?"error":type==="success"?"success":"info");
+ const text=document.createElement("div");text.className="toast-message";text.textContent=String(message??"");
+ const close=document.createElement("button");close.type="button";close.className="toast-close";close.setAttribute("aria-label","إغلاق التنبيه");close.textContent="×";
+ close.onclick=()=>{item.remove();if(!list.children.length)area.hidden=true};
+ item.append(close,text);list.prepend(item);area.hidden=false;toastSequence++;
+ while(list.children.length>5)list.lastElementChild.remove();
+}
+async function api(action,payload={}){
+ const {data,error}=await db.functions.invoke("academia-control-center",{body:{action,...payload}});
+ if(error){
+  let m=error.message||"تعذر الاتصال";const statusCode=Number(error.context?.status||error.status||0);
+  try{const x=await error.context.json();m=x.error||m}catch{}
+  if(statusCode===401||/session_not_found|جلسة الدخول غير صالحة/i.test(m)){
+   await db.auth.signOut({scope:"local"}).catch(()=>{});
+   state.adminRole=null;state.permissions={};loginView();
+   status("انتهت جلسة الدخول، غالبًا بعد تغيير كلمة المرور أو تسجيل الخروج من تطبيق آخر. سجّل الدخول مرة أخرى.",true);
+   throw new Error("انتهت جلسة الدخول. سجّل الدخول مرة أخرى.");
+  }
+  throw new Error(m);
+ }
+ if(data?.error)throw new Error(data.error);
+ return data;
+}
 function loginView(message=""){$("login").hidden=false;$("dashboard").hidden=true;if(message)status(message,true)}
 async function enter(session){
  $("login").hidden=true;$("dashboard").hidden=false;
@@ -26,7 +50,7 @@ async function enter(session){
   const first=["overview","users","notices","audit","team","account"].find(name=>allowed[name]);
   if(!first)throw new Error("هذا الحساب لا يملك صلاحية لعرض أي قسم. تواصل مع مدير المنصة.");
   await navigate(first);
- }catch(e){await db.auth.signOut();loginView(e.message)}
+ }catch(e){await db.auth.signOut({scope:"local"}).catch(()=>{});loginView(e.message)}
 }
 async function loadOverview(){const response=await api("overview");const c=response.counts||{};$("teachers").textContent=(c.teachers||0).toLocaleString("ar-EG");$("students").textContent=(c.students||0).toLocaleString("ar-EG");$("guardians").textContent=(c.guardians||0).toLocaleString("ar-EG");$("supervisors").textContent=(c.supervisors||0).toLocaleString("ar-EG");if($("unread-notices"))$("unread-notices").textContent=(c.unreadNotices||0).toLocaleString("ar-EG");if($("last-updated"))$("last-updated").textContent=fmt(new Date().toISOString())}
 async function loadOwnerProfile(){
@@ -95,7 +119,19 @@ function openManage(id){
  $("ban-form").onsubmit=e=>runForm(e,async f=>{const h=Number(f.get("duration_hours"));if(!confirm(h===0?"إعادة تفعيل هذا الحساب؟":"إيقاف هذا الحساب؟"))return;await api("set_ban",{user_id:u.id,duration_hours:h});await loadUsers();$("content").innerHTML="";});
  $("notice-form").onsubmit=e=>runForm(e,async f=>{const result=await api("send_notice",{user_id:u.id,title:f.get("title"),message:f.get("message"),severity:f.get("severity")});e.target.reset();toast(result.message||"تم إرسال التنبيه.");if(state.permissions.view_notices||state.adminRole==="super_admin")await loadNotices();});
 }
-async function runForm(e,fn){e.preventDefault();const b=e.submitter;const label=b?.textContent||"";if(b){b.disabled=true;b.textContent="جارٍ التنفيذ…"}try{await fn(new FormData(e.target));toast("تمت العملية بنجاح.")}catch(err){toast(err.message)}finally{if(b){b.disabled=false;b.textContent=label}}}
+async function runForm(e,fn){
+ e.preventDefault();const b=e.submitter,label=b?.textContent||"",toastAtStart=toastSequence;
+ if(b){b.disabled=true;b.textContent="جارٍ التنفيذ…"}
+ try{const result=await fn(new FormData(e.target));if(toastSequence===toastAtStart&&result?.skipSuccessToast!==true)toast("تمت العملية بنجاح.","success")}
+ catch(err){
+  const message=String(err?.message||err||"تعذر تنفيذ العملية.");
+  if(/Auth session missing|session not found|session_not_found|جلسة الدخول غير صالحة/i.test(message)){
+   await db.auth.signOut({scope:"local"}).catch(()=>{});
+   state.adminRole=null;state.permissions={};loginView();
+   status("انتهت جلسة الدخول، غالبًا بعد تغيير كلمة المرور. سجّل الدخول مجددًا ثم أعد المحاولة.",true);
+  }else toast(message,"error");
+ }finally{if(b){b.disabled=false;b.textContent=label}}
+}
 async function loadNotices(){
  const r=await api("list_notices");
  $("notice-rows").innerHTML=(r.notices||[]).map(n=>'<tr><td><b>'+esc(n.recipient_name||"مستخدم")+'</b><br><small dir="ltr">'+esc(n.recipient_email||"")+'</small></td><td><b>'+esc(n.title)+'</b><br>'+esc(n.message)+'</td><td>'+esc(n.severity)+'</td><td>'+esc(fmt(n.created_at))+'</td><td>'+(n.read_at?"تمت القراءة":"لم تُقرأ")+'</td></tr>').join("")||'<tr><td colspan="5" class="empty">لا توجد تنبيهات حتى الآن.</td></tr>';
@@ -105,7 +141,7 @@ async function loadAcademies(){const r=await api("list_academies");state.academi
 async function openCreate(){state.studentId="";$("create-form").reset();$("student-id").value="";$("student-selected").textContent="لم يتم اختيار طالب.";$("student-options").innerHTML="";$("create-status").textContent="";await loadAcademies();toggleRole();$("create-modal").showModal()}
 function toggleRole(){const r=$("account-role").value;$("academy-wrap").hidden=r!=="supervisor";$("student-wrap").hidden=!["student","guardian"].includes(r);$("phone-wrap").hidden=r!=="supervisor"}
 async function searchStudents(q){if(q.trim().length<2){$("student-options").innerHTML="";return}try{const r=await api("search_students",{query:q});$("student-options").innerHTML=(r.students||[]).map(s=>'<button type="button" class="row-btn student-pick" data-id="'+esc(s.id)+'" data-name="'+esc(s.name)+'" data-code="'+esc(s.code)+'">'+esc(s.name)+' · '+esc(s.code)+'</button>').join("")||'<small class="muted">لا توجد نتائج.</small>';document.querySelectorAll(".student-pick").forEach(b=>b.onclick=()=>{state.studentId=b.dataset.id;$("student-id").value=b.dataset.id;$("student-selected").textContent="تم اختيار: "+b.dataset.name+" · "+b.dataset.code;$("student-options").innerHTML=""})}catch(e){toast(e.message)}}
-$("logout").onclick=async()=>{await db.auth.signOut();location.reload()};
+$("logout").onclick=async()=>{await db.auth.signOut({scope:"local"});location.reload()};
 $("login-submit").addEventListener("click",()=>{});
 document.querySelectorAll("nav [data-page]").forEach(b=>b.onclick=()=>navigate(b.dataset.page).catch(e=>toast(e.message)));
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>navigate(b.dataset.go).catch(e=>toast(e.message)));
@@ -184,7 +220,11 @@ $("own-password-form").onsubmit=e=>runForm(e,async f=>{
   if(/current password|invalid.*password|password.*incorrect/i.test(String(error.message||"")))throw new Error("كلمة المرور الحالية غير صحيحة. لم يتم تغيير كلمة المرور.");
   throw error;
  }
- $("own-password-modal").close();e.target.reset();toast("تم التحقق من كلمة المرور الحالية وتحديث كلمة مرور المالك بنجاح. استخدم الجديدة في الدخول القادم.");
+ $("own-password-modal").close();e.target.reset();
+ await db.auth.signOut({scope:"local"}).catch(()=>{});
+ state.adminRole=null;state.permissions={};loginView();
+ status("تم تحديث كلمة المرور بنجاح. انتهت جلسة الدخول الحالية لأمان الحساب؛ سجّل الدخول الآن بكلمة المرور الجديدة.");
+ return {skipSuccessToast:true};
 });
 $("broadcast-form").onsubmit=e=>runForm(e,async f=>{
  const target=f.get("target_group");
@@ -230,6 +270,7 @@ $("owner-email-form").onsubmit=e=>runForm(e,async f=>{
   toast("تم إرسال طلب تغيير البريد عبر نظام التحقق.");
 });
 $("profile-password-button").onclick=()=>openOwnPassword();
+$("toast-clear-all").onclick=()=>{$("toast-list").replaceChildren();$("toast-area").hidden=true;};
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
