@@ -3,7 +3,7 @@
 const cfg=window.ACADEMIA_CONTROL_CONFIG,client=window.supabase?.createClient;
 const $=id=>document.getElementById(id);
 const db=client(cfg.supabaseUrl,cfg.supabasePublishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:"academia-control-center"}});
-const state={page:"overview",users:[],pageNumber:1,hasMore:false,selected:null,academies:[],studentId:"",adminRole:null,permissions:{},platformAdmins:[]};
+const state={page:"overview",users:[],pageNumber:1,hasMore:false,selected:null,academies:[],studentId:"",adminRole:null,permissions:{},platformAdmins:[],profile:null};
 const roles={teacher:"مدرس / مالك",supervisor:"مشرف",student:"طالب",guardian:"ولي أمر",general:"حساب عام"};
 const actions={user_created:"إنشاء حساب",user_updated:"تعديل بيانات",password_reset_by_admin:"تغيير كلمة مرور",user_blocked:"إيقاف حساب",user_unblocked:"إعادة تفعيل",notice_sent:"إرسال تنبيه",broadcast_notice_sent:"تنبيه جماعي",platform_admin_created:"إضافة مدير مساعد",platform_admin_permissions_updated:"تعديل صلاحيات مدير",platform_admin_access_revoked:"إلغاء صلاحية مدير"};
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -18,26 +18,52 @@ async function enter(session){
  try{
   const access=await api("my_access");state.adminRole=access.admin_role;state.permissions=access.permissions||{};
   const p=state.permissions,superAdmin=state.adminRole==="super_admin";
-  const allowed={overview:superAdmin||p.view_dashboard,users:superAdmin||p.view_accounts,notices:superAdmin||p.send_notices||p.view_notices,audit:superAdmin||p.view_audit,team:superAdmin};
+  const allowed={overview:superAdmin||p.view_dashboard,users:superAdmin||p.view_accounts,notices:superAdmin||p.send_notices||p.view_notices,audit:superAdmin||p.view_audit,team:superAdmin,account:superAdmin};
   document.querySelectorAll("nav [data-page]").forEach(b=>{b.hidden=!allowed[b.dataset.page]});
   if($("add-admin"))$("add-admin").hidden=!superAdmin;
   if($("self-password-button"))$("self-password-button").hidden=!superAdmin;
   if($("broadcast-form"))$("broadcast-form").hidden=!(superAdmin||p.send_notices);
-  const first=["overview","users","notices","audit","team"].find(name=>allowed[name]);
+  const first=["overview","users","notices","audit","team","account"].find(name=>allowed[name]);
   if(!first)throw new Error("هذا الحساب لا يملك صلاحية لعرض أي قسم. تواصل مع مدير المنصة.");
   await navigate(first);
  }catch(e){await db.auth.signOut();loginView(e.message)}
 }
 async function loadOverview(){const response=await api("overview");const c=response.counts||{};$("teachers").textContent=(c.teachers||0).toLocaleString("ar-EG");$("students").textContent=(c.students||0).toLocaleString("ar-EG");$("guardians").textContent=(c.guardians||0).toLocaleString("ar-EG");$("supervisors").textContent=(c.supervisors||0).toLocaleString("ar-EG");if($("unread-notices"))$("unread-notices").textContent=(c.unreadNotices||0).toLocaleString("ar-EG");if($("last-updated"))$("last-updated").textContent=fmt(new Date().toISOString())}
-function showPage(name){state.page=name;["overview","users","notices","audit","team"].forEach(p=>{const el=$(p);if(el)el.hidden=p!==name});document.querySelectorAll("nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));const title=$("page-title");if(title)title.textContent=({overview:"نظرة عامة",users:"إدارة الحسابات",notices:"الإنذارات والتنبيهات",audit:"سجل العمليات",team:"فريق الإدارة"})[name]||"مركز التحكم"}
+async function loadOwnerProfile(){
+  if(state.adminRole!=="super_admin")throw new Error("إعدادات الحساب الأساسي متاحة للمالك الأعلى فقط.");
+  const {data,error}=await db.auth.getUser();
+  if(error)throw error;
+  const user=data?.user;
+  if(!user)throw new Error("انتهت جلسة الدخول. سجّل الدخول مرة أخرى.");
+  state.profile=user;
+  const name=user.user_metadata?.full_name||user.user_metadata?.name||"";
+  $("owner-profile-form").elements.full_name.value=name;
+  $("owner-email-form").elements.email.value=user.email||"";
+  $("profile-email-value").textContent=user.email||"غير مسجل";
+  $("profile-email-verified").textContent=user.email_confirmed_at?"مؤكد":"غير مؤكد";
+  $("profile-email-verified").className=user.email_confirmed_at?"state-good":"state-warn";
+  $("profile-role").textContent="مدير المنصة الأعلى";
+  $("profile-created").textContent=fmt(user.created_at);
+  let identities=Array.isArray(user.identities)?user.identities:[];
+  try{
+    const result=await db.auth.getUserIdentities();
+    if(!result.error&&Array.isArray(result.data?.identities))identities=result.data.identities;
+  }catch{}
+  const providerLabels={email:"البريد الإلكتروني وكلمة المرور",google:"حساب Google",phone:"رقم الهاتف",apple:"Apple",facebook:"Facebook",github:"GitHub",azure:"Microsoft / Azure"};
+  const providers=[...new Set(identities.map(x=>String(x.provider||"").toLowerCase()).filter(Boolean))];
+  $("profile-provider-list").innerHTML=providers.length?providers.map(provider=>'<span class="provider-chip">'+esc(providerLabels[provider]||provider)+'</span>').join(""):'<span class="muted">لم تُرجع خدمة المصادقة طرق دخول مرتبطة لهذا الحساب.</span>';
+  $("owner-profile-status").textContent="";
+  $("owner-email-status").textContent="";
+}
+function showPage(name){state.page=name;["overview","users","notices","audit","team","account"].forEach(p=>{const el=$(p);if(el)el.hidden=p!==name});document.querySelectorAll("nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));const title=$("page-title");if(title)title.textContent=({overview:"نظرة عامة",users:"إدارة الحسابات",notices:"الإنذارات والتنبيهات",audit:"سجل العمليات",team:"فريق الإدارة",account:"إعدادات الحساب الأساسي"})[name]||"مركز التحكم"}
 async function navigate(name){
  const p=state.permissions||{},superAdmin=state.adminRole==="super_admin";
- const allowed={overview:superAdmin||p.view_dashboard,users:superAdmin||p.view_accounts,notices:superAdmin||p.send_notices||p.view_notices,audit:superAdmin||p.view_audit,team:superAdmin};
+ const allowed={overview:superAdmin||p.view_dashboard,users:superAdmin||p.view_accounts,notices:superAdmin||p.send_notices||p.view_notices,audit:superAdmin||p.view_audit,team:superAdmin,account:superAdmin};
  if(!allowed[name])throw new Error("ليس لديك صلاحية لفتح هذا القسم.");
  showPage(name);
  if(name==="overview")await loadOverview();if(name==="users")await loadUsers(1);
  if(name==="notices"&&(superAdmin||p.view_notices))await loadNotices();
- if(name==="audit")await loadAudit();if(name==="team")await loadAdmins();
+ if(name==="audit")await loadAudit();if(name==="team")await loadAdmins();if(name==="account")await loadOwnerProfile();
 }
 async function loadUsers(page=state.pageNumber){const r=await api("list_users",{page,perPage:100});state.users=r.users||[];state.pageNumber=r.page;state.hasMore=r.hasMore;$("page-label").textContent="الصفحة "+r.page;$("prev").disabled=r.page<=1;$("next").disabled=!r.hasMore;drawUsers()}
 function drawUsers(){
@@ -181,6 +207,29 @@ $("admin-rows").onclick=async e=>{
  if(edit){const item=state.platformAdmins.find(x=>x.user_id===edit.dataset.editAdmin);if(item)openAdminEditor(item)}
  if(remove){const id=remove.dataset.removeAdmin;if(!confirm("إلغاء صلاحيات هذا الشخص في مركز التحكم؟ سيظل حسابه موجودًا."))return;try{const result=await api("remove_admin_access",{user_id:id});toast(result.message);await loadAdmins()}catch(err){toast(err.message)}}
 };
+$("owner-profile-form").onsubmit=e=>runForm(e,async f=>{
+  if(state.adminRole!=="super_admin")throw new Error("هذه الإعدادات متاحة للمالك الأعلى فقط.");
+  const fullName=String(f.get("full_name")||"").trim();
+  if(fullName.length<2||fullName.length>100)throw new Error("الاسم يجب أن يكون من حرفين إلى 100 حرف.");
+  const {data,error}=await db.auth.updateUser({data:{full_name:fullName}});
+  if(error)throw error;
+  if(data?.user)state.profile=data.user;
+  $("admin-name").textContent=fullName;
+  $("owner-profile-status").textContent="تم حفظ الاسم الظاهر للحساب.";
+  toast("تم تحديث اسم الحساب الأساسي.");
+});
+$("owner-email-form").onsubmit=e=>runForm(e,async f=>{
+  if(state.adminRole!=="super_admin")throw new Error("هذه الإعدادات متاحة للمالك الأعلى فقط.");
+  const newEmail=String(f.get("email")||"").trim().toLowerCase();
+  const currentEmail=String(state.profile?.email||"").toLowerCase();
+  if(!/^\\S+@\\S+\\.\\S+$/.test(newEmail))throw new Error("اكتب بريدًا إلكترونيًا صحيحًا.");
+  if(newEmail===currentEmail)throw new Error("هذا هو البريد الحالي بالفعل.");
+  const {error}=await db.auth.updateUser({email:newEmail});
+  if(error)throw error;
+  $("owner-email-status").textContent="تم إرسال طلب تغيير البريد. افتح رسالة التحقق واتبع خطوات التأكيد؛ سيظل البريد الحالي مستخدمًا حتى اكتمال التحقق.";
+  toast("تم إرسال طلب تغيير البريد عبر نظام التحقق.");
+});
+$("profile-password-button").onclick=()=>openOwnPassword();
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
