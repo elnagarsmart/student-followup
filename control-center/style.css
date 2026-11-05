@@ -96,3 +96,16 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;transition:trans
 .account-facts b{color:#e7eef9;font-size:10px;text-align:left;overflow-wrap:anywhere}
 .account-security-button{width:100%}
 @media(max-width:760px){.account-grid{grid-template-columns:1fr}.account-panel{padding:15px}.account-form button{width:100%}.account-facts>div{gap:8px}}
+
+/* Dismissible notifications */
+.toast-area{position:fixed;bottom:18px;left:18px;z-index:100;width:min(420px,calc(100% - 36px));max-height:70vh;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-toolbar{display:flex;justify-content:flex-start;pointer-events:auto}
+.toast-clear-all{border:1px solid #75404b;border-radius:9px;background:#321d2b;color:#ffc1c9;padding:7px 12px;font-size:10px;font-weight:800}
+.toast-list{display:flex;flex-direction:column;gap:8px;max-height:62vh;overflow-y:auto;pointer-events:auto}
+.toast-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid #354b67;border-radius:12px;background:#172a42;color:#e8f0fb;box-shadow:0 12px 35px #0006;font-size:11px;line-height:1.8;direction:rtl}
+.toast-item.toast-error{border-color:#75404b;background:#2a1c2a}
+.toast-item.toast-success{border-color:#286548;background:#142d2c}
+.toast-message{flex:1;min-width:0;overflow-wrap:anywhere}
+.toast-close{flex:0 0 26px;width:26px;height:26px;border:1px solid #8b4955;border-radius:7px;background:#482431;color:#ffb4be;font-size:20px;line-height:1;padding:0}
+.toast-item.toast-success .toast-close{border-color:#397a5b;background:#1d4539;color:#a6f0c7}
+@media(max-width:620px){.toast-area{left:10px;bottom:10px;width:calc(100% - 20px)}.toast-item{font-size:12px;padding:11px}}
