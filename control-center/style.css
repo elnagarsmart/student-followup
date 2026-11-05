@@ -149,3 +149,5 @@ html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"
 .panel,.table-panel,.metric,.account-panel,.glass-demo{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(218,232,255,var(--glass-sheen)),transparent 48%),linear-gradient(145deg,rgba(24,42,66,var(--glass-alpha)),rgba(10,26,44,var(--glass-alpha)))!important;background-size:160% 160%,100% 100%;background-position:var(--glass-x,18%) var(--glass-y,0%),center}
 .panel,.table-panel,.metric,.account-panel,.glass-demo{transform:perspective(1100px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg));transform-style:preserve-3d}
 @media(prefers-reduced-motion:reduce){.panel,.table-panel,.metric,.account-panel,.glass-demo{transform:none!important}}
+
+@media(hover:hover){.panel:hover,.table-panel:hover,.metric:hover,.account-panel:hover,.glass-demo:hover{transform:perspective(1100px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-2px)!important}}
