@@ -73,3 +73,26 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;transition:trans
  .permission-fieldset{grid-template-columns:1fr}
  .manage-header{align-items:flex-start}
 }
+
+/* Owner account settings */
+.account-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.account-panel{min-width:0;padding:19px}
+.account-panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+.account-panel-head h4{margin:0;font-size:13px;color:#edf3fc}
+.account-panel-head p{margin:4px 0 0;color:#91a5bf;font-size:10px;line-height:1.8}
+.account-icon{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border-radius:12px;background:#282d60;color:#c5bdff;font-size:18px}
+.account-form{display:grid;gap:11px}
+.account-form label{display:block;color:#c7d4e7;font-size:10px;font-weight:800}
+.account-form input{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid #324963;border-radius:10px;background:#0a1728;color:#f2f6fc;font:inherit;font-size:12px;outline:none}
+.account-form input:focus{border-color:#7b70ec;box-shadow:0 0 0 3px #7b70ec22}
+.account-form button{justify-self:start;min-width:145px}
+.account-status{min-height:18px;margin:9px 0 0;color:#79dcb2;font-size:10px;line-height:1.7}
+.provider-list{display:flex;flex-wrap:wrap;gap:8px;min-height:35px}
+.provider-chip{display:inline-flex;padding:7px 11px;border-radius:9px;background:#1b3150;border:1px solid #355276;color:#d5e5fa;font-size:10px;font-weight:800}
+.account-facts{display:grid;gap:9px;margin-bottom:15px}
+.account-facts>div{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid #25394f}
+.account-facts>div:last-child{border-bottom:0}
+.account-facts span{color:#94a8c2;font-size:10px}
+.account-facts b{color:#e7eef9;font-size:10px;text-align:left;overflow-wrap:anywhere}
+.account-security-button{width:100%}
+@media(max-width:760px){.account-grid{grid-template-columns:1fr}.account-panel{padding:15px}.account-form button{width:100%}.account-facts>div{gap:8px}}
