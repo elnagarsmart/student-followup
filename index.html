@@ -91,7 +91,10 @@
 <form id="otp-form" class="stack" hidden><p id="otp-description" class="muted">أدخل رمز التحقق المرسل إليك.</p><label><span id="otp-label">رمز التحقق</span><input id="otp-token" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="12" pattern="[0-9]{6,12}" required placeholder="أدخل رمز التأكيد كاملًا"><small class="muted">اكتب كل أرقام الرمز كما وصل في البريد الإلكتروني أو رسالة الهاتف.</small></label><button type="submit">تأكيد الرمز</button><div class="otp-actions"><button id="otp-resend" type="button" class="text-button">إعادة إرسال الرمز</button><button id="otp-back" type="button" class="text-button">رجوع</button></div></form>
 <button id="google-login" type="button" class="google-button"><span class="google-g">G</span> المتابعة باستخدام Google</button>
 <button id="passkey-login" type="button" class="passkey-button">◈ الدخول بالبصمة أو مفتاح المرور</button>
-<button id="forgot-password" type="button" class="text-button">نسيت كلمة المرور؟</button><form id="reset-form" class="stack" hidden><label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" required autocomplete="new-password" placeholder="••••••••"></label><button type="submit">حفظ كلمة المرور الجديدة</button></form>
+<button id="forgot-password" type="button" class="text-button">نسيت كلمة المرور؟</button><form id="reset-form" class="stack" hidden>
+<label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="6 أحرف أو أرقام على الأقل"></label>
+<label>تأكيد كلمة المرور الجديدة<input id="confirm-new-password" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="أعد كتابة كلمة المرور الجديدة"></label>
+<button type="submit">تأكيد وحفظ كلمة المرور</button></form>
 <button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div>
 <div class="creator-contact" aria-label="معلومات منشئ البرنامج وروابط التواصل">
  <p class="creator-credit">تم إنشاء وتطوير <strong>أكاديميا</strong> بواسطة</p>
