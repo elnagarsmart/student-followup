@@ -113,7 +113,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
- appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded'},
+ appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:72},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
   absence:'السلام عليكم، نود إبلاغكم بغياب الطالب {{student}} عن جلسة {{session}} بتاريخ {{date}}. برجاء المتابعة. {{academy}}',
@@ -127,7 +127,7 @@ function mergeAcademySettings(value){
  const v=value&&typeof value==='object'?value:{};
  return {
   profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
-  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
+  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),glassIntensity:Number.isFinite(Number(v.appearance?.glassIntensity))?Math.max(0,Math.min(100,Number(v.appearance.glassIntensity))):DEFAULT_ACADEMY_SETTINGS.appearance.glassIntensity,skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
   messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
   notifications:{...DEFAULT_ACADEMY_SETTINGS.notifications,...(v.notifications||{})},
   defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
@@ -179,6 +179,16 @@ async function saveAcademyPublicProfile(value,profileOwnerId=session?.user?.id){
   updated_at:new Date().toISOString()
  },{onConflict:'owner_id'}));
 }
+function applyGlassIntensity(raw){
+ const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):72));
+ const t=strength/100,root=document.documentElement;
+ root.style.setProperty('--glass-strength',String(strength));
+ root.style.setProperty('--glass-alpha',(0.92-t*0.38).toFixed(3));
+ root.style.setProperty('--glass-blur',(3+t*22).toFixed(1)+'px');
+ root.style.setProperty('--glass-saturation',(108+t*62).toFixed(0)+'%');
+ root.style.setProperty('--glass-sheen',(0.025+t*0.17).toFixed(3));
+ root.dataset.glass=strength===0?'off':'on';
+}
 function applyAcademyAppearance(){
  const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
  applyTheme(appearance.theme);
@@ -187,6 +197,7 @@ function applyAcademyAppearance(){
  document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
  document.documentElement.dataset.density=appearance.density||'comfortable';
  document.documentElement.dataset.sidebar=appearance.sidebar||'expanded';
+ applyGlassIntensity(appearance.glassIntensity);
  applyAcademiaIdentity();
 }
 function applyPortalThemePreference(){
@@ -560,6 +571,7 @@ if(tab==='settings'&&role==='owner'){
      <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
      <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
      <label>القائمة الجانبية<select name="sidebar"><option value="expanded" ${a.sidebar==='expanded'?'selected':''}>كاملة</option><option value="compact" ${a.sidebar==='compact'?'selected':''}>أيقونات فقط على الكمبيوتر</option></select></label>
+      <label class="settings-span-2 glass-strength-field"><span>قوة الزجاج والشفافية <output id="glass-intensity-value">${Number(a.glassIntensity??72)}%</output></span><input name="glassIntensity" type="range" min="0" max="100" step="1" value="${Number(a.glassIntensity??72)}"><small>0 = واجهة شبه صلبة · 100 = زجاج عميق وضبابية وانعكاسات أقوى. يتغير الشكل فورًا قبل الحفظ.</small></label>
     </div>
     <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
    </section>
@@ -622,8 +634,9 @@ if(tab==='settings'&&role==='owner'){
   </section>
  </div>`;
  const form=$('academy-settings-form');
- const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;};
+ const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:v.get('glassIntensity')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;applyGlassIntensity(next.appearance.glassIntensity);const out=$('glass-intensity-value');if(out)out.textContent=next.appearance.glassIntensity+'%';};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
+ form.elements.glassIntensity.oninput=preview;
   form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
  const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
  const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
@@ -638,7 +651,7 @@ if(tab==='settings'&&role==='owner'){
   if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
   const next=mergeAcademySettings({
    profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),whatsappSupportPhone:String(v.get('whatsappSupportPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
-   appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar')},
+   appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:Number(v.get('glassIntensity')||0)},
    messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
    notifications:{messageBadges:v.get('messageBadges')==='on',vibration:v.get('vibration')==='on',browserAlerts:v.get('browserAlerts')==='on'},
    defaults:{monthlyFee,groupId:String(v.get('defaultGroup')||''),codePrefix:String(v.get('codePrefix')||'ST-').trim(),attendanceSession:String(v.get('attendanceSession')||'الجلسة الأولى').trim()||'الجلسة الأولى',autoGenerateCode:v.get('autoGenerateCode')==='on'}
