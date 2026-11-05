@@ -109,3 +109,38 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;transition:trans
 .toast-close{flex:0 0 26px;width:26px;height:26px;border:1px solid #8b4955;border-radius:7px;background:#482431;color:#ffb4be;font-size:20px;line-height:1;padding:0}
 .toast-item.toast-success .toast-close{border-color:#397a5b;background:#1d4539;color:#a6f0c7}
 @media(max-width:620px){.toast-area{left:10px;bottom:10px;width:calc(100% - 20px)}.toast-item{font-size:12px;padding:11px}}
+
+/* Liquid glass design system · Academia Control Center */
+:root{--glass-alpha:.632;--glass-blur:19.3px;--glass-saturation:157%;--glass-sheen:.155}
+body{background:radial-gradient(ellipse at 12% 6%,rgba(115,134,255,.17),transparent 34%),radial-gradient(ellipse at 90% 24%,rgba(57,188,198,.13),transparent 32%),linear-gradient(145deg,#07111f,#0d1c30 55%,#0a202d);background-attachment:fixed}
+.card,.panel,.table-panel,.metric,.admin-pill,.main-nav,.modal,.notice,.manage-section,.account-panel,.login-art,.login-form-wrap,.toolbar,.table-wrap{border:1px solid rgba(179,206,245,.2)!important;background:linear-gradient(145deg,rgba(24,42,66,var(--glass-alpha)),rgba(10,26,44,var(--glass-alpha)))!important;-webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation));backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation));box-shadow:0 18px 48px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,var(--glass-sheen)),inset 0 -1px 0 rgba(255,255,255,.05);transition:background .35s ease,border-color .35s ease,box-shadow .35s ease,transform .35s cubic-bezier(.2,.75,.2,1)}
+.topbar{border:1px solid rgba(178,201,241,.22);border-radius:20px;padding:14px 16px;background:rgba(15,31,51,var(--glass-alpha));box-shadow:0 13px 36px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.13)}
+.ambient{opacity:.21;filter:blur(82px);animation:glass-ambient 14s ease-in-out infinite alternate}
+@keyframes glass-ambient{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(-22px,16px,0) scale(1.12)}}
+.main-nav{background:rgba(10,26,43,.66)!important;box-shadow:inset 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.1)}
+.main-nav button{transition:transform .28s cubic-bezier(.2,.75,.2,1),background .28s ease,box-shadow .28s ease}
+.main-nav button:hover{transform:translateY(-2px);background:rgba(255,255,255,.075)}
+.main-nav button.active{background:linear-gradient(135deg,rgba(125,117,255,.6),rgba(74,111,204,.43));border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 22px rgba(73,82,194,.2),inset 0 1px rgba(255,255,255,.22)}
+.panel,.table-panel,.metric,.account-panel{position:relative}
+.panel:hover,.table-panel:hover,.metric:hover,.account-panel:hover{transform:translateY(-2px);border-color:rgba(195,220,255,.32)!important;box-shadow:0 24px 54px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.2)}
+.brand img,.brand-mark{box-shadow:0 12px 34px rgba(88,124,230,.2),0 0 0 1px rgba(255,255,255,.18)}
+.button,.row-btn,.icon-button,.main-nav button{transition:transform .28s cubic-bezier(.2,.75,.2,1),box-shadow .28s ease,filter .28s ease}
+.button:hover:not(:disabled),.row-btn:hover,.icon-button:hover{transform:translateY(-2px);filter:saturate(1.12);box-shadow:0 10px 25px rgba(0,0,0,.16)}
+.button:active:not(:disabled),.row-btn:active,.icon-button:active{transform:scale(.975)}
+input,select,textarea,.toolbar input,.form-grid input,.form-grid select,.manage-form input,.manage-form select,.manage-notice-form input,.manage-notice-form textarea,.account-form input{background:rgba(7,18,32,.55)!important;border-color:rgba(164,190,228,.22)!important;transition:border-color .25s ease,box-shadow .25s ease,background .25s ease}
+input:focus,select:focus,textarea:focus{border-color:rgba(148,143,255,.68)!important;box-shadow:0 0 0 4px rgba(132,122,255,.13),0 10px 25px rgba(0,0,0,.12)!important}
+th{background:rgba(24,42,65,.88)!important;backdrop-filter:blur(12px)}
+td{border-color:rgba(155,181,218,.12)}
+tbody tr:hover td{background:rgba(133,156,221,.08)}
+.modal{background:linear-gradient(145deg,rgba(22,39,63,.94),rgba(9,23,39,.93))!important}
+.glass-settings-modal{max-width:520px}
+.glass-settings-body{display:grid;gap:14px}
+.glass-demo{min-height:155px;border:1px solid rgba(220,235,255,.29);border-radius:18px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;background:radial-gradient(circle at 15% 12%,rgba(136,170,255,.42),transparent 40%),radial-gradient(circle at 92% 88%,rgba(78,220,208,.27),transparent 38%),linear-gradient(135deg,rgba(255,255,255,.19),rgba(255,255,255,.025));backdrop-filter:blur(var(--glass-blur)) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 18px 36px rgba(0,0,0,.15)}
+.glass-demo span{font-size:9px;letter-spacing:2px;color:#bfcdf4}.glass-demo b{font-size:23px;color:#fff}.glass-demo small{font-size:10px;color:#b0bfd7}
+.glass-range-label{display:flex!important;justify-content:space-between;align-items:center;gap:12px}.glass-range-label output{color:#c5bdff;font-weight:900}
+.glass-range{width:100%;accent-color:#8f84ff;cursor:ew-resize}
+.glass-scale{display:flex;justify-content:space-between;color:#8ea2bf;font-size:9px}
+.glass-settings-actions{display:flex;justify-content:space-between;gap:10px}
+html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"] .table-panel,html[data-glass="off"] .metric,html[data-glass="off"] .modal{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@media(max-width:620px){.topbar{align-items:flex-start}.top-actions{gap:6px}.top-actions .button{font-size:10px;padding:8px 9px}.glass-settings-modal{width:calc(100% - 18px)}.glass-demo{min-height:135px}}
+@media(prefers-reduced-motion:reduce){.ambient{animation:none!important}.card,.panel,.table-panel,.metric,.account-panel,.button,.main-nav button{transition:none!important;animation:none!important}.panel:hover,.metric:hover,.account-panel:hover{transform:none!important}}
