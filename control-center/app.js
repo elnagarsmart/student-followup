@@ -9,6 +9,26 @@ const actions={user_created:"إنشاء حساب",user_updated:"تعديل بي�
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>v?new Date(v).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:"short"}):"—";
 function status(message,error=false){$("status").textContent=message||"";$("status").style.color=error?"#b64b5a":"#16805e"}
+const CONTROL_GLASS_KEY="academia-control-glass-v1";
+function applyControlGlass(raw){
+ const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):72)),t=value/100,root=document.documentElement;
+ root.style.setProperty("--glass-alpha",(0.92-t*.4).toFixed(3));
+ root.style.setProperty("--glass-blur",(2+t*24).toFixed(1)+"px");
+ root.style.setProperty("--glass-saturation",(110+t*65).toFixed(0)+"%");
+ root.style.setProperty("--glass-sheen",(0.025+t*.18).toFixed(3));
+ root.dataset.glass=value===0?"off":"on";
+ $("admin-glass-intensity").value=String(value);
+ $("admin-glass-value").textContent=value+"%";
+}
+function initControlGlass(){
+ let value=72;
+ try{const stored=Number(localStorage.getItem(CONTROL_GLASS_KEY));if(Number.isFinite(stored))value=Math.max(0,Math.min(100,stored))}catch{}
+ applyControlGlass(value);
+ $("glass-settings-button").onclick=()=>$("glass-settings-modal").showModal();
+ $("admin-glass-intensity").oninput=e=>{const v=Number(e.target.value);applyControlGlass(v);try{localStorage.setItem(CONTROL_GLASS_KEY,String(v))}catch{}};
+ $("glass-reset").onclick=()=>{applyControlGlass(72);try{localStorage.setItem(CONTROL_GLASS_KEY,"72")}catch{}};
+ document.querySelectorAll("[data-close-glass]").forEach(b=>b.onclick=()=>$("glass-settings-modal").close());
+}
 let toastSequence=0;
 function toast(message,type="info"){
  const area=$("toast-area"),list=$("toast-list");if(!area||!list)return;
@@ -271,6 +291,7 @@ $("owner-email-form").onsubmit=e=>runForm(e,async f=>{
 });
 $("profile-password-button").onclick=()=>openOwnPassword();
 $("toast-clear-all").onclick=()=>{$("toast-list").replaceChildren();$("toast-area").hidden=true;};
+initControlGlass();
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
