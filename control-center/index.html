@@ -5,14 +5,14 @@
 <meta name="theme-color" content="#091526"><meta name="description" content="مركز تحكم أكاديميا لإدارة الأكاديميات والحسابات والتنبيهات.">
 <title>مركز تحكم أكاديميا | ACADEMIA CONTROL</title>
 <link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon.svg"><link rel="manifest" href="./manifest.webmanifest">
-<link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="./config.js"></script><script defer src="./app.js"></script><script defer src="./extra.js"></script>
+<link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.105.0"></script><script defer src="./config.js"></script><script defer src="./app.js"></script><script defer src="./extra.js"></script>
 </head>
 <body>
 <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
 <main class="app-shell">
 <header class="topbar">
  <div class="brand"><img id="brand-mark" src="./icon.svg" alt="شعار أكاديميا"><div><small>ACADEMIA · CONTROL</small><h1>مركز تحكم أكاديميا</h1><p>إدارة المنصة والأكاديميات والحسابات من مكان واحد</p></div></div>
- <div class="top-actions"><button type="button" class="button ghost" id="self-password-button">كلمة مرور الحساب</button><button type="button" class="button ghost" id="install-app">＋ تثبيت / تنزيل التطبيق</button><span class="admin-pill" id="admin-name">مدير المنصة</span></div>
+ <div class="top-actions"><button type="button" class="button ghost" id="self-password-button" hidden>تأمين كلمة مرور المالك</button><button type="button" class="button ghost" id="install-app">＋ تثبيت / تنزيل التطبيق</button><span class="admin-pill" id="admin-name">مدير المنصة</span></div>
 </header>
 <section id="login" class="login-layout card">
  <div class="login-art"><div class="art-orbit"></div><img src="./icon.svg" alt="شعار أكاديميا" class="login-logo"><div class="art-copy"><span>ACADEMIA CONTROL CENTER</span><h2>إدارة مركزية<br>بصورة أوضح.</h2><p>الحسابات، الأكاديميات، التنبيهات وسجل العمليات في لوحة واحدة.</p></div><div class="security-note"><span class="security-dot"></span> دخول محمي للحسابات الإدارية المعتمدة فقط</div></div>
@@ -65,7 +65,13 @@
  <button class="button primary span-all" type="submit">إنشاء الحساب</button><p id="create-status" class="span-all muted"></p>
 </form></dialog>
 <dialog id="own-password-modal" class="modal"><div class="modal-head"><div><div class="eyebrow">تأمين الحساب</div><h2>تعيين كلمة مرور الدخول</h2></div><button type="button" class="icon-button" data-close-own aria-label="إغلاق">×</button></div>
-<form id="own-password-form" class="dialog-body form-grid"><label class="span-all">كلمة المرور الجديدة<input name="password" type="password" minlength="6" maxlength="72" autocomplete="new-password" required placeholder="6 أحرف أو أرقام على الأقل"></label><label class="span-all">تأكيد كلمة المرور<input name="password_confirm" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label><p class="span-all form-hint">الحد الأقصى الفعلي 72 حرفًا بسبب طريقة حماية كلمات المرور في خدمة المصادقة.</p><button type="submit" class="button primary span-all">حفظ كلمة المرور</button></form></dialog>
+<form id="own-password-form" class="dialog-body form-grid">
+<label class="span-all">كلمة المرور الحالية<input name="current_password" type="password" minlength="6" maxlength="72" autocomplete="current-password" required placeholder="أدخل كلمة المرور الحالية"></label>
+<label class="span-all">كلمة المرور الجديدة<input name="password" type="password" minlength="6" maxlength="72" autocomplete="new-password" required placeholder="6 أحرف أو أرقام على الأقل"></label>
+<label class="span-all">تأكيد كلمة المرور الجديدة<input name="password_confirm" type="password" minlength="6" maxlength="72" autocomplete="new-password" required></label>
+<p class="span-all form-hint">يجب إدخال كلمة المرور الحالية. لا يتم تغيير كلمة مرور المالك بمجرد فتح النافذة. الحد الأقصى 72 حرفًا.</p>
+<button type="submit" class="button primary span-all">تحقق ثم تغيير كلمة المرور</button>
+</form></dialog>
 <dialog id="admin-modal" class="modal"><div class="modal-head"><div><div class="eyebrow">فريق المنصة</div><h2 id="admin-modal-title">إضافة مدير مساعد</h2></div><button type="button" class="icon-button" data-close-admin aria-label="إغلاق">×</button></div>
 <form id="admin-form" class="dialog-body form-grid">
 <input type="hidden" name="user_id">
