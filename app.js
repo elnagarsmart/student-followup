@@ -8,6 +8,11 @@ const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG')
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const normalizePhone=raw=>{let p=String(raw||'').trim().replace(/[\s()-]/g,'');if(/^01[0125]\d{8}$/.test(p))p='+20'+p.slice(1);return p};
 const msg=t=>{clearTimeout(messageTimer);$('message').textContent=t;$('message').hidden=false;messageTimer=setTimeout(()=>$('message').hidden=true,6000)};
+async function finishPasswordChange(message){
+ try{await db.auth.signOut({scope:'local'})}catch{}
+ session=null;authReady=true;renderShell();
+ $('auth-message').textContent=message;
+}
 
 function normalizeSupportWhatsAppNumber(raw){
  let digits=String(raw||'').replace(/\D/g,'');
@@ -225,9 +230,8 @@ $('reset-form').onsubmit=lockForm(async e=>{
   if(password!==confirmPassword)throw new Error('تأكيد كلمة المرور غير مطابق.');
   const {error}=await db.auth.updateUser({password});
   if(error)throw error;
-  recoveryMode=false;$('reset-form').hidden=true;$('auth-form').hidden=false;$('toggle-auth').hidden=false;$('forgot-password').hidden=false;
-  $('auth-message').textContent='تم تغيير كلمة المرور بنجاح. استخدم كلمة المرور الجديدة في تسجيل الدخول القادم.';
-  renderShell();
+  recoveryMode=false;$('reset-form').reset();$('reset-form').hidden=true;$('auth-form').hidden=false;$('toggle-auth').hidden=false;$('forgot-password').hidden=false;
+  await finishPasswordChange('تم تغيير كلمة المرور بنجاح. انتهت جلسة الدخول الحالية لأمان الحساب؛ سجّل الدخول الآن بكلمة المرور الجديدة.');
  }catch(x){$('auth-message').textContent=x.message}
 });
 function authErrorText(e){const m=String(e?.message||e||'حدث خطأ غير متوقع');if(/invalid login credentials/i.test(m))return'بيانات الدخول غير صحيحة.';if(/email not confirmed/i.test(m))return'أكد بريدك الإلكتروني باستخدام رمز التحقق أولاً.';if(/phone signups are disabled/i.test(m))return'تسجيل حساب جديد برقم الهاتف غير مفعّل حاليًا في Supabase. استخدم البريد الإلكتروني مؤقتًا؛ وتفعيل الهاتف يحتاج إلى إعداد مزوّد رسائل SMS.';if(/phone.*not enabled|phone provider is not enabled/i.test(m))return'تسجيل الهاتف غير مفعّل بعد في إعدادات Supabase Auth.';if(/sms|provider|twilio|messagebird|vonage/i.test(m))return'تعذر إرسال رسالة SMS. راجع مزوّد الرسائل وإعداداته في Supabase.';if(/rate limit|too many requests/i.test(m))return'تم إرسال طلبات كثيرة. انتظر قليلًا ثم حاول مرة أخرى.';return m}
@@ -235,7 +239,7 @@ $('auth-form').onsubmit=lockForm(async e=>{e.preventDefault();if(authChannel==='
 $('otp-form').onsubmit=lockForm(async e=>{e.preventDefault();const token=$('otp-token').value.trim();try{if(otpPurpose==='recovery')recoveryMode=true;const options=otpPurpose==='sms'?{phone:pendingPhone,token,type:'sms'}:{email:pendingEmail,token,type:otpPurpose==='recovery'?'recovery':'email'};const {error}=await db.auth.verifyOtp(options);if(error)throw error;if(otpPurpose==='recovery'){$('auth-message').textContent='تم التحقق. اختر كلمة المرور الجديدة.';$('otp-form').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true}else{$('auth-message').textContent=otpPurpose==='sms'?'تم تأكيد رقم الهاتف.':'تم تأكيد البريد الإلكتروني.';$('otp-form').hidden=true;$('auth-form').hidden=false}}catch(x){if(otpPurpose==='recovery')recoveryMode=false;$('auth-message').textContent=authErrorText(x)}});
 $('otp-resend').onclick=async()=>{try{$('otp-resend').disabled=true;$('auth-message').textContent='جارٍ إرسال رمز جديد…';let response;if(otpPurpose==='sms')response=await db.auth.resend({type:'signup',phone:pendingPhone});else if(otpPurpose==='recovery')response=await db.auth.resetPasswordForEmail(pendingEmail);else response=await db.auth.resend({type:'signup',email:pendingEmail});if(response.error)throw response.error;$('auth-message').textContent='تم طلب إرسال رمز جديد.'}catch(e){$('auth-message').textContent=authErrorText(e)}finally{$('otp-resend').disabled=false}};
 $('otp-back').onclick=()=>{$('otp-form').hidden=true;$('auth-form').hidden=false;$('auth-message').textContent='يمكنك المحاولة مرة أخرى.'};
-$('logout').onclick=async()=>{const {error}=await db.auth.signOut();if(error)msg(error.message)};$('backup').onclick=backup;
+$('logout').onclick=async()=>{const {error}=await db.auth.signOut({scope:'local'});if(error)msg(error.message)};$('backup').onclick=backup;
 $('passkey-register').onclick=async()=>{const button=$('passkey-register');if(!session?.user){msg('سجّل الدخول أولاً لتفعيل مفتاح المرور.');return}if(!window.PublicKeyCredential){msg('هذا المتصفح أو الجهاز لا يدعم مفاتيح المرور.');return}button.disabled=true;button.textContent='جارٍ تفعيل مفتاح المرور…';try{const {data,error}=await db.auth.registerPasskey();if(error)throw error;msg('تم تسجيل مفتاح المرور لهذا الحساب على هذا الجهاز. جرّب تسجيل الخروج ثم الدخول به.')}catch(e){msg(/email_not_confirmed/i.test(String(e.message))?'أكد بريدك الإلكتروني أولاً، ثم فعّل مفتاح المرور.':e.message)}finally{button.disabled=false;button.textContent='◈ تفعيل الدخول بالبصمة'}};
 let authReady=false, recoveryMode=false;
 async function processAuthCallback(){
@@ -506,7 +510,7 @@ async function recordQuickPayment(studentId,button){
 function fillAcademyTemplate(template,values={}){let text=String(template||'');for(const [key,value] of Object.entries(values))text=text.replace(new RegExp('{{'+key+'}}','g'),String(value??''));return text.replace(/\s{2,}/g,' ').trim()}
 function whatsAppFollowupUrl(student,record){let phone=String(student?.guardian_phone||'').replace(/[^0-9+]/g,'');if(/^01[0125]\d{8}$/.test(phone))phone='20'+phone.slice(1);phone=phone.replace(/\D/g,'');if(!phone)return '#';const status=record.status||'الحضور';const template=academySettings?.messages?.templates?.attendance||DEFAULT_ACADEMY_SETTINGS.messages.templates.attendance;let text=fillAcademyTemplate(template,{academy:academySettings?.profile?.academyName||'أكاديميا',student:student.name,status,date:record.session_date,session:record.session_name||'الجلسة الأولى',amount:record.amount||''});const signature=academySettings?.messages?.signature;if(signature)text+='\n'+signature;return 'https://wa.me/'+phone+'?text='+encodeURIComponent(text)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function render(){if(role==='visitor'){$('page-title').textContent='مرحبًا بك في أكاديميا';$('content').innerHTML='<section class="panel"><h2>حسابك جاهز 🎉</h2><p>أنت الآن في الوضع العام. لعرض بيانات طالب أو تسجيل الحضور، اطلب من إدارة الأكاديمية ربط بريدك الإلكتروني بملف الطالب.</p><p class="muted">حسابات الطلاب وأولياء الأمور لا ترى إلا السجلات المرتبطة بها.</p><button type="button" id="visitor-signout" class="text-button">تسجيل الخروج</button></section>';$('visitor-signout').onclick=async()=>{await db.auth.signOut()};return;}const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات',alerts:'الإنذارات والتنبيهات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length;
+async function render(){if(role==='visitor'){$('page-title').textContent='مرحبًا بك في أكاديميا';$('content').innerHTML='<section class="panel"><h2>حسابك جاهز 🎉</h2><p>أنت الآن في الوضع العام. لعرض بيانات طالب أو تسجيل الحضور، اطلب من إدارة الأكاديمية ربط بريدك الإلكتروني بملف الطالب.</p><p class="muted">حسابات الطلاب وأولياء الأمور لا ترى إلا السجلات المرتبطة بها.</p><button type="button" id="visitor-signout" class="text-button">تسجيل الخروج</button></section>';$('visitor-signout').onclick=async()=>{await db.auth.signOut({scope:'local'})};return;}const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات',alerts:'الإنذارات والتنبيهات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length;
 if(tab==='appearance'&&(role==='student'||role==='guardian')){
  const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','أبيض وذهبي','light']];
  const current=localStorage.getItem('academia-portal-skin')||'blue';
@@ -680,7 +684,7 @@ if(tab==='settings'&&role==='owner'){
     if(/current password|invalid.*password|password.*incorrect/i.test(String(error.message||'')))throw new Error('كلمة المرور الحالية غير صحيحة؛ لم يتم تغيير كلمة المرور.');
     throw error;
    }
-   e.currentTarget.reset();msg('تم التحقق من كلمة المرور الحالية وتحديث كلمة المرور بنجاح. استخدم كلمة المرور الجديدة في الدخول القادم.');
+   e.currentTarget.reset();await finishPasswordChange('تم تحديث كلمة المرور بنجاح. انتهت جلسة الدخول الحالية لأمان الحساب؛ سجّل الدخول الآن بكلمة المرور الجديدة.');
   }catch(x){msg(x.message||'تعذر تحديث كلمة المرور.')}
  });
  return;
