@@ -21,6 +21,7 @@ async function enter(session){
   const allowed={overview:superAdmin||p.view_dashboard,users:superAdmin||p.view_accounts,notices:superAdmin||p.send_notices||p.view_notices,audit:superAdmin||p.view_audit,team:superAdmin};
   document.querySelectorAll("nav [data-page]").forEach(b=>{b.hidden=!allowed[b.dataset.page]});
   if($("add-admin"))$("add-admin").hidden=!superAdmin;
+  if($("self-password-button"))$("self-password-button").hidden=!superAdmin;
   if($("broadcast-form"))$("broadcast-form").hidden=!(superAdmin||p.send_notices);
   const first=["overview","users","notices","audit","team"].find(name=>allowed[name]);
   if(!first)throw new Error("هذا الحساب لا يملك صلاحية لعرض أي قسم. تواصل مع مدير المنصة.");
@@ -103,7 +104,10 @@ function makeRandomPassword(length=18){
  const bytes=new Uint32Array(length);crypto.getRandomValues(bytes);
  return Array.from(bytes,n=>chars[n%chars.length]).join("");
 }
-function openOwnPassword(){const d=$("own-password-modal");if(d)d.showModal()}
+function openOwnPassword(){
+ if(state.adminRole!=="super_admin"){toast("تغيير كلمة مرور مركز التحكم متاح للمالك الأساسي فقط.");return}
+ const d=$("own-password-modal");if(d)d.showModal()
+}
 async function loadAdmins(){
  const r=await api("list_admins");state.platformAdmins=r.admins||[];
  const labels={super_admin:"مدير المنصة الأعلى",platform_admin:"مدير مساعد",support:"دعم فني"};
@@ -142,11 +146,19 @@ $("forgot-password").onclick=async()=>{
 $("toggle-login-password").onclick=()=>{const input=$("password");input.type=input.type==="password"?"text":"password";$("toggle-login-password").textContent=input.type==="password"?"إظهار كلمة المرور":"إخفاء كلمة المرور"};
 $("self-password-button").onclick=()=>openOwnPassword();
 $("own-password-form").onsubmit=e=>runForm(e,async f=>{
+ if(state.adminRole!=="super_admin")throw new Error("تغيير كلمة مرور مركز التحكم متاح للمالك الأساسي فقط.");
+ const currentPassword=String(f.get("current_password")||"");
  const p=String(f.get("password")||""),confirmP=String(f.get("password_confirm")||"");
- if(p.length<6||p.length>72)throw new Error("كلمة المرور يجب أن تكون من 6 إلى 72 حرفًا.");
- if(p!==confirmP)throw new Error("تأكيد كلمة المرور غير مطابق.");
- const {error}=await db.auth.updateUser({password:p});if(error)throw error;
- $("own-password-modal").close();e.target.reset();toast("تم تعيين كلمة مرور الدخول لحسابك الحالي.");
+ if(currentPassword.length<6||currentPassword.length>72)throw new Error("اكتب كلمة المرور الحالية الصحيحة.");
+ if(p.length<6||p.length>72)throw new Error("كلمة المرور الجديدة يجب أن تكون من 6 إلى 72 حرفًا.");
+ if(p!==confirmP)throw new Error("تأكيد كلمة المرور الجديدة غير مطابق.");
+ if(p===currentPassword)throw new Error("كلمة المرور الجديدة يجب أن تختلف عن الحالية.");
+ const {error}=await db.auth.updateUser({password:p,currentPassword});
+ if(error){
+  if(/current password|invalid.*password|password.*incorrect/i.test(String(error.message||"")))throw new Error("كلمة المرور الحالية غير صحيحة. لم يتم تغيير كلمة المرور.");
+  throw error;
+ }
+ $("own-password-modal").close();e.target.reset();toast("تم التحقق من كلمة المرور الحالية وتحديث كلمة مرور المالك بنجاح. استخدم الجديدة في الدخول القادم.");
 });
 $("broadcast-form").onsubmit=e=>runForm(e,async f=>{
  const target=f.get("target_group");
