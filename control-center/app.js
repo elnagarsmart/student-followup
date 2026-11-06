@@ -11,45 +11,22 @@ const fmt=v=>v?new Date(v).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:
 function status(message,error=false){$("status").textContent=message||"";$("status").style.color=error?"#b64b5a":"#16805e"}
 const CONTROL_GLASS_KEY="academia-control-glass-v1";
 function applyControlGlass(raw){
- const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):72)),t=value/100,root=document.documentElement;
- root.style.setProperty("--glass-alpha",(0.92-t*.4).toFixed(3));
- root.style.setProperty("--glass-blur",(2+t*24).toFixed(1)+"px");
- root.style.setProperty("--glass-saturation",(110+t*65).toFixed(0)+"%");
- root.style.setProperty("--glass-sheen",(0.025+t*.18).toFixed(3));
+ const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34)),t=value/100,root=document.documentElement;
+ root.style.setProperty("--glass-alpha",(0.97-t*.16).toFixed(3));
+ root.style.setProperty("--glass-blur",(2+t*9).toFixed(1)+"px");
+ root.style.setProperty("--glass-saturation",(105+t*22).toFixed(0)+"%");
+ root.style.setProperty("--glass-sheen",(0.01+t*.055).toFixed(3));
  root.dataset.glass=value===0?"off":"on";
  $("admin-glass-intensity").value=String(value);
  $("admin-glass-value").textContent=value+"%";
 }
-function installAdminGlassTracking(){
- if(document.documentElement.dataset.adminGlassTracking==="on")return;
- document.documentElement.dataset.adminGlassTracking="on";
- const selector=".panel,.table-panel,.metric,.account-panel,.card,.glass-demo";
- document.addEventListener("pointermove",event=>{
-  const surface=event.target?.closest?.(selector);if(!surface)return;
-  const rect=surface.getBoundingClientRect();if(!rect.width||!rect.height)return;
-  const x=Math.max(0,Math.min(100,(event.clientX-rect.left)/rect.width*100));
-  const y=Math.max(0,Math.min(100,(event.clientY-rect.top)/rect.height*100));
-  surface.style.setProperty("--glass-x",x.toFixed(1)+"%");
-  surface.style.setProperty("--glass-y",y.toFixed(1)+"%");
-  surface.style.setProperty("--glass-tilt-x",((x-50)/50*.55).toFixed(2)+"deg");
-  surface.style.setProperty("--glass-tilt-y",((50-y)/50*.45).toFixed(2)+"deg");
- });
- document.addEventListener("pointerout",event=>{
-  const surface=event.target?.closest?.(selector);
-  if(surface&&(!event.relatedTarget||!surface.contains(event.relatedTarget))){
-   surface.style.setProperty("--glass-x","18%");surface.style.setProperty("--glass-y","0%");
-   surface.style.setProperty("--glass-tilt-x","0deg");surface.style.setProperty("--glass-tilt-y","0deg");
-  }
- });
-}
-installAdminGlassTracking();
 function initControlGlass(){
- let value=72;
- try{const stored=Number(localStorage.getItem(CONTROL_GLASS_KEY));if(Number.isFinite(stored))value=Math.max(0,Math.min(100,stored))}catch{}
+ let value=34;
+ try{const raw=localStorage.getItem(CONTROL_GLASS_KEY);const stored=Number(raw);if(raw!==null&&Number.isFinite(stored))value=Math.max(0,Math.min(100,stored===72?34:stored))}catch{}
  applyControlGlass(value);
  $("glass-settings-button").onclick=()=>$("glass-settings-modal").showModal();
  $("admin-glass-intensity").oninput=e=>{const v=Number(e.target.value);applyControlGlass(v);try{localStorage.setItem(CONTROL_GLASS_KEY,String(v))}catch{}};
- $("glass-reset").onclick=()=>{applyControlGlass(72);try{localStorage.setItem(CONTROL_GLASS_KEY,"72")}catch{}};
+ $("glass-reset").onclick=()=>{applyControlGlass(34);try{localStorage.setItem(CONTROL_GLASS_KEY,"34")}catch{}};
  document.querySelectorAll("[data-close-glass]").forEach(b=>b.onclick=()=>$("glass-settings-modal").close());
 }
 let toastSequence=0;
