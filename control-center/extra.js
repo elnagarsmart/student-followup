@@ -30,7 +30,13 @@
   const installButton = document.getElementById("install-app");
   if (installButton) installButton.addEventListener("click", async () => {
     if (!installPrompt) {
-      toast("للتثبيت: افتح قائمة المتصفح ثم اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».");
+      const ua = navigator.userAgent || "";
+      const message = /iPhone|iPad|iPod/i.test(ua)
+        ? "على iPhone أو iPad: افتح الرابط في Safari، اضغط مشاركة، ثم «إضافة إلى الشاشة الرئيسية» وفعّل «فتح كتطبيق»."
+        : /Android/i.test(ua)
+          ? "على Android: افتح الرابط في Chrome، ثم قائمة ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»."
+          : "على الكمبيوتر: في Chrome أو Edge افتح القائمة واختر «تثبيت التطبيق» أو «Apps → Install this site as an app».";
+      toast(message);
       return;
     }
     installPrompt.prompt();
