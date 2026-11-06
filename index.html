@@ -81,7 +81,7 @@
 </script>
 </head><body><div id="app">
 <section id="auth" class="auth-shell"><div class="auth-top-actions"><button id="auth-install-app" type="button" class="install-app-button">＋ تثبيت أكاديميا</button><button id="auth-theme-toggle" type="button" class="theme-toggle" aria-label="تبديل الوضع الداكن">🌙 الوضع الداكن</button></div><div class="auth-card" id="auth-card"><div class="brand-mark"><img src="/icons/icon.svg" alt="شعار أكاديميا"></div><p class="eyebrow">منصة إدارة تعليمية</p><h1>أكاديميا</h1><p class="muted">متابعة الطلاب والحضور والمدفوعات في مكان واحد</p>
-<div class="auth-channel" role="group" aria-label="طريقة التسجيل"><button type="button" class="channel-btn active" data-channel="email">البريد الإلكتروني</button><button type="button" class="channel-btn" data-channel="phone">رقم الهاتف</button><button type="button" class="channel-btn" data-channel="code">كود الدخول</button></div>
+<div id="auth-channel" class="auth-channel" role="group" aria-label="طريقة التسجيل"><button type="button" class="channel-btn active" data-channel="email">البريد الإلكتروني</button><button type="button" class="channel-btn" data-channel="phone">رقم الهاتف</button><button type="button" class="channel-btn" data-channel="code">كود الدخول</button></div>
 <form id="auth-form" class="stack">
 <label id="name-field" hidden>الاسم الكامل<input id="full-name" type="text" autocomplete="name" placeholder="اكتب اسمك"></label><label id="account-type-field" hidden>نوع الحساب<select id="account-type"><option value="teacher">مدرس مستقل</option></select></label>
 <label id="email-field">البريد الإلكتروني<input id="email" type="email" required autocomplete="email" placeholder="name@example.com"></label>
@@ -95,6 +95,15 @@
 <label>كلمة المرور الجديدة<input id="new-password" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="6 أحرف أو أرقام على الأقل"></label>
 <label>تأكيد كلمة المرور الجديدة<input id="confirm-new-password" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="أعد كتابة كلمة المرور الجديدة"></label>
 <button type="submit">تأكيد وحفظ كلمة المرور</button></form>
+<form id="activation-form" class="stack" hidden>
+ <p class="eyebrow">تفعيل حساب أكاديميا</p>
+ <h2>أكمل تفعيل حسابك</h2>
+ <p class="muted">أنشئ كلمة مرور جديدة. بعد التفعيل ستدخل مباشرة إلى بوابة الطالب أو ولي الأمر.</p>
+ <label>كلمة المرور الجديدة<input id="activation-password" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="6 أحرف على الأقل"></label>
+ <label>تأكيد كلمة المرور<input id="activation-password-confirm" type="password" minlength="6" maxlength="72" required autocomplete="new-password" placeholder="أعد كتابة كلمة المرور"></label>
+ <button type="submit">تفعيل الحساب والدخول</button>
+ <p id="activation-message" class="notice" aria-live="polite"></p>
+</form>
 <button id="toggle-auth" class="text-button">ليس لديك حساب؟ إنشاء حساب</button><p id="auth-message" class="notice"></p></div>
 <div class="creator-contact" aria-label="معلومات منشئ البرنامج وروابط التواصل">
  <p class="creator-credit">تم إنشاء وتطوير <strong>أكاديميا</strong> بواسطة</p>
