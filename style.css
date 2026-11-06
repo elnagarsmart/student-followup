@@ -2254,3 +2254,33 @@ html[data-theme="dark"] .auth-card,html[data-theme="dark"] .panel,html[data-them
 @media(prefers-reduced-motion:reduce){.panel,.stat-card,.settings-card,.auth-card,.account-panel{transform:none!important}}
 
 @media(hover:hover){.panel:hover,.stat-card:hover,.settings-card:hover,.auth-card:hover,.account-panel:hover{transform:perspective(1100px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-2px)!important}}
+
+/* Calm premium frosted glass — replaces the earlier strong reflections and tilt */
+:root{--glass-alpha:.92;--glass-blur:6px;--glass-saturation:118%;--glass-sheen:.035}
+.auth-card,.panel,.stat-card,.settings-card,.settings-tabs,.settings-preview,.settings-readonly,.notice-banner,.student-mobile-card,.message-thread,.message-compose,.modal,.editor-form,.table-wrap,.search,.table-panel,.manage-section,.settings-security-block,.date-chip,.glass-strength-field{
+ background:linear-gradient(145deg,rgba(255,255,255,.93),rgba(247,249,255,.86))!important;
+ border:1px solid rgba(160,174,208,.22)!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ box-shadow:0 8px 24px rgba(36,54,94,.055),inset 0 1px 0 rgba(255,255,255,.8)!important;
+ transform:none!important;
+ transition:background .24s ease,border-color .24s ease,box-shadow .24s ease!important;
+}
+.sidebar{background:rgba(16,26,50,.96)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+.topbar{background:rgba(255,255,255,.88)!important;border:1px solid rgba(160,174,208,.2)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+.welcome{background:linear-gradient(112deg,rgba(39,51,104,.97),rgba(78,83,155,.92) 67%,rgba(77,131,159,.9))!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+html[data-theme="dark"] .auth-card,html[data-theme="dark"] .panel,html[data-theme="dark"] .stat-card,html[data-theme="dark"] .settings-card,html[data-theme="dark"] .settings-tabs,html[data-theme="dark"] .settings-preview,html[data-theme="dark"] .student-mobile-card,html[data-theme="dark"] .message-thread,html[data-theme="dark"] .message-compose,html[data-theme="dark"] .modal,html[data-theme="dark"] .editor-form,html[data-theme="dark"] .table-wrap,html[data-theme="dark"] .manage-section,html[data-theme="dark"] .settings-security-block,html[data-theme="dark"] .glass-strength-field{
+ background:linear-gradient(145deg,rgba(25,39,63,.94),rgba(16,29,49,.91))!important;border-color:rgba(166,188,224,.17)!important;color:#edf3ff;
+}
+html[data-theme="dark"] .topbar,html[data-theme="dark"] .date-chip{background:rgba(20,34,56,.92)!important;color:#e8efff}
+.panel:hover,.stat-card:hover,.settings-card:hover,.auth-card:hover,.student-mobile-card:hover{transform:translateY(-1px)!important;box-shadow:0 12px 28px rgba(36,54,94,.09),inset 0 1px 0 rgba(255,255,255,.78)!important}
+button,.button,.nav-item{transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease!important}
+button:not(:disabled):active,.button:not(:disabled):active{transform:scale(.99)!important}
+.install-app-button{border:1px solid rgba(105,117,205,.2);border-radius:10px;padding:8px 12px;background:rgba(113,112,205,.1);color:#5556a8;font-size:11px;font-weight:800;white-space:nowrap}
+html[data-theme="dark"] .install-app-button{color:#d5d2ff;background:rgba(137,130,255,.13);border-color:rgba(172,165,255,.23)}
+.glass-strength-field{background:linear-gradient(140deg,rgba(255,255,255,.92),rgba(242,245,253,.82))!important}
+.glass-strength-field output{color:#5c61bc}
+.glass-strength-field small{color:#73809a}
+html[data-theme="dark"] .glass-strength-field{background:linear-gradient(140deg,rgba(36,53,81,.95),rgba(20,35,57,.92))!important}
+html[data-theme="dark"] .glass-strength-field small{color:#a9bad3}
+@media(prefers-reduced-motion:reduce){.panel,.stat-card,.settings-card,.auth-card,.student-mobile-card,button,.button{transition:none!important;animation:none!important}}
