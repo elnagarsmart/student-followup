@@ -291,6 +291,20 @@ $("owner-email-form").onsubmit=e=>runForm(e,async f=>{
 });
 $("profile-password-button").onclick=()=>openOwnPassword();
 $("toast-clear-all").onclick=()=>{$("toast-list").replaceChildren();$("toast-area").hidden=true;};
+let foregroundRefreshTimer=null,adminRefreshBusy=false,lastAdminRefresh=0;
+async function refreshAdminPageOnReturn(){
+ if(document.hidden||!state.adminRole||!state.page||adminRefreshBusy||document.querySelector("dialog[open]"))return;
+ const now=Date.now();if(now-lastAdminRefresh<1800)return;
+ lastAdminRefresh=now;adminRefreshBusy=true;
+ try{await navigate(state.page)}catch(error){console.warn("Control center refresh failed:",error?.message||error)}
+ finally{adminRefreshBusy=false}
+}
+function scheduleAdminForegroundRefresh(){
+ if(foregroundRefreshTimer)clearTimeout(foregroundRefreshTimer);
+ foregroundRefreshTimer=setTimeout(()=>{foregroundRefreshTimer=null;void refreshAdminPageOnReturn()},450);
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleAdminForegroundRefresh()});
+window.addEventListener("focus",scheduleAdminForegroundRefresh);
 initControlGlass();
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
