@@ -3,11 +3,30 @@ const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABA
 let session=null, role='unknown', isOwner=false, ownerId=null, supervisor=null, permissions={}, students=[], groups=[], attendance=[], studentPhotoUrls={}, attendanceSelectedStudentId='', attendanceMode='camera', payments=[], links=[], supervisors=[], tab='overview', authMode='login', authChannel='email', pendingPhone='', pendingEmail='', otpPurpose='';
 const GLOBAL_SUPPORT_WHATSAPP='201011960156'; // Unified support line for every account and academy.
 let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='', academySettings=null, supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;
+let deferredInstallPrompt=null,academyRealtimeChannel=null,academyRealtimeUserId=null,academyRealtimeOwnerId=null,realtimeReloadTimer=null,realtimeReloadRunning=false;
 let messageContacts=[], activeMessagePeerId='', messageRefreshTimer=null, messageViewVersion=0, unreadRefreshTimer=null, unreadBySender={}, unreadTotal=0, unreadPlatformNotices=0;
 const $=id=>document.getElementById(id), money=n=>new Intl.NumberFormat('ar-EG').format(Number(n||0))+' ج.م', dateText=d=>d?new Date(d+'T00:00:00').toLocaleDateString('ar-EG'):'—';
 const localDate=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const normalizePhone=raw=>{let p=String(raw||'').trim().replace(/[\s()-]/g,'');if(/^01[0125]\d{8}$/.test(p))p='+20'+p.slice(1);return p};
 const msg=t=>{clearTimeout(messageTimer);$('message').textContent=t;$('message').hidden=false;messageTimer=setTimeout(()=>$('message').hidden=true,6000)};
+function installStatus(message){if(session)msg(message);else if($('auth-message'))$('auth-message').textContent=message}
+function updateInstallButtons(label,hidden=false){['auth-install-app','install-app'].forEach(id=>{const button=$(id);if(button){button.hidden=hidden;if(label)button.textContent=label}})}
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstallPrompt=event;updateInstallButtons('＋ تثبيت أكاديميا')});
+window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;updateInstallButtons('',true);installStatus('تم تثبيت أكاديميا على هذا الجهاز.')});
+async function requestAcademiaInstall(){
+ if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone){installStatus('أكاديميا مثبتة بالفعل على هذا الجهاز.');return}
+ if(deferredInstallPrompt){
+  const prompt=deferredInstallPrompt;deferredInstallPrompt=null;
+  try{await prompt.prompt();const choice=await prompt.userChoice;if(choice?.outcome==='accepted')installStatus('تم قبول تثبيت أكاديميا.');else installStatus('لم يتم التثبيت. يمكنك المحاولة مرة أخرى من زر التثبيت.')}catch{installStatus('تعذر فتح نافذة التثبيت. استخدم قائمة المتصفح ثم اختر تثبيت التطبيق.')}
+  return;
+ }
+ const ua=navigator.userAgent||'';
+ if(/iPhone|iPad|iPod/i.test(ua))installStatus('على iPhone أو iPad: افتح الرابط في Safari، اضغط مشاركة، ثم «إضافة إلى الشاشة الرئيسية» وفعّل «فتح كتطبيق».');
+ else if(/Android/i.test(ua))installStatus('للتثبيت على Android: افتح الموقع في Chrome، ثم قائمة ⋮ واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».');
+ else installStatus('للتثبيت على الكمبيوتر: في Chrome أو Edge افتح قائمة المتصفح واختر «تثبيت أكاديميا» أو «Apps → Install this site as an app».');
+}
+$('auth-install-app')?.addEventListener('click',requestAcademiaInstall);
+$('install-app')?.addEventListener('click',requestAcademiaInstall);
 async function finishPasswordChange(message){
  try{await db.auth.signOut({scope:'local'})}catch{}
  session=null;authReady=true;renderShell();
@@ -113,7 +132,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
- appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:72},
+ appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:34},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
   absence:'السلام عليكم، نود إبلاغكم بغياب الطالب {{student}} عن جلسة {{session}} بتاريخ {{date}}. برجاء المتابعة. {{academy}}',
@@ -180,38 +199,15 @@ async function saveAcademyPublicProfile(value,profileOwnerId=session?.user?.id){
  },{onConflict:'owner_id'}));
 }
 function applyGlassIntensity(raw){
- const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):72));
+ const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34));
  const t=strength/100,root=document.documentElement;
  root.style.setProperty('--glass-strength',String(strength));
- root.style.setProperty('--glass-alpha',(0.92-t*0.38).toFixed(3));
- root.style.setProperty('--glass-blur',(3+t*22).toFixed(1)+'px');
- root.style.setProperty('--glass-saturation',(108+t*62).toFixed(0)+'%');
- root.style.setProperty('--glass-sheen',(0.025+t*0.17).toFixed(3));
+ root.style.setProperty('--glass-alpha',(0.97-t*0.16).toFixed(3));
+ root.style.setProperty('--glass-blur',(2+t*9).toFixed(1)+'px');
+ root.style.setProperty('--glass-saturation',(105+t*22).toFixed(0)+'%');
+ root.style.setProperty('--glass-sheen',(0.01+t*0.055).toFixed(3));
  root.dataset.glass=strength===0?'off':'on';
 }
-function installAcademiaGlassTracking(){
- if(document.documentElement.dataset.glassTracking==="on")return;
- document.documentElement.dataset.glassTracking="on";
- const selector=".panel,.stat-card,.settings-card,.auth-card,.welcome,.student-mobile-card,.account-panel";
- document.addEventListener("pointermove",event=>{
-  const surface=event.target?.closest?.(selector);if(!surface)return;
-  const rect=surface.getBoundingClientRect();if(!rect.width||!rect.height)return;
-  const x=Math.max(0,Math.min(100,(event.clientX-rect.left)/rect.width*100));
-  const y=Math.max(0,Math.min(100,(event.clientY-rect.top)/rect.height*100));
-  surface.style.setProperty("--glass-x",x.toFixed(1)+"%");
-  surface.style.setProperty("--glass-y",y.toFixed(1)+"%");
-  surface.style.setProperty("--glass-tilt-x",((x-50)/50*.55).toFixed(2)+"deg");
-  surface.style.setProperty("--glass-tilt-y",((50-y)/50*.45).toFixed(2)+"deg");
- });
- document.addEventListener("pointerout",event=>{
-  const surface=event.target?.closest?.(selector);
-  if(surface&&(!event.relatedTarget||!surface.contains(event.relatedTarget))){
-   surface.style.setProperty("--glass-x","18%");surface.style.setProperty("--glass-y","0%");
-   surface.style.setProperty("--glass-tilt-x","0deg");surface.style.setProperty("--glass-tilt-y","0deg");
-  }
- });
-}
-installAcademiaGlassTracking();
 function applyAcademyAppearance(){
  const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
  applyTheme(appearance.theme);
@@ -311,6 +307,7 @@ const authCallbackPromise=processAuthCallback();
 $('auth').hidden=true;$('dashboard').hidden=true;
 db.auth.onAuthStateChange((event,s)=>{
   session=s;
+  if(event==='SIGNED_OUT'||!s)stopAcademiaRealtimeSync();
   if(event==='INITIAL_SESSION'&&!authReady){authReady=true;renderShell();return}
   if(!authReady)return;
   renderShell();
@@ -434,6 +431,46 @@ async function startAttendanceCamera(){
  }catch(e){await stopAttendanceCamera();msg('تعذر تشغيل الكاميرا: '+(e.message||'راجع إذن الكاميرا أو استخدم قارئ الباركود'))}
  finally{button.disabled=false;if(!activeAttendanceScanner)button.textContent='▣ فتح الكاميرا'}
 }
+
+function stopAcademiaRealtimeSync(){
+ if(realtimeReloadTimer){clearTimeout(realtimeReloadTimer);realtimeReloadTimer=null}
+ const channel=academyRealtimeChannel;
+ academyRealtimeChannel=null;academyRealtimeUserId=null;academyRealtimeOwnerId=null;
+ if(channel)void db.removeChannel(channel).catch(error=>console.warn('Realtime channel cleanup:',error?.message||error));
+}
+function scheduleAcademiaRealtimeReload(){
+ if(realtimeReloadTimer)clearTimeout(realtimeReloadTimer);
+ realtimeReloadTimer=setTimeout(async()=>{
+  realtimeReloadTimer=null;
+  if(document.hidden||!session?.user?.id||realtimeReloadRunning||loadingUserId===session.user.id)return;
+  realtimeReloadRunning=true;
+  try{await load(true)}catch(error){console.warn('Cross-device refresh failed:',error?.message||error)}
+  finally{realtimeReloadRunning=false}
+ },650);
+}
+function startAcademiaRealtimeSync(){
+ if(!session?.user?.id)return;
+ const syncOwner=ownerId||links.find(link=>link?.owner_id)?.owner_id||(role==='owner'?session.user.id:null);
+ if(!syncOwner){stopAcademiaRealtimeSync();return}
+ if(academyRealtimeChannel&&academyRealtimeUserId===session.user.id&&academyRealtimeOwnerId===syncOwner)return;
+ stopAcademiaRealtimeSync();
+ academyRealtimeUserId=session.user.id;academyRealtimeOwnerId=syncOwner;
+ const filter='owner_id=eq.'+syncOwner;
+ const channel=db.channel('academia-live:'+session.user.id+':'+syncOwner);
+ ['students','attendance','payments'].forEach(table=>{
+  channel.on('postgres_changes',{event:'*',schema:'public',table,filter},scheduleAcademiaRealtimeReload);
+ });
+ academyRealtimeChannel=channel;
+ channel.subscribe(status=>{
+  if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('Academia realtime status:',status);
+ });
+}
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden&&session?.user?.id)scheduleAcademiaRealtimeReload();
+});
+window.addEventListener('focus',()=>{
+ if(session?.user?.id)scheduleAcademiaRealtimeReload();
+});
 async function load(force=false){if(!session?.user?.id)return;const userId=session.user.id;if(!force&&(loadedUserId===userId||loadingUserId===userId))return;loadingUserId=userId;const currentLoad=++loadVersion;$('message').textContent='جار تحميل البيانات…';$('message').hidden=false;try{
  const uid=session.user.id,email=(session.user.email||'').toLowerCase();
  const assigned=email?await run(db.from('supervisor_access').select('*').ilike('supervisor_email',email).eq('active',true).limit(1)):[];
@@ -483,7 +520,7 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
  if(isOwner||can('manage_portals'))links=await run(db.from('student_portal_links').select('*').eq('owner_id',ownerId).order('created_at',{ascending:false}));else links=[];await Promise.all(jobs);
  }
  if(!isOwner&&!supervisor&&(role==='student'||role==='guardian')&&students.some(st=>st.photo_path)){try{const {data:portalPhotos,error:portalPhotoError}=await db.functions.invoke('student-code-auth',{body:{action:'portal_photo_urls'}});if(!portalPhotoError&&portalPhotos?.photo_urls)studentPhotoUrls=portalPhotos.photo_urls;else if(portalPhotoError)console.warn('Portal student photos unavailable:',portalPhotoError.message)}catch(photoError){console.warn('Portal student photos unavailable:',photoError.message)}}
- if(currentLoad!==loadVersion||session?.user?.id!==userId)return;loadedUserId=userId;$('role-label').textContent=role==='owner'?'مدرس مستقل':role==='supervisor'?'مشرف':role==='guardian'?'بوابة ولي الأمر':role==='student'?'بوابة الطالب':'حساب عام';await refreshPlatformNoticeCount();drawNav();render();startUnreadRefresh();
+ if(currentLoad!==loadVersion||session?.user?.id!==userId)return;loadedUserId=userId;$('role-label').textContent=role==='owner'?'مدرس مستقل':role==='supervisor'?'مشرف':role==='guardian'?'بوابة ولي الأمر':role==='student'?'بوابة الطالب':'حساب عام';await refreshPlatformNoticeCount();drawNav();render();startUnreadRefresh();startAcademiaRealtimeSync();
  }catch(e){if(currentLoad===loadVersion){role='unknown';$('dashboard').hidden=true;$('auth').hidden=false;$('auth-message').textContent=e.message;}}finally{if(currentLoad===loadVersion){loadingUserId=null;if($('message').textContent==='جار تحميل البيانات…')$('message').hidden=true}}}
 async function refreshPlatformNoticeCount(){
  if(!session?.user?.id){unreadPlatformNotices=0;return}
@@ -594,7 +631,7 @@ if(tab==='settings'&&role==='owner'){
      <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
      <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
      <label>القائمة الجانبية<select name="sidebar"><option value="expanded" ${a.sidebar==='expanded'?'selected':''}>كاملة</option><option value="compact" ${a.sidebar==='compact'?'selected':''}>أيقونات فقط على الكمبيوتر</option></select></label>
-      <label class="settings-span-2 glass-strength-field"><span>قوة الزجاج والشفافية <output id="glass-intensity-value">${Number(a.glassIntensity??72)}%</output></span><input name="glassIntensity" type="range" min="0" max="100" step="1" value="${Number(a.glassIntensity??72)}"><small>0 = واجهة شبه صلبة · 100 = زجاج عميق وضبابية وانعكاسات أقوى. يتغير الشكل فورًا قبل الحفظ.</small></label>
+      <label class="settings-span-2 glass-strength-field"><span>قوة الزجاج والشفافية <output id="glass-intensity-value">${Number(a.glassIntensity??34)}%</output></span><input name="glassIntensity" type="range" min="0" max="100" step="1" value="${Number(a.glassIntensity??34)}"><small>0 = مظهر هادئ شبه صلب · 100 = ضبابية زجاجية أوضح. يتغير الشكل فورًا قبل الحفظ.</small></label>
     </div>
     <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
    </section>
