@@ -1,7 +1,6 @@
 const {createClient} = supabase;
 const db = createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'academia-auth-session',experimental:{passkey:true}}});
 let session=null, role='unknown', isOwner=false, ownerId=null, supervisor=null, permissions={}, students=[], groups=[], attendance=[], studentPhotoUrls={}, attendanceSelectedStudentId='', attendanceMode='camera', payments=[], links=[], supervisors=[], tab='overview', authMode='login', authChannel='email', pendingPhone='', pendingEmail='', otpPurpose='';
-let activationToken=new URLSearchParams(window.location.search).get('activate')||'';
 const GLOBAL_SUPPORT_WHATSAPP='201011960156'; // Unified support line for every account and academy.
 let loadedUserId=null, loadingUserId=null, loadVersion=0, messageTimer=null, authCallbackMessage='', academySettings=null, supportWhatsappPhone=GLOBAL_SUPPORT_WHATSAPP;
 let deferredInstallPrompt=null,academyRealtimeChannel=null,academyRealtimeUserId=null,academyRealtimeOwnerId=null,realtimeReloadTimer=null,realtimeReloadRunning=false;
