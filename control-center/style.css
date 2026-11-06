@@ -151,3 +151,27 @@ html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"
 @media(prefers-reduced-motion:reduce){.panel,.table-panel,.metric,.account-panel,.glass-demo{transform:none!important}}
 
 @media(hover:hover){.panel:hover,.table-panel:hover,.metric:hover,.account-panel:hover,.glass-demo:hover{transform:perspective(1100px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-2px)!important}}
+
+/* Calm premium frosted glass — readable admin surfaces */
+:root{--glass-alpha:.92;--glass-blur:6px;--glass-saturation:118%;--glass-sheen:.035}
+.card,.panel,.table-panel,.metric,.admin-pill,.main-nav,.modal,.notice,.manage-section,.account-panel,.login-art,.login-form-wrap,.toolbar,.table-wrap{
+ background:linear-gradient(145deg,rgba(24,42,66,.91),rgba(13,29,48,.87))!important;
+ border:1px solid rgba(179,206,245,.15)!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ box-shadow:0 10px 30px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.055)!important;
+ transform:none!important;
+ transition:background .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+}
+.topbar{background:rgba(13,28,47,.93)!important;border:1px solid rgba(179,206,245,.16)!important;backdrop-filter:blur(7px)!important;-webkit-backdrop-filter:blur(7px)!important}
+.main-nav{background:rgba(8,22,38,.84)!important}
+.ambient{opacity:.13!important;filter:blur(90px)!important;animation:none!important}
+.panel:hover,.table-panel:hover,.metric:hover,.account-panel:hover{transform:translateY(-1px)!important;box-shadow:0 16px 34px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.07)!important;border-color:rgba(195,220,255,.2)!important}
+.glass-demo{background:linear-gradient(135deg,rgba(108,121,205,.19),rgba(60,176,175,.12),rgba(255,255,255,.035))!important;backdrop-filter:blur(7px) saturate(120%)!important;-webkit-backdrop-filter:blur(7px) saturate(120%)!important;box-shadow:inset 0 1px rgba(255,255,255,.12),0 12px 28px rgba(0,0,0,.1)!important}
+.glass-demo b{font-size:21px}
+.button,.row-btn,.icon-button,.main-nav button{transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease!important}
+.button:hover:not(:disabled),.row-btn:hover,.icon-button:hover{transform:translateY(-1px)!important;box-shadow:0 8px 18px rgba(0,0,0,.12)!important}
+.button:active:not(:disabled),.row-btn:active,.icon-button:active{transform:scale(.99)!important}
+html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"] .table-panel,html[data-glass="off"] .metric,html[data-glass="off"] .modal{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.glass-settings-modal{background:linear-gradient(145deg,rgba(21,39,62,.97),rgba(10,25,42,.96))!important}
+@media(prefers-reduced-motion:reduce){.button,.row-btn,.icon-button,.panel,.table-panel,.metric,.account-panel{transition:none!important;animation:none!important}}
