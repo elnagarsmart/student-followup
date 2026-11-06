@@ -146,7 +146,7 @@ function mergeAcademySettings(value){
  const v=value&&typeof value==='object'?value:{};
  return {
   profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
-  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),glassIntensity:Number.isFinite(Number(v.appearance?.glassIntensity))?Math.max(0,Math.min(100,Number(v.appearance.glassIntensity))):DEFAULT_ACADEMY_SETTINGS.appearance.glassIntensity,skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
+  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),glassIntensity:Number.isFinite(Number(v.appearance?.glassIntensity))?Math.max(0,Math.min(100,Number(v.appearance.glassIntensity)===72?34:Number(v.appearance.glassIntensity))):DEFAULT_ACADEMY_SETTINGS.appearance.glassIntensity,skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
   messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
   notifications:{...DEFAULT_ACADEMY_SETTINGS.notifications,...(v.notifications||{})},
   defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
