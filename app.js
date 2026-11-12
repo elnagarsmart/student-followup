@@ -908,8 +908,13 @@ async function renderMessages(){
  $('content').innerHTML=`<section class="panel message-panel">
   <div class="message-page-heading">
    <div><p class="eyebrow">صندوق الوارد</p><h2>الرسائل والمحادثات</h2><p class="muted">محادثات خاصة مع أولياء الأمور والطلاب والمشرفين</p></div>
-   <button id="message-refresh" class="message-refresh-button" type="button"><span>↻</span> تحديث</button>
+   ${role==='owner'?'<button id="owner-inbox-toggle" class="message-refresh-button" type="button">كل رسائل الأكاديمية</button>':''}<button id="message-refresh" class="message-refresh-button" type="button"><span>↻</span> تحديث</button>
   </div>
+  <section id="owner-message-inbox" class="owner-message-inbox" hidden>
+   <div class="message-section-heading"><div><h3>كل رسائل الأكاديمية</h3><p class="muted">صندوق شامل للمالك فقط، مع إمكانية الحذف اليدوي.</p></div><span id="owner-inbox-count">—</span></div>
+   <div id="owner-inbox-rows"><p class="empty-row">اضغط «كل رسائل الأكاديمية» لعرض الرسائل.</p></div>
+   <div class="owner-inbox-pagination"><button type="button" id="owner-inbox-prev" class="button ghost" disabled>الأحدث</button><button type="button" id="owner-inbox-next" class="button ghost" disabled>رسائل أقدم</button></div>
+  </section>
   <div class="messages-layout">
    <aside class="message-contacts-panel">
     <div class="message-section-heading"><h3>جهات الاتصال</h3><span id="message-contact-count">—</span></div>
@@ -931,6 +936,12 @@ async function renderMessages(){
    </section>
   </div>
  </section>`;
+ const ownerInboxToggle=$('owner-inbox-toggle'),ownerInboxPanel=$('owner-message-inbox');
+ if(ownerInboxToggle&&ownerInboxPanel)ownerInboxToggle.onclick=async()=>{
+  ownerInboxPanel.hidden=!ownerInboxPanel.hidden;
+  ownerInboxToggle.textContent=ownerInboxPanel.hidden?'كل رسائل الأكاديمية':'إخفاء كل الرسائل';
+  if(!ownerInboxPanel.hidden)await loadOwnerMessageInbox(0);
+ };
  try{
   const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'contacts'}});
   if(error)throw error;if(data?.error)throw new Error(data.error);
@@ -968,6 +979,36 @@ async function renderMessages(){
   $('message-thread').innerHTML='<div class="message-welcome-empty"><span>!</span><b>تعذر تحميل المحادثات</b><p>'+esc(e.message||'حاول تحديث الصفحة.')+'</p></div>';
   $('message-help').textContent='تحقق من الاتصال ثم حاول مرة أخرى.';
  }
+}
+async function loadOwnerMessageInbox(offset=0){
+ if(role!=='owner')return;
+ const root=$('owner-inbox-rows'),count=$('owner-inbox-count'),prev=$('owner-inbox-prev'),next=$('owner-inbox-next');
+ if(!root)return;
+ root.innerHTML='<p class="empty-row">جار تحميل جميع الرسائل…</p>';
+ try{
+  const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'owner_inbox',offset}});
+  if(error)throw error;if(data?.error)throw new Error(data.error);
+  const rows=Array.isArray(data?.messages)?data.messages:[];
+  if(count)count.textContent=Number(data.total||0).toLocaleString('ar-EG')+' رسالة';
+  root.innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>المرسل</th><th>المستلم</th><th>الطالب</th><th>الرسالة</th><th>التاريخ</th><th>الإجراء</th></tr></thead><tbody>'+rows.map(item=>{
+   const stamp=item.created_at?new Date(item.created_at).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}):'—';
+   return '<tr><td><b>'+esc(item.sender_name||'حساب')+'</b><small class="owner-inbox-role">'+esc(item.sender_role||'')+'</small></td><td><b>'+esc(item.recipient_name||'حساب')+'</b><small class="owner-inbox-role">'+esc(item.recipient_role||'')+'</small></td><td>'+esc(item.student_name||'—')+'</td><td class="owner-inbox-body">'+esc(item.body)+'</td><td>'+esc(stamp)+'</td><td><button type="button" class="text-button danger-action" data-owner-message-delete="'+esc(item.id)+'">حذف الرسالة</button></td></tr>';
+  }).join('')+'</tbody></table></div>':'<p class="empty-row">لا توجد رسائل في هذا الصندوق.</p>';
+  if(prev){prev.disabled=offset<=0;prev.onclick=()=>loadOwnerMessageInbox(Math.max(0,offset-100));prev.textContent=offset<=0?'أحدث الرسائل':'رسائل أحدث'}
+  if(next){next.disabled=!data.has_more;next.onclick=()=>loadOwnerMessageInbox(Number(data.next_offset||offset+100));next.textContent='رسائل أقدم'}
+  root.querySelectorAll('[data-owner-message-delete]').forEach(button=>button.onclick=async()=>{
+   const id=button.dataset.ownerMessageDelete;
+   if(!confirm('حذف هذه الرسالة نهائيًا من سجل المحادثة؟'))return;
+   button.disabled=true;
+   try{
+    const {data:deleted,error:deleteError}=await db.functions.invoke('academia-messages',{body:{action:'delete_message',message_id:id}});
+    if(deleteError||deleted?.error)throw new Error(deleted?.error||deleteError.message);
+    await loadOwnerMessageInbox(offset);
+    if(activeMessagePeerId)await loadMessageThread(messageViewVersion).catch(()=>{});
+    msg('تم حذف الرسالة.');
+   }catch(error){button.disabled=false;msg('تعذر حذف الرسالة: '+error.message)}
+  });
+ }catch(error){root.innerHTML='<p class="error-message">تعذر تحميل صندوق الرسائل: '+esc(error.message||'حاول مرة أخرى')+'</p>'}
 }
 async function loadMessageThread(view){
  const peerId=activeMessagePeerId;
