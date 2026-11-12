@@ -310,3 +310,41 @@ document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-pa
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
 })();
+
+// Pointer/touch-reactive Liquid Glass. Touch updates reflections without tilting cards.
+(function initLiquidGlassInteractions(){
+ const surfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const tiltSurfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const mark=root=>{
+  if(root.nodeType!==1)return;
+  if(root.matches?.(surfaces)){root.classList.add('liquid-glass-surface');if(root.matches(tiltSurfaces))root.classList.add('liquid-glass-tilt')}
+  root.querySelectorAll?.(surfaces).forEach(el=>{el.classList.add('liquid-glass-surface');if(el.matches(tiltSurfaces))el.classList.add('liquid-glass-tilt')});
+ };
+ mark(document.documentElement);
+ const observer=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(mark)));
+ observer.observe(document.documentElement,{childList:true,subtree:true});
+ let pending=null,frame=0;
+ document.addEventListener('pointermove',event=>{
+  pending=event;if(frame)return;
+  frame=requestAnimationFrame(()=>{
+   frame=0;const e=pending;if(!e)return;
+   const surface=e.target?.closest?.('.liquid-glass-surface');if(!surface)return;
+   const rect=surface.getBoundingClientRect();if(!rect.width||!rect.height)return;
+   const x=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100));
+   const y=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));
+   surface.style.setProperty('--glass-x',x.toFixed(1)+'%');
+   surface.style.setProperty('--glass-y',y.toFixed(1)+'%');
+   if(surface.classList.contains('liquid-glass-tilt')&&e.pointerType==='mouse'&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+    surface.style.setProperty('--glass-tilt-x',(((x-50)/50)*2.2).toFixed(2)+'deg');
+    surface.style.setProperty('--glass-tilt-y',(((50-y)/50)*2.2).toFixed(2)+'deg');
+   }else{
+    surface.style.setProperty('--glass-tilt-x','0deg');surface.style.setProperty('--glass-tilt-y','0deg');
+   }
+  });
+ },{passive:true});
+ document.addEventListener('pointerout',event=>{
+  const surface=event.target?.closest?.('.liquid-glass-surface');
+  if(!surface||event.relatedTarget&&surface.contains(event.relatedTarget))return;
+  surface.style.setProperty('--glass-tilt-x','0deg');surface.style.setProperty('--glass-tilt-y','0deg');
+ },{passive:true});
+})();
