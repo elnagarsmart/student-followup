@@ -202,10 +202,10 @@ function applyGlassIntensity(raw){
  const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34));
  const t=strength/100,root=document.documentElement;
  root.style.setProperty('--glass-strength',String(strength));
- root.style.setProperty('--glass-alpha',(0.97-t*0.16).toFixed(3));
- root.style.setProperty('--glass-blur',(2+t*9).toFixed(1)+'px');
- root.style.setProperty('--glass-saturation',(105+t*22).toFixed(0)+'%');
- root.style.setProperty('--glass-sheen',(0.01+t*0.055).toFixed(3));
+ root.style.setProperty('--glass-alpha',(0.84-t*0.18).toFixed(3));
+ root.style.setProperty('--glass-blur',(10+t*18).toFixed(1)+'px');
+ root.style.setProperty('--glass-saturation',(125+t*55).toFixed(0)+'%');
+ root.style.setProperty('--glass-sheen',(0.035+t*0.11).toFixed(3));
  root.dataset.glass=strength===0?'off':'on';
 }
 function applyAcademyAppearance(){
@@ -1049,3 +1049,42 @@ $('content').addEventListener('click',async e=>{const edit=e.target.closest('[da
 $('content').addEventListener('click',e=>{const button=e.target.closest('[data-student-quick-payment]');if(!button)return;const student=students.find(item=>item.id===button.dataset.studentQuickPayment);if(student)void recordQuickPayment(student.id,button)});
 $('content').addEventListener('click',async e=>{const b=e.target.closest('[data-record-delete],[data-record-edit]');if(!b)return;const kind=b.dataset.recordDelete||b.dataset.recordEdit,id=b.dataset.recordId;if(b.dataset.recordDelete){if(!confirm(kind==='attendance'?'تأكيد حذف سجل الحضور؟':'تأكيد حذف سجل الدفعة؟'))return;try{const tableName=kind==='attendance'?'attendance':'payments';await run(db.from(tableName).delete().eq('id',id).eq('owner_id',ownerId));await load(true);msg('تم حذف السجل بنجاح')}catch(x){msg(x.message)}return}const rows=kind==='attendance'?attendance:payments,row=rows.find(x=>x.id===id);if(!row)return;try{let patch;if(kind==='attendance'){const date=prompt('تاريخ الحضور (YYYY-MM-DD):',row.session_date);if(date===null)return;const status=prompt('الحالة: حاضر أو غائب أو متأخر أو بعذر',row.status);if(status===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!['حاضر','غائب','متأخر','بعذر'].includes(status.trim())){msg('راجع التاريخ والحالة');return}patch={session_date:date,status:status.trim()}}else{const amount=prompt('المبلغ:',String(row.amount));if(amount===null)return;const date=prompt('تاريخ الدفع (YYYY-MM-DD):',row.paid_at);if(date===null)return;const note=prompt('ملاحظة:',row.note||'');if(note===null)return;if(!Number.isFinite(Number(amount))||Number(amount)<=0||!/^\d{4}-\d{2}-\d{2}$/.test(date)){msg('راجع المبلغ والتاريخ');return}patch={amount:Number(amount),paid_at:date,note:note.trim()}}const tableName=kind==='attendance'?'attendance':'payments';await run(db.from(tableName).update(patch).eq('id',id).eq('owner_id',ownerId));await load(true);msg('تم تعديل السجل بنجاح')}catch(x){msg(x.message)}});
 async function backup(){try{if(role!=='owner')return;const payload={students,groups,attendance,payments,links,created_at:new Date().toISOString()};await run(db.from('backup_snapshots').insert({owner_id:session.user.id,payload,reason:'manual'}));const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));a.href=url;a.download='student-followup-backup-'+localDate()+'.json';a.click();URL.revokeObjectURL(url);msg('تم حفظ نسخة احتياطية في قاعدة البيانات وتنزيل نسخة على جهازك')}catch(e){msg(e.message)}}
+
+
+// Pointer/touch-reactive Liquid Glass. Touch updates reflections without tilting cards.
+(function initLiquidGlassInteractions(){
+ const surfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const tiltSurfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const mark=root=>{
+  if(root.nodeType!==1)return;
+  if(root.matches?.(surfaces)){root.classList.add('liquid-glass-surface');if(root.matches(tiltSurfaces))root.classList.add('liquid-glass-tilt')}
+  root.querySelectorAll?.(surfaces).forEach(el=>{el.classList.add('liquid-glass-surface');if(el.matches(tiltSurfaces))el.classList.add('liquid-glass-tilt')});
+ };
+ mark(document.documentElement);
+ const observer=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(mark)));
+ observer.observe(document.documentElement,{childList:true,subtree:true});
+ let pending=null,frame=0;
+ document.addEventListener('pointermove',event=>{
+  pending=event;if(frame)return;
+  frame=requestAnimationFrame(()=>{
+   frame=0;const e=pending;if(!e)return;
+   const surface=e.target?.closest?.('.liquid-glass-surface');if(!surface)return;
+   const rect=surface.getBoundingClientRect();if(!rect.width||!rect.height)return;
+   const x=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100));
+   const y=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));
+   surface.style.setProperty('--glass-x',x.toFixed(1)+'%');
+   surface.style.setProperty('--glass-y',y.toFixed(1)+'%');
+   if(surface.classList.contains('liquid-glass-tilt')&&e.pointerType==='mouse'&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+    surface.style.setProperty('--glass-tilt-x',(((x-50)/50)*2.2).toFixed(2)+'deg');
+    surface.style.setProperty('--glass-tilt-y',(((50-y)/50)*2.2).toFixed(2)+'deg');
+   }else{
+    surface.style.setProperty('--glass-tilt-x','0deg');surface.style.setProperty('--glass-tilt-y','0deg');
+   }
+  });
+ },{passive:true});
+ document.addEventListener('pointerout',event=>{
+  const surface=event.target?.closest?.('.liquid-glass-surface');
+  if(!surface||event.relatedTarget&&surface.contains(event.relatedTarget))return;
+  surface.style.setProperty('--glass-tilt-x','0deg');surface.style.setProperty('--glass-tilt-y','0deg');
+ },{passive:true});
+})();
