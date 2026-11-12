@@ -929,10 +929,10 @@ async function renderMessages(){
     <div id="message-thread" class="message-thread"><p class="empty-row">اختر جهة اتصال لعرض المحادثة.</p></div>
     <form id="message-send-form" class="message-compose" hidden>
      <label class="message-compose-label" for="message-body">اكتب رسالتك</label>
-     <select id="message-template-select" class="message-template-select"><option value="">رسالة فارغة</option><option value="welcome">ترحيب</option><option value="attendance">متابعة الحضور</option><option value="absence">إشعار غياب</option><option value="payment">تذكير الرسوم</option></select>
+     <select id="message-template-select" class="message-template-select" \${role==='student'||role==='guardian'?'hidden':''}><option value="">رسالة فارغة</option><option value="welcome">ترحيب</option>\${role==='owner'||role==='supervisor'?'<option value="attendance">متابعة الحضور</option><option value="absence">إشعار غياب</option><option value="payment">تذكير الرسوم</option>':''}</select>
      <div class="message-compose-row"><textarea id="message-body" name="message_body" rows="2" maxlength="4000" required placeholder="اكتب رسالتك هنا…"></textarea><button type="submit" aria-label="إرسال الرسالة">إرسال <span>↗</span></button></div>
     </form>
-    <p id="message-help" class="message-help">الرسائل تظهر داخل حساب أكاديميا للطرف الآخر. لا يتم إرسال SMS أو واتساب أو بريد تلقائيًا.</p>
+    <p id="message-help" class="message-help">\${role==='student'||role==='guardian'?'يمكنك مراسلة إدارة الأكاديمية فقط. الرسالة لا تُسجّل حضورًا ولا تصدر إنذارًا.':'الرسائل تظهر داخل حساب أكاديميا للطرف الآخر. لا يتم إرسال SMS أو واتساب أو بريد تلقائيًا.'}</p>
    </section>
   </div>
  </section>`;
