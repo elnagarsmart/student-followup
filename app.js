@@ -132,7 +132,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
- appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:34},
+ appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:82},
  messages:{signature:'',soundNotifications:false,templates:{
   attendance:'السلام عليكم، نتابع معكم من {{academy}} بخصوص الطالب {{student}}. تم تسجيل حالة {{status}} بتاريخ {{date}}. شكرًا لكم.',
   absence:'السلام عليكم، نود إبلاغكم بغياب الطالب {{student}} عن جلسة {{session}} بتاريخ {{date}}. برجاء المتابعة. {{academy}}',
@@ -146,7 +146,7 @@ function mergeAcademySettings(value){
  const v=value&&typeof value==='object'?value:{};
  return {
   profile:{...DEFAULT_ACADEMY_SETTINGS.profile,...(v.profile||{})},
-  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),glassIntensity:Number.isFinite(Number(v.appearance?.glassIntensity))?Math.max(0,Math.min(100,Number(v.appearance.glassIntensity)===72?34:Number(v.appearance.glassIntensity))):DEFAULT_ACADEMY_SETTINGS.appearance.glassIntensity,skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
+  appearance:{...DEFAULT_ACADEMY_SETTINGS.appearance,...(v.appearance||{}),glassIntensity:Number.isFinite(Number(v.appearance?.glassIntensity))?Math.max(0,Math.min(100,Number(v.appearance.glassIntensity)===72?82:Number(v.appearance.glassIntensity))):DEFAULT_ACADEMY_SETTINGS.appearance.glassIntensity,skin:v.appearance?.skin||(v.appearance?.theme==='dark'?'midnight':'blue')},
   messages:{...DEFAULT_ACADEMY_SETTINGS.messages,...(v.messages||{}),templates:{...DEFAULT_ACADEMY_SETTINGS.messages.templates,...(v.messages?.templates||{})}},
   notifications:{...DEFAULT_ACADEMY_SETTINGS.notifications,...(v.notifications||{})},
   defaults:{...DEFAULT_ACADEMY_SETTINGS.defaults,...(v.defaults||{})}
@@ -202,12 +202,54 @@ function applyGlassIntensity(raw){
  const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34));
  const t=strength/100,root=document.documentElement;
  root.style.setProperty('--glass-strength',String(strength));
- root.style.setProperty('--glass-alpha',(0.97-t*0.16).toFixed(3));
- root.style.setProperty('--glass-blur',(2+t*9).toFixed(1)+'px');
- root.style.setProperty('--glass-saturation',(105+t*22).toFixed(0)+'%');
- root.style.setProperty('--glass-sheen',(0.01+t*0.055).toFixed(3));
+ root.style.setProperty('--glass-alpha',(0.90-t*0.34).toFixed(3));
+ root.style.setProperty('--glass-blur',(6+t*22).toFixed(1)+'px');
+ root.style.setProperty('--glass-saturation',(112+t*105).toFixed(0)+'%');
+ root.style.setProperty('--glass-sheen',(0.045+t*0.21).toFixed(3));
  root.dataset.glass=strength===0?'off':'on';
 }
+
+function initAcademiaLiquidGlassMotion(){
+ const selector='.auth-card,.panel,.stat-card,.settings-card,.student-mobile-card,.account-panel,.welcome,.topbar,.message-thread,.message-compose,.portal-student-profile,.attendance-panel,.attendance-history-panel,.glass-strength-field';
+ let active=null,frame=0,pending=null;
+ const reset=surface=>{
+  if(!surface)return;
+  surface.classList.remove('liquid-glass-active');
+  surface.style.removeProperty('--glass-x');surface.style.removeProperty('--glass-y');
+  surface.style.removeProperty('--glass-tilt-x');surface.style.removeProperty('--glass-tilt-y');
+ };
+ document.addEventListener('pointermove',event=>{
+  const surface=event.target instanceof Element?event.target.closest(selector):null;
+  if(!surface||document.documentElement.dataset.glass==='off'){if(active&&active!==surface)reset(active);active=null;return}
+  if(event.pointerType==='mouse'&&event.buttons!==0)return;
+  const rect=surface.getBoundingClientRect();
+  if(!rect.width||!rect.height)return;
+  const x=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+  const y=Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+  const tilt=event.pointerType==='touch'?1.25:2.4;
+  pending={surface,x,y,tilt};
+  if(frame)return;
+  frame=requestAnimationFrame(()=>{
+   frame=0;
+   if(!pending)return;
+   if(active&&active!==pending.surface)reset(active);
+   active=pending.surface;
+   active.classList.add('liquid-glass-active');
+   active.style.setProperty('--glass-x',(pending.x*100).toFixed(1)+'%');
+   active.style.setProperty('--glass-y',(pending.y*100).toFixed(1)+'%');
+   active.style.setProperty('--glass-tilt-x',((pending.x-.5)*pending.tilt).toFixed(2)+'deg');
+   active.style.setProperty('--glass-tilt-y',((.5-pending.y)*pending.tilt).toFixed(2)+'deg');
+   pending=null;
+  });
+ },{passive:true});
+ document.addEventListener('pointerout',event=>{
+  if(!active||!event.relatedTarget||!(event.relatedTarget instanceof Node)||!active.contains(event.relatedTarget))reset(active);
+  active=null;
+ },true);
+ window.addEventListener('blur',()=>{reset(active);active=null});
+ document.addEventListener('pointercancel',()=>{reset(active);active=null},{passive:true});
+}
+
 function applyAcademyAppearance(){
  const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
  applyTheme(appearance.theme);
@@ -234,6 +276,7 @@ async function saveAcademySettings(next){
  return value;
 }
 academySettings=mergeAcademySettings(null);
+initAcademiaLiquidGlassMotion();
 applyTheme(localStorage.getItem('academia-theme')||'dark');
 const toggleAcademiaTheme=async()=>{
  const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
@@ -835,7 +878,7 @@ if(tab==='groups'&&role==='owner'){
 if(tab==='attendance'){
  const mayManage=can('manage_attendance'),recent=attendance.slice(0,30);attendanceSelectedStudentId='';
  $('content').innerHTML=
- '<div class=\'attendance-page\'> '+
+ '<div class=\'attendance-page\'> '+(mayManage?'':'<div class=\'portal-attendance-note\'>سجل الحضور الرسمي تسجّله الإدارة أو المشرف فقط. يمكنك متابعة سجلك هنا، أما رسالة «أنا حضرت» فلا تغيّر الحضور المسجّل.</div>')+
  '<div class=\'attendance-page-heading\'><div><p class=\'eyebrow\'>لوحة التحكم</p><h2>الحضور والغياب</h2><p class=\'muted\'>تسجيل حضور وغياب الطلاب بسهولة</p></div><div class=\'attendance-heading-actions\'><button type=\'button\' class=\'attendance-outline-button\' id=\'attendance-focus-search\'>⌕ البحث عن طالب</button><button type=\'button\' class=\'attendance-primary-button\' id=\'attendance-top-camera\'>▣ فتح الكاميرا</button></div></div> '+
  '<section class=\'attendance-panel\'><div class=\'attendance-panel-heading\'><div><h3>سجل الحضور</h3><p>سجّل الحضور بالباركود أو ابحث عن الطالب</p></div></div> '+
  (mayManage?'<div class=\'attendance-session-grid\'><label>تاريخ الجلسة<input id=\'attendance-session-date\' type=\'date\' value=\''+localDate()+'\' required></label><label>اختر الجلسة<select id=\'attendance-session-name\'><option ${academySettings.defaults.attendanceSession==="الجلسة الأولى"?"selected":""}>الجلسة الأولى</option><option ${academySettings.defaults.attendanceSession==="الجلسة الثانية"?"selected":""}>الجلسة الثانية</option><option ${academySettings.defaults.attendanceSession==="الجلسة الثالثة"?"selected":""}>الجلسة الثالثة</option><option ${academySettings.defaults.attendanceSession==="المراجعة"?"selected":""}>المراجعة</option><option ${academySettings.defaults.attendanceSession==="الامتحان"?"selected":""}>الامتحان</option></select></label></div> '+
