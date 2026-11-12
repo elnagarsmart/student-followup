@@ -2303,7 +2303,7 @@ html[data-theme="dark"] .auth-card,html[data-theme="dark"] .panel,html[data-them
  background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(211,229,255,var(--glass-sheen)),transparent 48%),linear-gradient(145deg,rgba(28,49,78,var(--glass-alpha)),rgba(10,24,43,.86))!important;
  box-shadow:0 20px 54px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.17),inset 0 -1px 0 rgba(255,255,255,.035)!important;
 }
-.sidebar{background:rgba(16,26,50,.84)!important;-webkit-backdrop-filter:blur(calc(var(--glass-blur)*.72)) saturate(155%)!important;backdrop-filter:blur(calc(var(--glass-blur)*.72)) saturate(155%)!important;border-inline-end:1px solid rgba(194,213,255,.18)}
+.sidebar{background:rgba(16,26,50,.84)!important;-webkit-backdrop-filter:blur(17px) saturate(155%)!important;backdrop-filter:blur(17px) saturate(155%)!important;border-inline-end:1px solid rgba(194,213,255,.18)}
 .topbar{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(255,255,255,.16),transparent 48%),linear-gradient(135deg,rgba(255,255,255,.82),rgba(239,245,255,.66))!important}
 html[data-theme="dark"] .topbar{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(210,226,255,.18),transparent 48%),linear-gradient(135deg,rgba(23,42,68,.92),rgba(10,23,41,.86))!important}
 .liquid-glass-active{transform:perspective(1150px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-1px)!important}
