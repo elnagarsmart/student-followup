@@ -2284,3 +2284,58 @@ html[data-theme="dark"] .install-app-button{color:#d5d2ff;background:rgba(137,13
 html[data-theme="dark"] .glass-strength-field{background:linear-gradient(140deg,rgba(36,53,81,.95),rgba(20,35,57,.92))!important}
 html[data-theme="dark"] .glass-strength-field small{color:#a9bad3}
 @media(prefers-reduced-motion:reduce){.panel,.stat-card,.settings-card,.auth-card,.student-mobile-card,button,.button{transition:none!important;animation:none!important}}
+
+
+/* Premium liquid glass: layered optical depth with pointer-following highlights. */
+:root{--glass-alpha:.62;--glass-blur:24px;--glass-saturation:190%;--glass-sheen:.20}
+.auth-card,.panel,.stat-card,.settings-card,.settings-tabs,.settings-preview,.settings-readonly,.notice-banner,.student-mobile-card,.account-panel,.welcome,.topbar,.message-thread,.message-compose,.message-contacts-panel,.message-conversation-panel,.portal-student-profile,.attendance-panel,.attendance-history-panel,.glass-strength-field,.modal,.table-wrap{
+ border:1px solid rgba(174,195,235,.34)!important;
+ background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(255,255,255,var(--glass-sheen)),transparent 46%),linear-gradient(145deg,rgba(255,255,255,var(--glass-alpha)),rgba(230,239,255,.66))!important;
+ background-size:160% 160%,100% 100%!important;
+ background-position:var(--glass-x,18%) var(--glass-y,0%),center!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ box-shadow:0 18px 52px rgba(42,61,109,.13),inset 0 1px 0 rgba(255,255,255,.72),inset 0 -1px 0 rgba(255,255,255,.18)!important;
+ transition:background-position .16s ease,border-color .22s ease,box-shadow .22s ease,transform .16s ease!important;
+}
+html[data-theme="dark"] .auth-card,html[data-theme="dark"] .panel,html[data-theme="dark"] .stat-card,html[data-theme="dark"] .settings-card,html[data-theme="dark"] .settings-tabs,html[data-theme="dark"] .settings-preview,html[data-theme="dark"] .settings-readonly,html[data-theme="dark"] .notice-banner,html[data-theme="dark"] .student-mobile-card,html[data-theme="dark"] .account-panel,html[data-theme="dark"] .topbar,html[data-theme="dark"] .message-thread,html[data-theme="dark"] .message-compose,html[data-theme="dark"] .message-contacts-panel,html[data-theme="dark"] .message-conversation-panel,html[data-theme="dark"] .portal-student-profile,html[data-theme="dark"] .attendance-panel,html[data-theme="dark"] .attendance-history-panel,html[data-theme="dark"] .glass-strength-field,html[data-theme="dark"] .modal,html[data-theme="dark"] .table-wrap{
+ border-color:rgba(183,207,250,.25)!important;
+ background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(211,229,255,var(--glass-sheen)),transparent 48%),linear-gradient(145deg,rgba(28,49,78,var(--glass-alpha)),rgba(10,24,43,.86))!important;
+ box-shadow:0 20px 54px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.17),inset 0 -1px 0 rgba(255,255,255,.035)!important;
+}
+.sidebar{background:rgba(16,26,50,.84)!important;-webkit-backdrop-filter:blur(17px) saturate(155%)!important;backdrop-filter:blur(17px) saturate(155%)!important;border-inline-end:1px solid rgba(194,213,255,.18)}
+.topbar{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(255,255,255,.16),transparent 48%),linear-gradient(135deg,rgba(255,255,255,.82),rgba(239,245,255,.66))!important}
+html[data-theme="dark"] .topbar{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(210,226,255,.18),transparent 48%),linear-gradient(135deg,rgba(23,42,68,.92),rgba(10,23,41,.86))!important}
+.liquid-glass-active{transform:perspective(1150px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-1px)!important}
+.panel.liquid-glass-active,.stat-card.liquid-glass-active,.settings-card.liquid-glass-active,.auth-card.liquid-glass-active,.account-panel.liquid-glass-active{box-shadow:0 24px 58px rgba(40,63,119,.18),inset 0 1px 0 rgba(255,255,255,.82),inset 0 -1px 0 rgba(255,255,255,.20)!important}
+html[data-theme="dark"] .panel.liquid-glass-active,html[data-theme="dark"] .stat-card.liquid-glass-active,html[data-theme="dark"] .settings-card.liquid-glass-active,html[data-theme="dark"] .auth-card.liquid-glass-active,html[data-theme="dark"] .account-panel.liquid-glass-active{box-shadow:0 26px 62px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05)!important}
+.message-heading-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.owner-inbox-toolbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;margin-bottom:10px;border-radius:15px;border:1px solid rgba(150,174,218,.24);background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%)}
+.owner-inbox-toolbar label{font-size:11px;font-weight:800;white-space:nowrap}
+.owner-inbox-toolbar input{flex:1;min-width:160px;border:1px solid rgba(130,151,193,.3);border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.82);color:inherit}
+.owner-inbox-toolbar span{font-size:10px;color:var(--muted)}
+.owner-inbox-list{display:grid;gap:10px}
+.owner-inbox-row{border:1px solid rgba(157,181,224,.3);border-radius:16px;padding:13px 14px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(240,245,255,.64));box-shadow:0 8px 24px rgba(35,55,96,.07)}
+.owner-inbox-row-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.owner-inbox-row-head>div{display:grid;gap:2px;min-width:0}
+.owner-inbox-row-head b{font-size:11px}
+.owner-inbox-row-head small,.owner-inbox-row-head time{font-size:9px;color:var(--muted)}
+.owner-inbox-row-head time{margin-inline-start:auto}
+.owner-inbox-arrow{color:#7f8cb4;font-size:15px}
+.owner-inbox-student{font-size:10px;color:var(--muted);margin:10px 0 0}
+.owner-inbox-body{font-size:12px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
+.owner-inbox-row-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid rgba(140,160,198,.18);padding-top:8px}
+.owner-inbox-row-actions>span{font-size:9px;color:var(--muted)}
+html[data-theme="dark"] .owner-inbox-toolbar{background:rgba(18,34,57,.86);border-color:rgba(178,201,239,.2)}
+html[data-theme="dark"] .owner-inbox-toolbar input{background:rgba(8,21,38,.82);border-color:rgba(171,194,233,.24);color:#edf3ff}
+html[data-theme="dark"] .owner-inbox-row{background:linear-gradient(145deg,rgba(29,49,77,.86),rgba(10,24,42,.82));border-color:rgba(169,195,239,.2)}
+.payment-reminder-info,.portal-attendance-note{padding:13px 15px;margin:12px 0;border-radius:14px;border:1px solid rgba(133,157,208,.24);background:linear-gradient(135deg,rgba(116,132,207,.13),rgba(115,190,207,.10));font-size:11px;line-height:1.9}
+.payment-reminder-info b{display:block;margin-bottom:3px}
+.payment-reminder-info p{margin:0;color:var(--muted)}
+.portal-attendance-note{margin:0 0 12px;color:var(--muted)}
+@media(max-width:650px){.owner-inbox-toolbar{align-items:stretch}.owner-inbox-toolbar label{width:100%}.owner-inbox-toolbar input{width:100%;min-width:0}.owner-inbox-row-head{align-items:flex-start}.owner-inbox-row-head time{width:100%;margin:2px 0 0}.message-heading-actions{width:100%}.message-heading-actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){.liquid-glass-active{transform:none!important}.auth-card,.panel,.stat-card,.settings-card,.student-mobile-card,.account-panel,.welcome,.topbar{transition:none!important}}
+
+.owner-inbox-load-more{display:block;width:100%;margin:6px 0 16px;padding:12px 16px;border-radius:13px;border:1px solid rgba(126,151,211,.28);background:linear-gradient(135deg,rgba(110,126,206,.15),rgba(88,174,189,.12));color:inherit;font-size:11px;font-weight:800;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.owner-inbox-load-more:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(57,82,146,.13)}
+.owner-inbox-load-more:disabled{opacity:.65;cursor:wait}
