@@ -175,3 +175,20 @@ html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"
 html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"] .table-panel,html[data-glass="off"] .metric,html[data-glass="off"] .modal{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .glass-settings-modal{background:linear-gradient(145deg,rgba(21,39,62,.97),rgba(10,25,42,.96))!important}
 @media(prefers-reduced-motion:reduce){.button,.row-btn,.icon-button,.panel,.table-panel,.metric,.account-panel{transition:none!important;animation:none!important}}
+
+
+/* Premium Liquid Glass — dynamic reflections and subtle pointer parallax */
+:root{--glass-alpha:.76;--glass-blur:16px;--glass-saturation:145%;--glass-sheen:.075}
+.liquid-glass-surface{
+ position:relative;
+ isolation:isolate;
+ background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(218,232,255,var(--glass-sheen)),transparent 48%),linear-gradient(145deg,rgba(24,42,66,var(--glass-alpha)),rgba(10,26,44,calc(var(--glass-alpha) - .08)))!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ border-color:rgba(179,206,245,.22)!important;
+ box-shadow:0 18px 46px rgba(0,0,0,.19),inset 0 1px 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(255,255,255,.04)!important;
+ transition:background-position .18s ease,border-color .24s ease,box-shadow .24s ease,transform .24s cubic-bezier(.2,.75,.2,1)!important;
+}
+.liquid-glass-tilt{transform:perspective(1200px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateZ(0)}
+.liquid-glass-tilt:hover{box-shadow:0 24px 56px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.19)!important}
+@media(prefers-reduced-motion:reduce){.liquid-glass-tilt{transform:none!important;transition:none!important}}
