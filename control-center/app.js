@@ -11,24 +11,62 @@ const fmt=v=>v?new Date(v).toLocaleString("ar-EG",{dateStyle:"medium",timeStyle:
 function status(message,error=false){$("status").textContent=message||"";$("status").style.color=error?"#b64b5a":"#16805e"}
 const CONTROL_GLASS_KEY="academia-control-glass-v1";
 function applyControlGlass(raw){
- const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34)),t=value/100,root=document.documentElement;
- root.style.setProperty("--glass-alpha",(0.97-t*.16).toFixed(3));
- root.style.setProperty("--glass-blur",(2+t*9).toFixed(1)+"px");
- root.style.setProperty("--glass-saturation",(105+t*22).toFixed(0)+"%");
- root.style.setProperty("--glass-sheen",(0.01+t*.055).toFixed(3));
+ const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):82)),t=value/100,root=document.documentElement;
+ root.style.setProperty("--glass-alpha",(0.90-t*.34).toFixed(3));
+ root.style.setProperty("--glass-blur",(6+t*22).toFixed(1)+"px");
+ root.style.setProperty("--glass-saturation",(112+t*105).toFixed(0)+"%");
+ root.style.setProperty("--glass-sheen",(0.045+t*.21).toFixed(3));
  root.dataset.glass=value===0?"off":"on";
  $("admin-glass-intensity").value=String(value);
  $("admin-glass-value").textContent=value+"%";
 }
 function initControlGlass(){
- let value=34;
- try{const raw=localStorage.getItem(CONTROL_GLASS_KEY);const stored=Number(raw);if(raw!==null&&Number.isFinite(stored))value=Math.max(0,Math.min(100,stored===72?34:stored))}catch{}
+ let value=82;
+ try{const raw=localStorage.getItem(CONTROL_GLASS_KEY);const stored=Number(raw);if(raw!==null&&Number.isFinite(stored)){value=Math.max(0,Math.min(100,stored===72||stored===34?82:stored));if(value!==stored)localStorage.setItem(CONTROL_GLASS_KEY,String(value));}}catch{}
  applyControlGlass(value);
  $("glass-settings-button").onclick=()=>$("glass-settings-modal").showModal();
  $("admin-glass-intensity").oninput=e=>{const v=Number(e.target.value);applyControlGlass(v);try{localStorage.setItem(CONTROL_GLASS_KEY,String(v))}catch{}};
- $("glass-reset").onclick=()=>{applyControlGlass(34);try{localStorage.setItem(CONTROL_GLASS_KEY,"34")}catch{}};
+ $("glass-reset").onclick=()=>{applyControlGlass(82);try{localStorage.setItem(CONTROL_GLASS_KEY,"82")}catch{}};
  document.querySelectorAll("[data-close-glass]").forEach(b=>b.onclick=()=>$("glass-settings-modal").close());
 }
+
+function initControlLiquidGlassMotion(){
+ const selector='.card,.panel,.table-panel,.metric,.admin-pill,.main-nav,.modal,.notice,.manage-section,.account-panel,.login-art,.login-form-wrap,.toolbar,.table-wrap,.topbar,.glass-demo';
+ let active=null,frame=0,pending=null;
+ const reset=surface=>{
+  if(!surface)return;
+  surface.classList.remove('liquid-glass-active');
+  surface.style.removeProperty('--glass-x');surface.style.removeProperty('--glass-y');
+  surface.style.removeProperty('--glass-tilt-x');surface.style.removeProperty('--glass-tilt-y');
+ };
+ document.addEventListener('pointermove',event=>{
+  const surface=event.target instanceof Element?event.target.closest(selector):null;
+  if(!surface||document.documentElement.dataset.glass==='off'){if(active&&active!==surface)reset(active);active=null;return}
+  if(event.pointerType==='mouse'&&event.buttons!==0)return;
+  const rect=surface.getBoundingClientRect();if(!rect.width||!rect.height)return;
+  const x=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+  const y=Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+  pending={surface,x,y,tilt:event.pointerType==='touch'?1.25:2.4};
+  if(frame)return;
+  frame=requestAnimationFrame(()=>{
+   frame=0;if(!pending)return;
+   if(active&&active!==pending.surface)reset(active);
+   active=pending.surface;active.classList.add('liquid-glass-active');
+   active.style.setProperty('--glass-x',(pending.x*100).toFixed(1)+'%');
+   active.style.setProperty('--glass-y',(pending.y*100).toFixed(1)+'%');
+   active.style.setProperty('--glass-tilt-x',((pending.x-.5)*pending.tilt).toFixed(2)+'deg');
+   active.style.setProperty('--glass-tilt-y',((.5-pending.y)*pending.tilt).toFixed(2)+'deg');
+   pending=null;
+  });
+ },{passive:true});
+ document.addEventListener('pointerout',event=>{
+  if(!active||!event.relatedTarget||!(event.relatedTarget instanceof Node)||!active.contains(event.relatedTarget))reset(active);
+  active=null;
+ },true);
+ window.addEventListener('blur',()=>{reset(active);active=null});
+ document.addEventListener('pointercancel',()=>{reset(active);active=null},{passive:true});
+}
+
 let toastSequence=0;
 function toast(message,type="info"){
  const area=$("toast-area"),list=$("toast-list");if(!area||!list)return;
@@ -306,6 +344,7 @@ function scheduleAdminForegroundRefresh(){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleAdminForegroundRefresh()});
 window.addEventListener("focus",scheduleAdminForegroundRefresh);
 initControlGlass();
+initControlLiquidGlassMotion();
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
