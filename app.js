@@ -1053,7 +1053,7 @@ async function backup(){try{if(role!=='owner')return;const payload={students,gro
 
 // Pointer/touch-reactive Liquid Glass. Touch updates reflections without tilting cards.
 (function initLiquidGlassInteractions(){
- const surfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const surfaces='.topbar,.sidebar,.sidebar-bottom,.nav-item,.theme-toggle,.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
  const tiltSurfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.metric,.manage-section,.login-art,.login-form-wrap';
  const mark=root=>{
   if(root.nodeType!==1)return;
