@@ -2314,3 +2314,174 @@ html[data-theme="dark"] .liquid-glass-surface{
 @media(prefers-reduced-motion:reduce){.liquid-glass-tilt{transform:none!important;transition:none!important}}
 
 .student-supervisor-mobile{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;font-size:11px;color:var(--muted,#75839b)}.student-supervisor-mobile .student-supervisor-select{flex:1;max-width:190px}
+
+
+/* 2026-11-12 hotfix: full-width workspace + reliable slide-out navigation on phone-sized and tablet-sized viewports.
+   Theme-scoped legacy rail rules previously overrode the generic mobile layout. */
+@media (max-width: 1050px) {
+  html[data-theme="light"] .app-shell .main,
+  html[data-theme="dark"] .app-shell .main {
+    display: block !important;
+    box-sizing: border-box !important;
+    float: none !important;
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 16px 14px calc(30px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar,
+  html[data-theme="dark"] .app-shell .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    width: min(84vw, 310px) !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    z-index: 90 !important;
+    padding: 16px 12px calc(12px + env(safe-area-inset-bottom)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    transform: translateX(105%) !important;
+    transition: transform .22s ease !important;
+    box-shadow: -12px 0 36px #0003 !important;
+  }
+
+  html[data-theme="light"] .app-shell.mobile-nav-open .sidebar,
+  html[data-theme="dark"] .app-shell.mobile-nav-open .sidebar {
+    transform: translateX(0) !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar .brand,
+  html[data-theme="dark"] .app-shell .sidebar .brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    padding: 2px 5px 13px !important;
+    margin: 0 0 8px !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar .profile,
+  html[data-theme="dark"] .app-shell .sidebar .profile {
+    display: flex !important;
+    min-width: 0 !important;
+    gap: 8px !important;
+    padding: 10px 3px !important;
+    margin: 0 0 9px !important;
+    align-items: center !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar .profile > div:last-child,
+  html[data-theme="dark"] .app-shell .sidebar .profile > div:last-child {
+    display: block !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar nav,
+  html[data-theme="dark"] .app-shell .sidebar nav {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-content: start !important;
+    align-items: stretch !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    gap: 4px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 3px 0 10px !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar nav .nav-item,
+  html[data-theme="dark"] .app-shell .sidebar nav .nav-item {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 42px !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    padding: 8px 11px !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar .sidebar-bottom,
+  html[data-theme="dark"] .app-shell .sidebar .sidebar-bottom {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 3px !important;
+    flex: 0 0 auto !important;
+    margin: 8px 0 0 !important;
+    padding: 9px 0 0 !important;
+    border-top: 1px solid var(--academy-border, #2a3c58) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html[data-theme="light"] .app-shell .sidebar .sidebar-bottom .nav-item,
+  html[data-theme="dark"] .app-shell .sidebar .sidebar-bottom .nav-item {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 40px !important;
+    height: auto !important;
+    flex: 0 0 auto !important;
+    justify-content: flex-start !important;
+    padding: 8px 11px !important;
+    font-size: 11px !important;
+    white-space: normal !important;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+  }
+
+  #mobile-nav-backdrop:not([hidden]) {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #02071399 !important;
+    backdrop-filter: blur(2px);
+    z-index: 80 !important;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 430px) {
+  html[data-theme="light"] .app-shell .main,
+  html[data-theme="dark"] .app-shell .main {
+    padding-inline: 11px !important;
+  }
+}
