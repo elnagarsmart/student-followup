@@ -2312,3 +2312,5 @@ html[data-theme="dark"] .liquid-glass-surface{
 .student-supervisor-select{max-width:170px;min-width:130px;padding:8px 10px;border-radius:10px}
 @media(max-width:700px){.owner-message-inbox{padding:10px}.owner-inbox-body{min-width:170px}.owner-inbox-pagination .button{flex:1}}
 @media(prefers-reduced-motion:reduce){.liquid-glass-tilt{transform:none!important;transition:none!important}}
+
+.student-supervisor-mobile{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;font-size:11px;color:var(--muted,#75839b)}.student-supervisor-mobile .student-supervisor-select{flex:1;max-width:190px}
