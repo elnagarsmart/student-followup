@@ -939,7 +939,7 @@ function renderAIImportPreview(rows){
 
 async function renderMessages(){
  if(messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}
- const view=++messageViewVersion;
+ const view=++messageViewVersion;ownerInboxMode=false;
  $('content').innerHTML=`<section class="panel message-panel">
   <div class="message-page-heading">
    <div><p class="eyebrow">صندوق الوارد</p><h2>الرسائل والمحادثات</h2><p class="muted">محادثات خاصة مع أولياء الأمور والطلاب والمشرفين</p></div>
