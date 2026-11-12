@@ -175,3 +175,24 @@ html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"
 html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"] .table-panel,html[data-glass="off"] .metric,html[data-glass="off"] .modal{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .glass-settings-modal{background:linear-gradient(145deg,rgba(21,39,62,.97),rgba(10,25,42,.96))!important}
 @media(prefers-reduced-motion:reduce){.button,.row-btn,.icon-button,.panel,.table-panel,.metric,.account-panel{transition:none!important;animation:none!important}}
+
+
+/* Premium liquid glass for the control center */
+:root{--glass-alpha:.62;--glass-blur:24px;--glass-saturation:190%;--glass-sheen:.20}
+.card,.panel,.table-panel,.metric,.admin-pill,.main-nav,.modal,.notice,.manage-section,.account-panel,.login-art,.login-form-wrap,.toolbar,.table-wrap,.topbar,.glass-demo{
+ border:1px solid rgba(174,198,240,.27)!important;
+ background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(220,234,255,var(--glass-sheen)),transparent 48%),linear-gradient(145deg,rgba(25,46,73,var(--glass-alpha)),rgba(8,22,41,.86))!important;
+ background-size:160% 160%,100% 100%!important;background-position:var(--glass-x,18%) var(--glass-y,0%),center!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation))!important;
+ box-shadow:0 20px 52px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.035)!important;
+ transition:background-position .16s ease,border-color .22s ease,box-shadow .22s ease,transform .16s ease!important;
+}
+.topbar{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(210,229,255,.18),transparent 48%),linear-gradient(135deg,rgba(24,43,70,.96),rgba(8,22,39,.89))!important}
+.main-nav{background-image:radial-gradient(circle at var(--glass-x,18%) var(--glass-y,0%),rgba(212,227,255,.14),transparent 48%),linear-gradient(135deg,rgba(12,29,49,.90),rgba(6,18,33,.86))!important}
+.liquid-glass-active{transform:perspective(1150px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateY(-1px)!important}
+.panel.liquid-glass-active,.metric.liquid-glass-active,.account-panel.liquid-glass-active,.card.liquid-glass-active{box-shadow:0 25px 62px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.23),inset 0 -1px 0 rgba(255,255,255,.05)!important}
+.glass-demo{min-height:165px!important;border-radius:20px!important}
+.owner-inbox-row{border:1px solid rgba(174,198,240,.2);border-radius:15px;background:rgba(15,32,53,.64);padding:13px}
+.payment-reminder-info,.portal-attendance-note{border:1px solid rgba(151,177,224,.2);border-radius:14px;background:linear-gradient(135deg,rgba(95,110,190,.12),rgba(69,160,175,.09));padding:13px 15px;font-size:11px;line-height:1.9}
+@media(prefers-reduced-motion:reduce){.liquid-glass-active{transform:none!important}.card,.panel,.table-panel,.metric,.account-panel,.glass-demo{transition:none!important}}
