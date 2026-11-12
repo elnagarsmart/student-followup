@@ -999,7 +999,7 @@ async function renderMessages(){
   if(!ownerInboxMode)await loadMessageThread(view);
   const templateSelect=$('message-template-select');
   if(templateSelect)templateSelect.onchange=()=>{const key=templateSelect.value;if(!key)return;const peer=messageContacts.find(c=>c.id===activeMessagePeerId);const template=academySettings?.messages?.templates?.[key]||DEFAULT_ACADEMY_SETTINGS.messages.templates[key];const body=fillAcademyTemplate(template,{academy:academySettings?.profile?.academyName||'أكاديميا',student:peer?.name||'الطالب',status:'حاضر',date:localDate(),session:academySettings?.defaults?.attendanceSession||'الجلسة الأولى',amount:''});const signature=academySettings?.messages?.signature;$('message-body').value=body+(signature?'\\n'+signature:'')};
-  messageRefreshTimer=setInterval(()=>{if(tab==='messages'&&!document.hidden){void (ownerInboxMode?loadOwnerInbox(view):loadMessageThread(view)).catch(e=>msg('تعذر تحديث المحادثة: '+e.message));void refreshUnreadCounts();}},8000);
+  messageRefreshTimer=setInterval(()=>{if(tab==='messages'&&!document.hidden){if(!ownerInboxMode)void loadMessageThread(view).catch(e=>msg('تعذر تحديث المحادثة: '+e.message));void refreshUnreadCounts();}},8000);
  }catch(e){
   if(view!==messageViewVersion)return;
   $('message-thread').innerHTML='<div class="message-welcome-empty"><span>!</span><b>تعذر تحميل المحادثات</b><p>'+esc(e.message||'حاول تحديث الصفحة.')+'</p></div>';
@@ -1017,24 +1017,45 @@ async function loadOwnerInbox(view){
  $('message-peer-avatar').textContent='✉';
  thread.innerHTML='<div class="message-welcome-empty"><span>⌛</span><b>جار تحميل كل الرسائل…</b></div>';
  try{
-  const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'owner_inbox'}});
+  const {data,error}=await db.functions.invoke('academia-messages',{body:{action:'owner_inbox',offset:0}});
   if(error)throw error;
   if(data?.error)throw new Error(data.error);
   if(view!==messageViewVersion||tab!=='messages'||!ownerInboxMode)return;
-  const rows=Array.isArray(data?.messages)?data.messages:[];
+  let rows=Array.isArray(data?.messages)?data.messages:[];
+  let nextOffset=Number(data?.next_offset??rows.length);
+  let hasMore=data?.has_more===true;
+  const total=Number(data?.total??rows.length);
   const roleLabels={owner:'المالك',supervisor:'مشرف',student:'طالب',guardian:'ولي أمر',account:'حساب'};
-  thread.innerHTML='<div class="owner-inbox-toolbar"><label for="owner-inbox-search">بحث في جميع المحادثات</label><input id="owner-inbox-search" type="search" placeholder="اسم الطالب أو المرسل أو نص الرسالة…"><span>'+rows.length+' رسالة</span></div><div id="owner-inbox-list" class="owner-inbox-list"></div>'+(data?.truncated?'<p class="message-help">نعرض أحدث 1000 رسالة فقط. استخدم البحث لتضييق النتائج.</p>':'');
-  const list=$('owner-inbox-list'),search=$('owner-inbox-search');
+  thread.innerHTML='<div class="owner-inbox-toolbar"><label for="owner-inbox-search">بحث في الرسائل المحمّلة</label><input id="owner-inbox-search" type="search" placeholder="اسم الطالب أو المرسل أو نص الرسالة…"><span id="owner-inbox-count"></span></div><p class="message-help">يتم تحميل الرسائل على دفعات؛ استخدم «تحميل رسائل أقدم» للوصول إلى المحادثات الأقدم.</p><div id="owner-inbox-list" class="owner-inbox-list"></div>';
+  const list=$('owner-inbox-list'),search=$('owner-inbox-search'),count=$('owner-inbox-count');
   const draw=()=>{
    const q=String(search?.value||'').trim().toLocaleLowerCase('ar');
    const filtered=rows.filter(m=>[m.sender_name,m.recipient_name,m.student_name,m.body,roleLabels[m.sender_role],roleLabels[m.recipient_role]].join(' ').toLocaleLowerCase('ar').includes(q));
+   count.textContent=rows.length+' من '+total+' رسالة';
    list.innerHTML=filtered.length?filtered.map(m=>{
     const stamp=m.created_at?new Date(m.created_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}):'—';
     return '<article class="owner-inbox-row"><div class="owner-inbox-row-head"><div><b>'+esc(m.sender_name||'حساب غير معروف')+'</b><small>'+esc(roleLabels[m.sender_role]||'حساب')+'</small></div><span class="owner-inbox-arrow">←</span><div><b>'+esc(m.recipient_name||'حساب غير معروف')+'</b><small>'+esc(roleLabels[m.recipient_role]||'حساب')+'</small></div><time>'+esc(stamp)+'</time></div>'+(m.student_name?'<p class="owner-inbox-student">الطالب المرتبط: <b>'+esc(m.student_name)+'</b></p>':'')+'<p class="owner-inbox-body">'+esc(m.body)+'</p><div class="owner-inbox-row-actions"><span>'+(m.read_at?'مقروءة':'غير مقروءة')+'</span><button type="button" class="text-button danger-action" data-owner-delete-message="'+esc(m.id)+'">حذف الرسالة</button></div></article>';
-   }).join(''):'<div class="message-welcome-empty"><span>⌕</span><b>لا توجد نتائج مطابقة</b></div>';
+   }).join(''):'<div class="message-welcome-empty"><span>⌕</span><b>لا توجد نتائج مطابقة ضمن الرسائل المحمّلة</b></div>';
+   if(hasMore)list.insertAdjacentHTML('beforeend','<button type="button" class="owner-inbox-load-more" data-owner-load-more>تحميل رسائل أقدم</button>');
   };
   search?.addEventListener('input',draw);
   list.onclick=async event=>{
+   const more=event.target.closest('[data-owner-load-more]');
+   if(more){
+    more.disabled=true;more.textContent='جار تحميل الرسائل…';
+    try{
+     const {data:older,error:olderError}=await db.functions.invoke('academia-messages',{body:{action:'owner_inbox',offset:nextOffset}});
+     if(olderError)throw olderError;
+     if(older?.error)throw new Error(older.error);
+     if(view!==messageViewVersion||tab!=='messages'||!ownerInboxMode)return;
+     const seen=new Set(rows.map(item=>item.id));
+     rows.push(...(Array.isArray(older?.messages)?older.messages.filter(item=>!seen.has(item.id)):[]));
+     nextOffset=Number(older?.next_offset??(nextOffset+100));
+     hasMore=older?.has_more===true;
+     draw();
+    }catch(error){more.disabled=false;more.textContent='إعادة المحاولة لتحميل الأقدم';msg(error.message||'تعذر تحميل الرسائل الأقدم.')}
+    return;
+   }
    const button=event.target.closest('[data-owner-delete-message]');
    if(!button)return;
    const id=button.dataset.ownerDeleteMessage;
@@ -1049,13 +1070,12 @@ async function loadOwnerInbox(view){
    }catch(error){button.disabled=false;button.textContent='حذف الرسالة';msg(error.message||'تعذر حذف الرسالة.')}
   };
   draw();
-  $('message-help').textContent='هذا عرض إشرافي شامل للمالك، مع إمكانية حذف رسالة منفردة. لا يحوّل الرسائل إلى سجلات حضور أو إنذارات.';
+  $('message-help').textContent='هذا عرض إشرافي شامل للمالك؛ يمكنك البحث في الرسائل المحمّلة، تحميل الأقدم، وحذف رسالة منفردة نهائيًا.';
  }catch(error){
   if(view!==messageViewVersion)return;
   thread.innerHTML='<div class="message-welcome-empty"><span>!</span><b>تعذر تحميل صندوق المالك</b><p>'+esc(error.message||'تحقق من الاتصال وحاول مرة أخرى.')+'</p></div>';
  }
 }
-
 async function loadMessageThread(view){
  const peerId=activeMessagePeerId;
  if(!peerId)return;
