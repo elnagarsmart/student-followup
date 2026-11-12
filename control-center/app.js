@@ -313,8 +313,8 @@ document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admi
 
 // Pointer/touch-reactive Liquid Glass. Touch updates reflections without tilting cards.
 (function initLiquidGlassInteractions(){
- const surfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
- const tiltSurfaces='.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const surfaces='.card,.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.message-thread,.message-compose,.modal,.table-panel,.metric,.manage-section,.login-art,.login-form-wrap';
+ const tiltSurfaces='.card,.auth-card,.panel,.stat-card,.settings-card,.welcome,.student-mobile-card,.account-panel,.metric,.manage-section,.login-art,.login-form-wrap';
  const mark=root=>{
   if(root.nodeType!==1)return;
   if(root.matches?.(surfaces)){root.classList.add('liquid-glass-surface');if(root.matches(tiltSurfaces))root.classList.add('liquid-glass-tilt')}
