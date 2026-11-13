@@ -192,3 +192,24 @@ html[data-glass="off"] .card,html[data-glass="off"] .panel,html[data-glass="off"
 .liquid-glass-tilt{transform:perspective(1200px) rotateX(var(--glass-tilt-y,0deg)) rotateY(var(--glass-tilt-x,0deg)) translateZ(0)}
 .liquid-glass-tilt:hover{box-shadow:0 24px 56px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.19)!important}
 @media(prefers-reduced-motion:reduce){.liquid-glass-tilt{transform:none!important;transition:none!important}}
+
+
+/* High-visibility Liquid Glass finish for the central control center */
+.liquid-glass-surface{
+ position:relative!important;isolation:isolate!important;
+ background-color:rgba(15,31,52,.55)!important;
+ background-image:
+  radial-gradient(ellipse at var(--glass-x,18%) var(--glass-y,0%),rgba(226,239,255,.25),transparent 43%),
+  radial-gradient(ellipse at 92% 8%,rgba(119,157,255,.17),transparent 42%),
+  linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.025) 48%,rgba(8,19,35,.2))!important;
+ -webkit-backdrop-filter:blur(var(--glass-blur,24px)) saturate(var(--glass-saturation,175%)) contrast(1.04)!important;
+ backdrop-filter:blur(var(--glass-blur,24px)) saturate(var(--glass-saturation,175%)) contrast(1.04)!important;
+ border-color:rgba(204,224,255,.27)!important;
+ box-shadow:0 20px 48px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.23),inset 0 -1px 0 rgba(255,255,255,.07)!important;
+}
+.liquid-glass-surface::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(125deg,rgba(255,255,255,.12),transparent 30%,transparent 70%,rgba(123,164,255,.08));
+}
+.liquid-glass-tilt{will-change:transform}
+@media(prefers-reduced-motion:reduce){.liquid-glass-tilt{will-change:auto}}
