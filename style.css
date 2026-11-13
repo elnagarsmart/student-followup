@@ -2912,3 +2912,56 @@ html[data-skin] .welcome.liquid-glass-surface::after{
 /* The fifth statistic fits the desktop row and remains balanced on phones. */
 @media(min-width:1100px){#dashboard.app-shell .stats-grid:has(.stat-card:nth-child(5):last-child){grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){html[data-skin] .liquid-glass-surface{transition:none!important}}
+
+
+/* Final polish requested: integrated liquid sculpture and consistent line icons */
+html[data-skin] .welcome.liquid-glass-surface::after{content:none!important;display:none!important}
+html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art{
+ position:absolute!important;
+ inset:0 auto 0 2.5%!important;
+ width:min(42%,330px)!important;
+ height:100%!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ z-index:1!important;
+ pointer-events:none!important;
+ opacity:.94!important;
+}
+html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art svg{
+ display:block!important;width:100%!important;height:auto!important;max-height:95%!important;
+ overflow:visible!important;filter:drop-shadow(0 10px 18px rgba(9,25,51,.18));
+}
+html[data-skin] .welcome.liquid-glass-surface>div:first-child{z-index:2!important}
+html[data-skin] .welcome.liquid-glass-surface{isolation:isolate!important}
+html[data-skin] .welcome.liquid-glass-surface::before{z-index:0!important}
+html[data-skin] .stat-card .stat-icon svg{
+ display:block;width:20px;height:20px;overflow:visible;
+ fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;
+}
+html[data-skin] #nav .nav-item span svg{
+ display:block;width:20px;height:20px;max-width:20px;max-height:20px;
+ fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+}
+html[data-skin] #nav .nav-item span{
+ display:inline-grid;place-items:center;flex:0 0 22px;min-width:22px;
+}
+@media(max-width:760px){
+ html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art{
+  left:1.5%!important;width:39%!important;opacity:.76!important;
+ }
+ html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art svg{
+  max-height:88%!important;
+ }
+ html[data-skin] .welcome.liquid-glass-surface>div:first-child{
+  position:relative!important;z-index:2!important;
+  max-width:68%!important;margin-inline-start:auto!important;
+ }
+ html[data-skin] #nav .nav-item span svg{
+  width:21px;height:21px;max-width:21px;max-height:21px;
+ }
+}
+@media(max-width:380px){
+ html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art{width:35%!important}
+ html[data-skin] .welcome.liquid-glass-surface>div:first-child{max-width:72%!important}
+}
