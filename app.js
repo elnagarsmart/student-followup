@@ -119,15 +119,25 @@ const themeToggle=$('theme-toggle');
 const authThemeToggle=$('auth-theme-toggle');
 const mobileNavToggle=$('mobile-nav-toggle');
 const mobileNavBackdrop=$('mobile-nav-backdrop');
-function closeMobileNav(){ $('dashboard')?.classList.remove('mobile-nav-open');mobileNavToggle?.setAttribute('aria-expanded','false'); }
+const mobileNavClose=$('mobile-nav-close');
+function closeMobileNav(){
+ $('dashboard')?.classList.remove('mobile-nav-open');
+ mobileNavToggle?.setAttribute('aria-expanded','false');
+ mobileNavToggle?.setAttribute('aria-label','فتح القائمة');
+ if(mobileNavBackdrop)mobileNavBackdrop.hidden=true;
+}
 function toggleMobileNav(){
  if(!mobileNavToggle)return;
  const opening=!$('dashboard').classList.contains('mobile-nav-open');
  $('dashboard').classList.toggle('mobile-nav-open',opening);
  mobileNavToggle.setAttribute('aria-expanded',String(opening));
+ mobileNavToggle.setAttribute('aria-label',opening?'القائمة مفتوحة':'فتح القائمة');
+ if(mobileNavBackdrop)mobileNavBackdrop.hidden=!opening;
 }
 if(mobileNavToggle)mobileNavToggle.onclick=toggleMobileNav;
+if(mobileNavClose)mobileNavClose.onclick=closeMobileNav;
 if(mobileNavBackdrop)mobileNavBackdrop.onclick=closeMobileNav;
+$('nav')?.addEventListener('click',e=>{if(e.target.closest('button'))closeMobileNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
 const DEFAULT_ACADEMY_SETTINGS={
@@ -202,10 +212,10 @@ function applyGlassIntensity(raw){
  const strength=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34));
  const t=strength/100,root=document.documentElement;
  root.style.setProperty('--glass-strength',String(strength));
- root.style.setProperty('--glass-alpha',(0.84-t*0.18).toFixed(3));
- root.style.setProperty('--glass-blur',(10+t*18).toFixed(1)+'px');
- root.style.setProperty('--glass-saturation',(125+t*55).toFixed(0)+'%');
- root.style.setProperty('--glass-sheen',(0.035+t*0.11).toFixed(3));
+ root.style.setProperty('--glass-alpha',(0.70-t*0.14).toFixed(3));
+ root.style.setProperty('--glass-blur',(18+t*20).toFixed(1)+'px');
+ root.style.setProperty('--glass-saturation',(150+t*70).toFixed(0)+'%');
+ root.style.setProperty('--glass-sheen',(0.10+t*0.16).toFixed(3));
  root.dataset.glass=strength===0?'off':'on';
 }
 function applyAcademyAppearance(){
