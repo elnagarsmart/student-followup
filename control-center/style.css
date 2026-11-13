@@ -340,3 +340,128 @@ html[data-admin-skin] .role-chip{background:var(--control-soft)!important;border
  .control-theme-picker-wrap select{flex:1 1 auto!important;max-width:none!important}
  .top-actions{align-items:stretch!important}
 }
+
+
+/* ============================================================
+   LIQUID GLASS — sculpted translucent materials (Control v3)
+   ============================================================ */
+html[data-admin-skin] body{
+ background:
+  radial-gradient(ellipse at 12% 4%,rgba(244,249,255,.12),transparent 31%),
+  radial-gradient(ellipse at 87% 16%,color-mix(in srgb,var(--control-accent) 28%,transparent),transparent 39%),
+  radial-gradient(ellipse at 72% 90%,rgba(94,172,201,.15),transparent 38%),
+  linear-gradient(145deg,#091321 0%,#14243a 48%,#091827 100%)!important;
+ background-attachment:fixed!important;
+}
+html[data-admin-skin] .liquid-glass-surface{
+ position:relative!important;isolation:isolate!important;overflow:hidden;
+ -webkit-backdrop-filter:blur(30px) saturate(195%) brightness(1.08)!important;
+ backdrop-filter:blur(30px) saturate(195%) brightness(1.08)!important;
+ background-color:rgba(28,47,72,.34)!important;
+ background-image:
+  radial-gradient(ellipse at var(--glass-x,18%) var(--glass-y,0%),rgba(243,249,255,.30) 0%,rgba(243,249,255,.035) 32%,transparent 55%),
+  radial-gradient(ellipse at 92% 3%,color-mix(in srgb,var(--control-accent) 23%,transparent),transparent 48%),
+  linear-gradient(140deg,rgba(255,255,255,.17),rgba(255,255,255,.035) 42%,rgba(5,17,31,.34) 100%)!important;
+ border:1px solid rgba(220,235,255,.32)!important;
+ box-shadow:
+  0 22px 55px rgba(0,0,0,.23),
+  0 3px 10px rgba(0,0,0,.12),
+  inset 0 1.5px 0 rgba(255,255,255,.38),
+  inset 0 -1px 0 rgba(0,0,0,.18),
+  inset 1px 0 0 rgba(255,255,255,.16),
+  inset -1px 0 0 rgba(255,255,255,.06)!important;
+ transition:background .3s ease,border-color .3s ease,box-shadow .3s ease,transform .28s cubic-bezier(.2,.75,.2,1)!important;
+}
+html[data-admin-skin] .card.liquid-glass-surface::before,
+html[data-admin-skin] .panel.liquid-glass-surface::before,
+html[data-admin-skin] .metric.liquid-glass-surface::before,
+html[data-admin-skin] .account-panel.liquid-glass-surface::before,
+html[data-admin-skin] .login-art.liquid-glass-surface::before,
+html[data-admin-skin] .login-form-wrap.liquid-glass-surface::before,
+html[data-admin-skin] .table-panel.liquid-glass-surface::before,
+html[data-admin-skin] .manage-section.liquid-glass-surface::before,
+html[data-admin-skin] .modal.liquid-glass-surface::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+ background:
+  radial-gradient(ellipse at 16% 0%,rgba(255,255,255,.30),transparent 45%),
+  linear-gradient(118deg,rgba(255,255,255,.13),transparent 28%,transparent 70%,rgba(255,255,255,.07));
+ opacity:.92;
+}
+html[data-admin-skin] .card.liquid-glass-surface>*,
+html[data-admin-skin] .panel.liquid-glass-surface>*,
+html[data-admin-skin] .metric.liquid-glass-surface>*,
+html[data-admin-skin] .account-panel.liquid-glass-surface>*,
+html[data-admin-skin] .login-art.liquid-glass-surface>*,
+html[data-admin-skin] .login-form-wrap.liquid-glass-surface>*,
+html[data-admin-skin] .table-panel.liquid-glass-surface>*,
+html[data-admin-skin] .manage-section.liquid-glass-surface>*,
+html[data-admin-skin] .modal.liquid-glass-surface>*{position:relative;z-index:1}
+html[data-admin-skin] .topbar.liquid-glass-surface{
+ background:linear-gradient(120deg,rgba(255,255,255,.16),rgba(255,255,255,.045) 58%,var(--control-glass))!important;
+ border-color:rgba(224,238,255,.34)!important;
+ box-shadow:0 14px 36px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.34)!important;
+}
+html[data-admin-skin] .main-nav.liquid-glass-surface{
+ background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(12,29,49,.45))!important;
+ border-color:rgba(212,229,255,.25)!important;
+}
+html[data-admin-skin] .metric.liquid-glass-surface{
+ min-height:126px;
+ background-color:rgba(24,47,73,.36)!important;
+}
+html[data-admin-skin] .metric.liquid-glass-surface b{color:#fbfdff!important;text-shadow:0 1px 10px rgba(0,0,0,.12)}
+html[data-admin-skin] .metric.liquid-glass-surface span,
+html[data-admin-skin] .metric.liquid-glass-surface small{color:#ccdaed!important}
+html[data-admin-skin] .metric.liquid-glass-surface .metric-icon{
+ border:1px solid rgba(255,255,255,.27)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 8px 20px rgba(0,0,0,.12);
+}
+html[data-admin-skin] .panel.liquid-glass-surface,
+html[data-admin-skin] .table-panel.liquid-glass-surface,
+html[data-admin-skin] .account-panel.liquid-glass-surface{
+ background-color:rgba(21,40,62,.34)!important;
+}
+html[data-admin-skin] .login-art.liquid-glass-surface{
+ background:
+  radial-gradient(ellipse at 22% 6%,rgba(255,255,255,.22),transparent 40%),
+  radial-gradient(ellipse at 82% 80%,var(--control-glow),transparent 50%),
+  linear-gradient(135deg,rgba(255,255,255,.13),rgba(14,31,52,.46))!important;
+}
+html[data-admin-skin] .manage-section.liquid-glass-surface,
+html[data-admin-skin] .login-form-wrap.liquid-glass-surface{
+ background-color:rgba(14,30,49,.38)!important;
+}
+html[data-admin-skin] .table-wrap.liquid-glass-surface{
+ border-color:rgba(212,229,255,.24)!important;
+}
+html[data-admin-skin] .modal.liquid-glass-surface{
+ background:linear-gradient(145deg,rgba(30,49,73,.78),rgba(9,22,38,.84))!important;
+}
+html[data-admin-skin] .control-theme-picker-wrap{
+ background:rgba(25,44,66,.42)!important;
+ border-color:rgba(220,235,255,.25)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 8px 22px rgba(0,0,0,.12)!important;
+}
+html[data-admin-skin] .control-theme-picker-wrap select{
+ background:rgba(9,24,42,.62)!important;border-color:rgba(220,235,255,.24)!important;
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+}
+html[data-admin-skin] .button.ghost,
+html[data-admin-skin] .icon-button,
+html[data-admin-skin] .admin-pill{
+ -webkit-backdrop-filter:blur(18px) saturate(170%)!important;
+ backdrop-filter:blur(18px) saturate(170%)!important;
+ border-color:rgba(220,235,255,.23)!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 18px rgba(0,0,0,.12)!important;
+}
+html[data-admin-skin] .button.primary{
+ box-shadow:0 9px 26px var(--control-soft),inset 0 1px 0 rgba(255,255,255,.31)!important;
+}
+html[data-admin-skin] .liquid-glass-tilt:hover{
+ box-shadow:0 25px 62px rgba(0,0,0,.28),inset 0 1.5px 0 rgba(255,255,255,.45)!important;
+}
+@media(max-width:620px){
+ html[data-admin-skin] .liquid-glass-surface{-webkit-backdrop-filter:blur(24px) saturate(185%)!important;backdrop-filter:blur(24px) saturate(185%)!important}
+ html[data-admin-skin] .metric.liquid-glass-surface{min-height:112px}
+}
+@media(prefers-reduced-motion:reduce){html[data-admin-skin] .liquid-glass-surface{transition:none!important}}
