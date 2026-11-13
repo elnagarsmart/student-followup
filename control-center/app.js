@@ -12,10 +12,10 @@ function status(message,error=false){$("status").textContent=message||"";$("stat
 const CONTROL_GLASS_KEY="academia-control-glass-v1";
 function applyControlGlass(raw){
  const value=Math.max(0,Math.min(100,Number.isFinite(Number(raw))?Number(raw):34)),t=value/100,root=document.documentElement;
- root.style.setProperty("--glass-alpha",(0.97-t*.16).toFixed(3));
- root.style.setProperty("--glass-blur",(2+t*9).toFixed(1)+"px");
- root.style.setProperty("--glass-saturation",(105+t*22).toFixed(0)+"%");
- root.style.setProperty("--glass-sheen",(0.01+t*.055).toFixed(3));
+ root.style.setProperty("--glass-alpha",(0.72-t*.14).toFixed(3));
+ root.style.setProperty("--glass-blur",(18+t*20).toFixed(1)+"px");
+ root.style.setProperty("--glass-saturation",(150+t*70).toFixed(0)+"%");
+ root.style.setProperty("--glass-sheen",(0.10+t*.16).toFixed(3));
  root.dataset.glass=value===0?"off":"on";
  $("admin-glass-intensity").value=String(value);
  $("admin-glass-value").textContent=value+"%";
