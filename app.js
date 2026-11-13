@@ -137,6 +137,14 @@ function toggleMobileNav(){
 if(mobileNavToggle)mobileNavToggle.onclick=toggleMobileNav;
 if(mobileNavClose)mobileNavClose.onclick=closeMobileNav;
 if(mobileNavBackdrop)mobileNavBackdrop.onclick=closeMobileNav;
+// Capture outside taps before the underlying page action, so the drawer always closes
+// even when a browser or installed PWA does not deliver the backdrop click as expected.
+document.addEventListener('click',e=>{
+ const dashboard=$('dashboard'),sidebar=document.querySelector('.app-shell .sidebar');
+ if(!dashboard?.classList.contains('mobile-nav-open'))return;
+ if(sidebar?.contains(e.target)||mobileNavToggle?.contains(e.target))return;
+ closeMobileNav();
+},true);
 $('nav')?.addEventListener('click',e=>{if(e.target.closest('button'))closeMobileNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
 window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
