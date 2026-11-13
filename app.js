@@ -618,6 +618,7 @@ function renderOwnerOverview(total,present,paidStudentsThisMonth){
  const presentAngle=Math.min(360,presentToday/baseCount*360);
  const absentAngle=Math.min(360,presentAngle+Math.min(360-presentAngle,absentToday/baseCount*360));
  const displayName=academySettings?.profile?.displayName||'مدير الأكاديمية';
+ $('user-email').textContent=displayName;$('role-label').textContent='المالك';
  const metric=(tone,icon,label,value,note,target)=>'<article class="owner-metric-card tone-'+tone+'"><div class="owner-metric-main"><div class="owner-metric-copy"><span>'+label+'</span><strong>'+value+'</strong><small>'+note+'</small></div><div class="owner-metric-icon">'+icon+'</div></div><button type="button" class="owner-metric-link" data-owner-tab="'+target+'"><span>عرض التفاصيل</span><b aria-hidden="true">←</b></button></article>';
  const feeIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="15" rx="3"/><path d="M3 9h18M7 15h3M16 14h.01M7 3h10"/></svg>';
  const attendanceIcon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3.5"/><path d="M2.8 20c.4-3.7 2.6-5.5 6.2-5.5 2 0 3.4.5 4.5 1.6M16 17l2 2 4-4"/></svg>';
@@ -629,7 +630,7 @@ function renderOwnerOverview(total,present,paidStudentsThisMonth){
  }).join('');
  $('content').innerHTML=
   '<section class="owner-dashboard-layout">'+
-   '<div class="owner-welcome"><div class="owner-welcome-copy"><p>مرحبًا بك في أكاديميا</p><h2>كل تفاصيل السنتر في نظرة واحدة</h2><span>إدارة منظمة للحضور والرسوم وبيانات الطلاب</span></div><div class="owner-welcome-mark" aria-hidden="true"><span>ACADEMIA</span></div></div>'+
+   '<div class="owner-welcome"><div class="owner-welcome-copy"><p>مرحبًا بك، '+esc(displayName)+'</p><h2>كل تفاصيل السنتر في نظرة واحدة</h2><span>إدارة منظمة للحضور والرسوم وبيانات الطلاب</span></div><div class="owner-welcome-mark" aria-hidden="true"><span>ACADEMIA</span></div></div>'+
    '<div class="owner-metrics">'+
     metric('fees',feeIcon,'تحصيل هذا الشهر',esc(money(monthCollected)),'جنيه مصري','payments')+
     metric('attendance',attendanceIcon,'الحضور اليوم',String(presentToday),'سجل حضور اليوم','attendance')+

@@ -3231,3 +3231,16 @@ html[data-skin] #nav .nav-item span{
  #dashboard.owner-overview-active .owner-metric-copy strong{font-size:20px}
  #dashboard.owner-overview-active .owner-payment-date{font-size:9px}
 }
+
+/* Tablet and phone fit: preserve the drawer close control and avoid narrow columns. */
+@media(max-width:1200px){
+ #dashboard.owner-overview-active .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:920px){
+ #dashboard.owner-overview-active .owner-lower-grid{grid-template-columns:minmax(0,1fr)!important}
+ #dashboard.owner-overview-active .owner-quick-widget{grid-column:auto!important}
+}
+@media(max-width:760px){
+ #dashboard.owner-overview-active .sidebar{width:min(84vw,300px)!important}
+ #dashboard.owner-overview-active .sidebar .mobile-nav-close{display:flex!important}
+}
