@@ -2965,3 +2965,269 @@ html[data-skin] #nav .nav-item span{
  html[data-skin] .welcome.liquid-glass-surface .welcome-glass-art{width:35%!important}
  html[data-skin] .welcome.liquid-glass-surface>div:first-child{max-width:72%!important}
 }
+
+
+/* =========================================================
+   ACADEMIA OWNER DASHBOARD — screenshot-matched glass layout
+   ========================================================= */
+.welcome-glass-art{display:none!important}
+#dashboard.owner-overview-active{
+ background:
+  radial-gradient(ellipse at 4% 0%,rgba(66,119,231,.15),transparent 34%),
+  radial-gradient(ellipse at 92% 22%,rgba(0,191,202,.10),transparent 34%),
+  linear-gradient(145deg,#030b18 0%,#08182b 52%,#071322 100%)!important;
+ color:#f4f7ff!important;
+}
+#dashboard.owner-overview-active .sidebar{
+ width:286px!important;padding:24px 17px 18px!important;
+ background:linear-gradient(165deg,rgba(5,17,32,.98),rgba(8,25,46,.96))!important;
+ border-left:1px solid rgba(159,192,239,.22)!important;
+ box-shadow:-18px 0 46px rgba(0,0,0,.22),inset 1px 0 0 rgba(255,255,255,.06)!important;
+}
+#dashboard.owner-overview-active .sidebar .brand{
+ padding:5px 7px 25px!important;margin-bottom:24px!important;
+ border-bottom:1px solid rgba(174,205,245,.14)!important;
+}
+#dashboard.owner-overview-active .sidebar .brand b{font-size:22px!important;color:#56a4ff!important;letter-spacing:.2px}
+#dashboard.owner-overview-active .sidebar .brand small{font-size:11px!important;color:#d7e5fa!important}
+#dashboard.owner-overview-active .sidebar .brand-mark.small{
+ width:54px!important;height:54px!important;border-radius:17px!important;
+ background:rgba(37,104,201,.15)!important;border:1px solid rgba(112,175,255,.35)!important;
+}
+#dashboard.owner-overview-active .sidebar .mobile-nav-close{display:none!important}
+#dashboard.owner-overview-active .sidebar nav{gap:9px!important}
+#dashboard.owner-overview-active .sidebar nav .nav-item{
+ min-height:60px!important;padding:12px 16px!important;border:1px solid transparent!important;
+ border-radius:16px!important;color:#d8e4f6!important;font-size:14px!important;font-weight:700!important;
+ background:transparent!important;transition:background .2s,border-color .2s,box-shadow .2s!important;
+}
+#dashboard.owner-overview-active .sidebar nav .nav-item:hover,
+#dashboard.owner-overview-active .sidebar nav .nav-item.active{
+ background:linear-gradient(110deg,rgba(39,116,220,.52),rgba(14,57,105,.68))!important;
+ border-color:rgba(95,176,255,.76)!important;color:#fff!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.17),0 7px 22px rgba(0,93,205,.19)!important;
+}
+#dashboard.owner-overview-active .sidebar nav .nav-item.active{box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 8px 22px rgba(0,104,221,.2)!important}
+#dashboard.owner-overview-active .sidebar nav .nav-item span{width:29px!important;min-width:29px!important;height:29px!important;display:inline-grid!important;place-items:center!important;color:#91bfff!important;font-size:20px!important}
+#dashboard.owner-overview-active .sidebar nav .nav-item span svg{width:22px!important;height:22px!important;stroke:currentColor!important;fill:none!important;stroke-width:1.7!important}
+#dashboard.owner-overview-active .sidebar .sidebar-bottom{gap:8px!important}
+#dashboard.owner-overview-active .sidebar .sidebar-bottom .nav-item{
+ min-height:48px!important;border-radius:13px!important;border:1px solid rgba(174,205,245,.15)!important;
+ background:rgba(255,255,255,.045)!important;color:#d8e4f6!important;
+}
+#dashboard.owner-overview-active .sidebar .sidebar-bottom .logout{color:#ff8e98!important;border-color:rgba(255,117,135,.28)!important}
+#dashboard.owner-overview-active .main{
+ width:calc(100% - 286px)!important;margin-right:286px!important;max-width:none!important;
+ padding:14px 16px 18px!important;
+}
+#dashboard.owner-overview-active .topbar{
+ min-height:82px!important;display:flex!important;align-items:center!important;
+ justify-content:space-between!important;gap:14px!important;margin:0 0 13px!important;padding:12px 17px!important;
+ border-radius:21px!important;border:1px solid rgba(192,217,255,.22)!important;
+ background:linear-gradient(120deg,rgba(255,255,255,.105),rgba(15,39,66,.62) 58%,rgba(12,32,55,.76))!important;
+ -webkit-backdrop-filter:blur(24px) saturate(175%)!important;backdrop-filter:blur(24px) saturate(175%)!important;
+ box-shadow:0 14px 32px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18)!important;
+}
+#dashboard.owner-overview-active .topbar-heading{display:none!important}
+#dashboard.owner-overview-active .topbar-actions{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:13px!important;
+ flex-wrap:wrap!important;direction:ltr!important;margin-inline-start:auto!important;
+}
+#dashboard.owner-overview-active .topbar-profile{
+ display:flex!important;align-items:center!important;gap:11px!important;min-width:185px!important;
+ margin:0!important;padding:0 3px!important;border:0!important;background:transparent!important;
+ direction:rtl!important;color:#f4f7ff!important;
+}
+#dashboard.owner-overview-active .topbar-profile .avatar{
+ width:48px!important;height:48px!important;flex:0 0 48px!important;border-radius:50%!important;
+ background:linear-gradient(145deg,#dce9fb,#8ba6ca)!important;color:#182c48!important;
+ font-size:21px!important;border:2px solid rgba(255,255,255,.5)!important;
+}
+#dashboard.owner-overview-active .topbar-profile b{max-width:210px!important;color:#fff!important;font-size:13px!important;direction:ltr!important}
+#dashboard.owner-overview-active .topbar-profile small{color:#c3d2e9!important;font-size:11px!important}
+#dashboard.owner-overview-active .topbar-icon-button{
+ width:52px!important;height:52px!important;position:relative!important;display:inline-grid!important;
+ place-items:center!important;border-radius:50%!important;border:1px solid rgba(184,211,250,.22)!important;
+ color:#eef6ff!important;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(13,34,57,.62))!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 7px 17px rgba(0,0,0,.16)!important;
+}
+#dashboard.owner-overview-active .topbar-icon-button svg{width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+#dashboard.owner-overview-active .topbar-icon-count{
+ position:absolute!important;top:-4px!important;right:-4px!important;min-width:21px!important;height:21px!important;
+ padding:0 5px!important;border-radius:20px!important;display:grid!important;place-items:center!important;
+ background:#197df0!important;color:#fff!important;font-size:10px!important;font-weight:900!important;
+ border:2px solid #10233d!important;
+}
+#dashboard.owner-overview-active .topbar-icon-count[hidden]{display:none!important}
+#dashboard.owner-overview-active .topbar-actions .theme-toggle{
+ min-height:42px!important;border-radius:12px!important;padding:8px 11px!important;
+ background:rgba(255,255,255,.07)!important;border:1px solid rgba(180,207,245,.19)!important;color:#e7f0ff!important;
+ font-size:11px!important;
+}
+#dashboard.owner-overview-active .topbar-actions .install-app-button,
+#dashboard.owner-overview-active .topbar-actions .date-chip{display:none!important}
+#dashboard.owner-overview-active #message{margin-bottom:12px}
+#dashboard.owner-overview-active #content{width:100%;max-width:none!important}
+#dashboard.owner-overview-active .owner-dashboard-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:17px;width:100%}
+#dashboard.owner-overview-active .owner-welcome{
+ min-height:144px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;
+ padding:27px 34px;border-radius:22px;border:1px solid rgba(199,221,255,.30);
+ color:#fff;background:
+  radial-gradient(ellipse at 4% 12%,rgba(127,170,255,.28),transparent 42%),
+  radial-gradient(ellipse at 96% 85%,rgba(30,111,230,.20),transparent 35%),
+  linear-gradient(110deg,#102846 0%,#0d2550 48%,#173c70 100%);
+ -webkit-backdrop-filter:blur(25px) saturate(165%);backdrop-filter:blur(25px) saturate(165%);
+ box-shadow:0 17px 38px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.06);
+}
+#dashboard.owner-overview-active .owner-welcome::before{
+ content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(116deg,rgba(255,255,255,.14),transparent 28%,transparent 73%,rgba(161,201,255,.10));
+}
+#dashboard.owner-overview-active .owner-welcome-copy{position:relative;z-index:1;text-align:right;margin-inline-start:auto}
+#dashboard.owner-overview-active .owner-welcome-copy p{margin:0 0 10px;color:#afc9ef;font-size:13px;font-weight:700}
+#dashboard.owner-overview-active .owner-welcome-copy h2{margin:0 0 8px;color:#fff;font-size:clamp(22px,2.4vw,32px);font-weight:900;line-height:1.4}
+#dashboard.owner-overview-active .owner-welcome-copy span{color:#d1def1;font-size:13px}
+#dashboard.owner-overview-active .owner-welcome-mark{display:none!important}
+#dashboard.owner-overview-active .owner-metrics{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;direction:rtl;
+}
+#dashboard.owner-overview-active .owner-metric-card{
+ min-width:0;min-height:210px;padding:19px 18px 12px;border-radius:20px;display:flex;flex-direction:column;justify-content:space-between;
+ border:1px solid rgba(205,225,255,.28);color:#f5f8ff;overflow:hidden;
+ -webkit-backdrop-filter:blur(24px) saturate(175%);backdrop-filter:blur(24px) saturate(175%);
+ box-shadow:0 14px 32px rgba(0,0,0,.19),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.07);
+}
+#dashboard.owner-overview-active .owner-metric-card.tone-fees{background:linear-gradient(135deg,rgba(133,88,42,.35),rgba(43,38,37,.58) 52%,rgba(16,33,51,.76))}
+#dashboard.owner-overview-active .owner-metric-card.tone-attendance{background:linear-gradient(135deg,rgba(34,101,194,.43),rgba(16,48,91,.63) 58%,rgba(8,24,46,.76))}
+#dashboard.owner-overview-active .owner-metric-card.tone-students{background:linear-gradient(135deg,rgba(111,72,176,.39),rgba(39,35,89,.64) 58%,rgba(11,23,48,.78))}
+#dashboard.owner-overview-active .owner-metric-card.tone-paid{background:linear-gradient(135deg,rgba(19,142,146,.40),rgba(7,75,88,.65) 58%,rgba(8,31,49,.78))}
+#dashboard.owner-overview-active .owner-metric-main{display:grid;grid-template-columns:minmax(0,1fr) 68px;gap:12px;align-items:start;direction:rtl}
+#dashboard.owner-overview-active .owner-metric-copy{display:flex;flex-direction:column;min-width:0;align-items:flex-start;text-align:right}
+#dashboard.owner-overview-active .owner-metric-copy>span{font-size:13px;font-weight:800;color:#e6efff;line-height:1.5}
+#dashboard.owner-overview-active .owner-metric-copy strong{font-size:clamp(25px,2.3vw,36px);font-weight:900;line-height:1.5;margin-top:12px;color:#fff;direction:rtl;overflow-wrap:anywhere}
+#dashboard.owner-overview-active .owner-metric-copy small{font-size:11px;color:#c2d4ed;margin-top:3px}
+#dashboard.owner-overview-active .owner-metric-icon{
+ width:66px;height:66px;display:grid;place-items:center;border-radius:18px;
+ border:1px solid rgba(216,234,255,.30);background:rgba(255,255,255,.09);
+ color:#9ed8ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 8px 20px rgba(0,0,0,.13)
+}
+#dashboard.owner-overview-active .tone-fees .owner-metric-icon{color:#ffb45c;background:rgba(255,178,87,.10);border-color:rgba(255,178,87,.35)}
+#dashboard.owner-overview-active .tone-attendance .owner-metric-icon{color:#8fc2ff;background:rgba(69,143,255,.12);border-color:rgba(88,155,255,.35)}
+#dashboard.owner-overview-active .tone-students .owner-metric-icon{color:#d1b4ff;background:rgba(166,126,255,.11);border-color:rgba(190,150,255,.35)}
+#dashboard.owner-overview-active .tone-paid .owner-metric-icon{color:#65e8e6;background:rgba(47,208,205,.11);border-color:rgba(77,225,218,.35)}
+#dashboard.owner-overview-active .owner-metric-icon svg{width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#dashboard.owner-overview-active .owner-metric-link,
+#dashboard.owner-overview-active .owner-widget-link{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:48px;
+ padding:10px 14px;border-radius:14px;border:1px solid rgba(208,228,255,.18);
+ background:rgba(4,21,39,.38);color:#c5e4ff;font:inherit;font-size:12px;font-weight:800;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.09);cursor:pointer;
+}
+#dashboard.owner-overview-active .owner-metric-link b,
+#dashboard.owner-overview-active .owner-widget-link b{font-size:19px;color:#83bdff}
+#dashboard.owner-overview-active .owner-lower-grid{
+ display:grid;grid-template-columns:minmax(245px,.88fr) minmax(300px,1fr) minmax(330px,1.12fr);
+ gap:12px;direction:rtl;align-items:stretch;
+}
+#dashboard.owner-overview-active .owner-widget{
+ min-width:0;min-height:390px;padding:17px 17px 14px;border-radius:19px;
+ border:1px solid rgba(192,217,250,.23);
+ background:linear-gradient(145deg,rgba(25,48,73,.77),rgba(6,20,37,.82));
+ -webkit-backdrop-filter:blur(25px) saturate(165%);backdrop-filter:blur(25px) saturate(165%);
+ box-shadow:0 14px 32px rgba(0,0,0,.19),inset 0 1px 0 rgba(255,255,255,.16);
+ display:flex;flex-direction:column;overflow:hidden;
+}
+#dashboard.owner-overview-active .owner-widget-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:13px;border-bottom:1px solid rgba(189,214,246,.12)}
+#dashboard.owner-overview-active .owner-widget-heading h3{margin:0;color:#f6f9ff;font-size:15px;font-weight:900}
+#dashboard.owner-overview-active .owner-widget-heading p{margin:4px 0 0;color:#91a8c5;font-size:10px}
+#dashboard.owner-overview-active .owner-widget-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px;background:rgba(63,130,221,.10);border:1px solid rgba(144,190,255,.18);color:#8dc1ff}
+#dashboard.owner-overview-active .owner-widget-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#dashboard.owner-overview-active .owner-donut-wrap{display:flex;justify-content:center;align-items:center;padding:16px 0 10px}
+#dashboard.owner-overview-active .owner-donut{
+ width:164px;height:164px;border-radius:50%;display:grid;place-items:center;position:relative;
+ background:conic-gradient(#2587f5 0deg var(--present-angle),#f59b36 var(--present-angle) var(--absent-angle),#06aaa7 var(--absent-angle) 360deg);
+ box-shadow:0 9px 23px rgba(0,0,0,.18),0 0 28px rgba(12,151,187,.08);
+}
+#dashboard.owner-overview-active .owner-donut::before{content:"";position:absolute;inset:19px;border-radius:50%;background:#081a2d;border:1px solid rgba(196,223,255,.12);box-shadow:inset 0 4px 12px rgba(0,0,0,.3)}
+#dashboard.owner-overview-active .owner-donut>div{position:relative;z-index:1;display:grid;text-align:center;gap:2px}
+#dashboard.owner-overview-active .owner-donut strong{color:#f8fbff;font-size:27px;font-weight:900}
+#dashboard.owner-overview-active .owner-donut span{color:#b8cbe3;font-size:10px}
+#dashboard.owner-overview-active .owner-legend{display:grid;gap:0;margin:0 6px 12px}
+#dashboard.owner-overview-active .owner-legend>div{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(195,216,244,.10);font-size:11px;color:#e5eefb}
+#dashboard.owner-overview-active .owner-legend>div>span{display:flex;gap:8px;align-items:center}
+#dashboard.owner-overview-active .owner-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+#dashboard.owner-overview-active .legend-present{background:#2587f5}
+#dashboard.owner-overview-active .legend-absent{background:#f59b36}
+#dashboard.owner-overview-active .legend-total{background:#06aaa7}
+#dashboard.owner-overview-active .owner-legend b{color:#fff;font-weight:800}
+#dashboard.owner-overview-active .owner-payment-list{display:grid;flex:1}
+#dashboard.owner-overview-active .owner-payment-row{display:grid;grid-template-columns:76px minmax(0,1fr) auto 22px;gap:9px;align-items:center;min-height:67px;border-bottom:1px solid rgba(192,216,246,.12)}
+#dashboard.owner-overview-active .owner-payment-date{font-size:10px;color:#9eb0c9;white-space:nowrap}
+#dashboard.owner-overview-active .owner-payment-person{min-width:0;display:grid;gap:4px}
+#dashboard.owner-overview-active .owner-payment-person b{font-size:12px;color:#f3f7ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dashboard.owner-overview-active .owner-payment-person small{font-size:10px;color:#90a5c1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dashboard.owner-overview-active .owner-payment-row>strong{font-size:11px;color:#19d9b2;white-space:nowrap}
+#dashboard.owner-overview-active .owner-payment-check{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:#08ad91;color:#fff;font-size:11px;font-weight:900}
+#dashboard.owner-overview-active .owner-overview-message-list{display:grid;flex:1;align-content:start}
+#dashboard.owner-overview-active .owner-overview-message-row{display:grid;grid-template-columns:38px minmax(0,1fr);gap:10px;align-items:center;min-height:70px;padding:7px 0;border-bottom:1px solid rgba(192,216,246,.12)}
+#dashboard.owner-overview-active .owner-message-avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#315e91,#142d4b);border:1px solid rgba(184,215,255,.25);color:#eaf5ff;font-size:14px;font-weight:900}
+#dashboard.owner-overview-active .owner-message-copy{min-width:0;display:grid;gap:3px}
+#dashboard.owner-overview-active .owner-message-copy>div{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#dashboard.owner-overview-active .owner-message-copy b{font-size:11px;color:#f5f8ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dashboard.owner-overview-active .owner-message-copy time{font-size:9px;color:#91a6c1;white-space:nowrap}
+#dashboard.owner-overview-active .owner-message-copy small{font-size:9px;color:#94abc9}
+#dashboard.owner-overview-active .owner-message-copy p{margin:0;color:#c7d6eb;font-size:10px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#dashboard.owner-overview-active .owner-empty{margin:0;padding:22px 8px;text-align:center;color:#9db0cb;font-size:11px;line-height:1.8}
+#dashboard.owner-overview-active .owner-message-error{color:#ffb6bd}
+#dashboard.owner-overview-active .owner-widget-link{margin-top:auto;text-align:right;color:#79bbff;background:rgba(3,17,32,.42)}
+#dashboard.owner-overview-active footer{color:#9eb2cc;border-color:rgba(187,211,242,.10);margin-top:16px}
+#dashboard.owner-overview-active footer span{color:#879cb7}
+#dashboard.owner-overview-active .empty-row{color:#98adc8}
+#dashboard.owner-overview-active .mobile-nav-toggle{border-color:rgba(198,220,255,.28)!important;background:rgba(255,255,255,.08)!important;color:#eff6ff!important}
+@media(max-width:1200px){
+ #dashboard.owner-overview-active .sidebar{width:258px!important}
+ #dashboard.owner-overview-active .main{width:calc(100% - 258px)!important;margin-right:258px!important}
+ #dashboard.owner-overview-active .owner-lower-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ #dashboard.owner-overview-active .owner-quick-widget{grid-column:1/-1;min-height:300px}
+ #dashboard.owner-overview-active .owner-quick-widget .owner-donut{width:140px;height:140px}
+}
+@media(max-width:760px){
+ #dashboard.owner-overview-active .main{width:100%!important;margin:0!important;padding:12px 11px calc(30px + env(safe-area-inset-bottom))!important}
+ #dashboard.owner-overview-active .topbar{min-height:68px!important;padding:8px 10px!important;border-radius:15px!important;margin-bottom:12px!important}
+ #dashboard.owner-overview-active .topbar-actions{gap:7px!important;flex-wrap:nowrap!important;min-width:0!important}
+ #dashboard.owner-overview-active .topbar-profile{min-width:0!important;max-width:142px!important;gap:6px!important}
+ #dashboard.owner-overview-active .topbar-profile .avatar{width:37px!important;height:37px!important;flex-basis:37px!important;font-size:16px!important}
+ #dashboard.owner-overview-active .topbar-profile b{max-width:92px!important;font-size:10px!important}
+ #dashboard.owner-overview-active .topbar-profile small{font-size:9px!important}
+ #dashboard.owner-overview-active .topbar-icon-button{width:38px!important;height:38px!important;flex:0 0 38px!important}
+ #dashboard.owner-overview-active .topbar-icon-button svg{width:19px!important;height:19px!important}
+ #dashboard.owner-overview-active .topbar-actions .theme-toggle{display:none!important}
+ #dashboard.owner-overview-active .owner-welcome{min-height:115px;padding:20px 19px;border-radius:17px}
+ #dashboard.owner-overview-active .owner-welcome-copy h2{font-size:20px}
+ #dashboard.owner-overview-active .owner-welcome-copy p{font-size:11px;margin-bottom:5px}
+ #dashboard.owner-overview-active .owner-welcome-copy span{font-size:10px}
+ #dashboard.owner-overview-active .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ #dashboard.owner-overview-active .owner-metric-card{min-height:162px;padding:12px 11px 10px;border-radius:15px}
+ #dashboard.owner-overview-active .owner-metric-main{grid-template-columns:minmax(0,1fr) 45px;gap:7px}
+ #dashboard.owner-overview-active .owner-metric-icon{width:44px;height:44px;border-radius:12px}
+ #dashboard.owner-overview-active .owner-metric-icon svg{width:24px;height:24px}
+ #dashboard.owner-overview-active .owner-metric-copy>span{font-size:10px}
+ #dashboard.owner-overview-active .owner-metric-copy strong{font-size:23px;margin-top:8px}
+ #dashboard.owner-overview-active .owner-metric-copy small{font-size:9px}
+ #dashboard.owner-overview-active .owner-metric-link{min-height:38px;padding:7px 9px;font-size:10px}
+ #dashboard.owner-overview-active .owner-lower-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+ #dashboard.owner-overview-active .owner-widget{min-height:0;padding:13px;border-radius:15px}
+ #dashboard.owner-overview-active .owner-quick-widget{grid-column:auto}
+ #dashboard.owner-overview-active .owner-quick-widget .owner-donut{width:145px;height:145px}
+ #dashboard.owner-overview-active .owner-payment-row{grid-template-columns:62px minmax(0,1fr) auto 19px;gap:6px;min-height:62px}
+ #dashboard.owner-overview-active .owner-overview-message-row{min-height:62px}
+ #dashboard.owner-overview-active .owner-widget-link{min-height:42px}
+ #dashboard.owner-overview-active footer{text-align:center;padding-bottom:8px}
+}
+@media(max-width:390px){
+ #dashboard.owner-overview-active .topbar-profile{max-width:116px!important}
+ #dashboard.owner-overview-active .topbar-profile b{max-width:69px!important}
+ #dashboard.owner-overview-active .owner-metric-card{min-height:155px}
+ #dashboard.owner-overview-active .owner-metric-copy strong{font-size:20px}
+ #dashboard.owner-overview-active .owner-payment-date{font-size:9px}
+}
