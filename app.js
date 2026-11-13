@@ -226,6 +226,45 @@ function applyGlassIntensity(raw){
  root.style.setProperty('--glass-sheen',(0.10+t*0.16).toFixed(3));
  root.dataset.glass=strength===0?'off':'on';
 }
+async function renderMyAcademiaProfilePhoto(){
+ const avatar=$('profile-avatar-button');if(!avatar||!session?.user)return;
+ const path=session.user.user_metadata?.academia_photo_path||'';
+ if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
+ try{
+  const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);
+  if(error)throw error;
+  avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية">';
+ }catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
+}
+async function uploadMyAcademiaProfilePhoto(file){
+ if(!file||!session?.user?.id)return;
+ const allowed={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif'};
+ if(!allowed[file.type])throw new Error('اختَر صورة بصيغة JPG أو PNG أو WEBP أو GIF أو AVIF.');
+ if(file.size>5*1024*1024)throw new Error('حجم الصورة يجب ألا يتجاوز 5 ميجابايت.');
+ const uid=session.user.id,oldPath=session.user.user_metadata?.academia_photo_path||'';
+ const path=uid+'/profile/'+crypto.randomUUID()+'.'+allowed[file.type];
+ const {error:uploadError}=await db.storage.from('student-photos').upload(path,file,{contentType:file.type,upsert:false,cacheControl:'3600'});
+ if(uploadError)throw uploadError;
+ try{
+  const {data,error}=await db.auth.updateUser({data:{academia_photo_path:path}});
+  if(error)throw error;
+  session={...session,user:data.user};
+  await run(db.from('account_profile_photos').upsert({user_id:uid,owner_id:ownerId||uid,photo_path:path,updated_at:new Date().toISOString()},{onConflict:'user_id'}));
+  await renderMyAcademiaProfilePhoto();
+  if(oldPath&&oldPath.startsWith(uid+'/profile/')){try{await db.storage.from('student-photos').remove([oldPath])}catch(cleanupError){console.warn('Previous profile photo cleanup:',cleanupError.message)}}
+  msg('تم تحديث صورتك الشخصية بنجاح.');
+ }catch(error){
+  try{await db.storage.from('student-photos').remove([path])}catch{}
+  throw error;
+ }
+}
+$('profile-avatar-button')?.addEventListener('click',()=>$('profile-photo-input')?.click());
+$('profile-photo-input')?.addEventListener('change',async e=>{
+ const file=e.target.files?.[0];e.target.value='';if(!file)return;
+ const button=$('profile-avatar-button');if(button)button.disabled=true;
+ try{await uploadMyAcademiaProfilePhoto(file)}catch(error){msg('تعذر حفظ الصورة: '+(error.message||'حدث خطأ غير متوقع'))}
+ finally{if(button)button.disabled=false}
+});
 function applyAcademyAppearance(){
  const appearance=academySettings?.appearance||DEFAULT_ACADEMY_SETTINGS.appearance;
  applyTheme(appearance.theme);
@@ -340,7 +379,7 @@ db.auth.getSession().then(async ({error})=>{
   authReady=true;$('auth').hidden=false;$('dashboard').hidden=true;
   $('auth-message').textContent='تعذر استعادة تسجيل الدخول. تحقق من اتصال الإنترنت ثم حدّث الصفحة. '+e.message;
 });
-function renderShell(){if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;const supportWidget=$('whatsapp-support-widget');if(supportWidget)supportWidget.hidden=false;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};unreadPlatformNotices=0;loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];studentSupervisorAssignments=[];attendance=[];studentPhotoUrls={};payments=[];links=[];supervisors=[];academySettings=mergeAcademySettings(null);applyAcademyAppearance();tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
+function renderShell(){if(session?.user?.id)renderMyAcademiaProfilePhoto();if(recoveryMode){$('auth').hidden=false;$('dashboard').hidden=true;$('reset-form').hidden=false;$('auth-form').hidden=true;$('toggle-auth').hidden=true;$('forgot-password').hidden=true;$('auth-message').textContent=authCallbackMessage||'اكتب كلمة المرور الجديدة.';return}const authenticated=!!session;const supportWidget=$('whatsapp-support-widget');if(supportWidget)supportWidget.hidden=false;$('auth').hidden=authenticated;$('dashboard').hidden=!authenticated;if(!authenticated){if(unreadRefreshTimer){clearInterval(unreadRefreshTimer);unreadRefreshTimer=null}unreadTotal=0;unreadBySender={};unreadPlatformNotices=0;loadedUserId=null;loadingUserId=null;loadVersion++;role='unknown';isOwner=false;ownerId=null;supervisor=null;permissions={};students=[];groups=[];studentSupervisorAssignments=[];attendance=[];studentPhotoUrls={};payments=[];links=[];supervisors=[];academySettings=mergeAcademySettings(null);applyAcademyAppearance();tab='overview';if(authCallbackMessage)$('auth-message').textContent=authCallbackMessage;return}if(authCallbackMessage){msg(authCallbackMessage);authCallbackMessage=''}$('user-email').textContent=session.user.email||session.user.phone||'حساب أكاديميا';if(loadedUserId!==session.user.id&&loadingUserId!==session.user.id)load()}
 const can=key=>isOwner||permissions[key]===true;
 function ageLabel(dob){
  if(!dob)return 'غير مسجل';
