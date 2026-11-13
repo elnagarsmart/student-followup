@@ -29,6 +29,22 @@ function initControlGlass(){
  $("glass-reset").onclick=()=>{applyControlGlass(34);try{localStorage.setItem(CONTROL_GLASS_KEY,"34")}catch{}};
  document.querySelectorAll("[data-close-glass]").forEach(b=>b.onclick=()=>$("glass-settings-modal").close());
 }
+const CONTROL_THEME_KEY="academia-control-theme-v1";
+const CONTROL_THEMES=["midnight","blue","green","violet","gold"];
+function applyControlTheme(raw,persist=false){
+ const theme=CONTROL_THEMES.includes(raw)?raw:"midnight";
+ document.documentElement.dataset.adminSkin=theme;
+ const picker=$("control-theme-picker");if(picker)picker.value=theme;
+ if(persist){try{localStorage.setItem(CONTROL_THEME_KEY,theme)}catch{}}
+}
+function initControlTheme(){
+ let theme="midnight";
+ try{const saved=localStorage.getItem(CONTROL_THEME_KEY);if(saved&&CONTROL_THEMES.includes(saved))theme=saved}catch{}
+ applyControlTheme(theme);
+ const picker=$("control-theme-picker");
+ if(picker)picker.onchange=()=>applyControlTheme(picker.value,true);
+}
+
 let toastSequence=0;
 function toast(message,type="info"){
  const area=$("toast-area"),list=$("toast-list");if(!area||!list)return;
@@ -306,6 +322,7 @@ function scheduleAdminForegroundRefresh(){
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)scheduleAdminForegroundRefresh()});
 window.addEventListener("focus",scheduleAdminForegroundRefresh);
 initControlGlass();
+initControlTheme();
 document.querySelectorAll("[data-close-own]").forEach(b=>b.onclick=()=>$("own-password-modal").close());
 document.querySelectorAll("[data-close-admin]").forEach(b=>b.onclick=()=>$("admin-modal").close());
 
