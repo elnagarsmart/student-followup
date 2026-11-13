@@ -2784,3 +2784,131 @@ html[data-skin] .liquid-glass-tilt:hover{filter:saturate(1.04)}
  }
 }
 @media(prefers-reduced-motion:reduce){.liquid-glass-tilt{will-change:auto;transition:none!important}}
+
+
+/* ============================================================
+   LIQUID GLASS — refractive, sculpted surfaces (Academia v3)
+   Inspired by the soft translucent glass language in the reference.
+   ============================================================ */
+html[data-theme="light"][data-skin] body,
+html[data-theme="light"][data-skin] #app,
+html[data-theme="light"][data-skin] .app-shell{
+ background:
+  radial-gradient(ellipse at 12% 8%,rgba(255,255,255,.96) 0%,rgba(255,255,255,0) 31%),
+  radial-gradient(ellipse at 86% 14%,color-mix(in srgb,var(--theme-accent) 15%,transparent) 0%,transparent 36%),
+  radial-gradient(ellipse at 72% 82%,rgba(133,180,224,.20) 0%,transparent 39%),
+  linear-gradient(145deg,#e5ebf3 0%,#f4f7fb 44%,#dce5ef 100%)!important;
+ background-attachment:fixed!important;
+}
+html[data-theme="dark"][data-skin] body,
+html[data-theme="dark"][data-skin] #app,
+html[data-theme="dark"][data-skin] .app-shell{
+ background:
+  radial-gradient(ellipse at 12% 6%,color-mix(in srgb,var(--theme-accent) 24%,transparent),transparent 34%),
+  radial-gradient(ellipse at 88% 80%,rgba(77,132,190,.16),transparent 38%),
+  linear-gradient(145deg,#07111e 0%,#101c2d 52%,#081526 100%)!important;
+ background-attachment:fixed!important;
+}
+html[data-skin] .liquid-glass-surface{
+ position:relative!important;
+ isolation:isolate!important;
+ overflow:hidden;
+ -webkit-backdrop-filter:blur(30px) saturate(190%) brightness(1.04)!important;
+ backdrop-filter:blur(30px) saturate(190%) brightness(1.04)!important;
+ border:1px solid rgba(255,255,255,.56)!important;
+ box-shadow:
+  0 18px 46px rgba(39,60,92,.13),
+  0 2px 8px rgba(39,60,92,.07),
+  inset 0 1.5px 0 rgba(255,255,255,.88),
+  inset 0 -1px 0 rgba(126,151,184,.19),
+  inset 1px 0 0 rgba(255,255,255,.42),
+  inset -1px 0 0 rgba(110,137,174,.10)!important;
+ transition:background .3s ease,border-color .3s ease,box-shadow .3s ease,transform .28s cubic-bezier(.2,.75,.2,1)!important;
+}
+html[data-theme="light"][data-skin] .liquid-glass-surface{
+ background-color:rgba(238,246,255,.37)!important;
+ background-image:
+  radial-gradient(ellipse at var(--glass-x,18%) var(--glass-y,0%),rgba(255,255,255,.88) 0%,rgba(255,255,255,.10) 30%,transparent 53%),
+  radial-gradient(ellipse at 92% 4%,color-mix(in srgb,var(--theme-accent) 13%,transparent),transparent 47%),
+  linear-gradient(138deg,rgba(255,255,255,.76) 0%,rgba(245,249,255,.38) 31%,rgba(215,229,246,.30) 69%,rgba(255,255,255,.48) 100%)!important;
+ border-color:rgba(255,255,255,.80)!important;
+ box-shadow:
+  0 20px 48px rgba(53,76,111,.14),
+  0 3px 10px rgba(76,99,132,.06),
+  inset 0 1.5px 0 rgba(255,255,255,.98),
+  inset 0 -1px 0 rgba(111,138,174,.17),
+  inset 1px 0 0 rgba(255,255,255,.70),
+  inset -1px 0 0 rgba(111,138,174,.12)!important;
+}
+html[data-theme="dark"][data-skin] .liquid-glass-surface{
+ background-color:rgba(13,29,49,.38)!important;
+ background-image:
+  radial-gradient(ellipse at var(--glass-x,18%) var(--glass-y,0%),rgba(237,246,255,.25) 0%,rgba(237,246,255,.025) 31%,transparent 54%),
+  radial-gradient(ellipse at 92% 4%,color-mix(in srgb,var(--theme-accent) 22%,transparent),transparent 46%),
+  linear-gradient(138deg,rgba(255,255,255,.13),rgba(37,58,87,.28) 38%,rgba(7,18,33,.42) 100%)!important;
+ border-color:rgba(198,218,248,.32)!important;
+ box-shadow:
+  0 20px 52px rgba(0,0,0,.27),
+  inset 0 1.5px 0 rgba(255,255,255,.28),
+  inset 0 -1px 0 rgba(0,0,0,.23),
+  inset 1px 0 0 rgba(255,255,255,.13),
+  inset -1px 0 0 rgba(255,255,255,.05)!important;
+}
+/* Specular rim and wide soft reflection, without covering labels or controls. */
+html[data-skin] .panel.liquid-glass-surface::before,
+html[data-skin] .stat-card.liquid-glass-surface::before,
+html[data-skin] .settings-card.liquid-glass-surface::before,
+html[data-skin] .welcome.liquid-glass-surface::before,
+html[data-skin] .account-panel.liquid-glass-surface::before,
+html[data-skin] .auth-card.liquid-glass-surface::before,
+html[data-skin] .student-mobile-card.liquid-glass-surface::before,
+html[data-skin] .table-panel.liquid-glass-surface::before{
+ content:"";
+ position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+ background:
+  radial-gradient(ellipse at 18% 0%,rgba(255,255,255,.43),transparent 43%),
+  linear-gradient(116deg,rgba(255,255,255,.28) 0%,transparent 24%,transparent 70%,rgba(255,255,255,.10) 100%);
+ opacity:.78;
+}
+html[data-skin] .panel.liquid-glass-surface>*,
+html[data-skin] .stat-card.liquid-glass-surface>*,
+html[data-skin] .settings-card.liquid-glass-surface>*,
+html[data-skin] .welcome.liquid-glass-surface>*,
+html[data-skin] .account-panel.liquid-glass-surface>*,
+html[data-skin] .auth-card.liquid-glass-surface>*,
+html[data-skin] .student-mobile-card.liquid-glass-surface>*,
+html[data-skin] .table-panel.liquid-glass-surface>*{position:relative;z-index:1}
+html[data-theme="light"][data-skin] .liquid-glass-surface p,
+html[data-theme="light"][data-skin] .liquid-glass-surface label{color:var(--theme-ink)}
+html[data-theme="light"][data-skin] .liquid-glass-surface .muted{color:#64748b!important}
+html[data-theme="light"][data-skin] .stat-card.liquid-glass-surface strong{color:#192a43!important}
+html[data-theme="light"][data-skin] .stat-card.liquid-glass-surface .stat-icon{
+ background:rgba(255,255,255,.58)!important;color:var(--theme-accent)!important;
+ border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 12px rgba(50,80,125,.12),inset 0 1px 0 #fff;
+}
+html[data-theme="dark"][data-skin] .stat-card.liquid-glass-surface strong{color:#f4f8ff!important}
+html[data-skin] .welcome.liquid-glass-surface{
+ background:
+  radial-gradient(ellipse at 12% 8%,rgba(255,255,255,.55),transparent 38%),
+  linear-gradient(125deg,color-mix(in srgb,var(--theme-accent) 42%,#203858),color-mix(in srgb,var(--theme-accent) 26%,#13243d))!important;
+ border-color:rgba(255,255,255,.48)!important;
+}
+html[data-skin] .welcome.liquid-glass-surface::after{
+ content:"";position:absolute;left:7%;top:50%;width:clamp(120px,29%,270px);height:clamp(58px,62%,112px);
+ transform:translateY(-50%) rotate(-7deg);
+ border-radius:58% 42% 55% 45% / 48% 52% 48% 52%;
+ border:1px solid rgba(255,255,255,.56);
+ background:
+  radial-gradient(ellipse at 30% 7%,rgba(255,255,255,.78),transparent 38%),
+  linear-gradient(145deg,rgba(255,255,255,.33),rgba(255,255,255,.035) 52%,rgba(255,255,255,.14));
+ -webkit-backdrop-filter:blur(18px) saturate(185%);backdrop-filter:blur(18px) saturate(185%);
+ box-shadow:0 14px 30px rgba(18,34,70,.15),inset 0 2px 0 rgba(255,255,255,.68),inset 0 -2px 0 rgba(255,255,255,.18);
+ pointer-events:none;opacity:.84;
+}
+@media(max-width:760px){
+ html[data-skin] .welcome.liquid-glass-surface::after{left:3%;width:31%;height:54px;opacity:.60}
+ html[data-skin] .liquid-glass-surface{-webkit-backdrop-filter:blur(23px) saturate(180%);backdrop-filter:blur(23px) saturate(180%)}
+}
+/* The fifth statistic fits the desktop row and remains balanced on phones. */
+@media(min-width:1100px){#dashboard.app-shell .stats-grid:has(.stat-card:nth-child(5):last-child){grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){html[data-skin] .liquid-glass-surface{transition:none!important}}
