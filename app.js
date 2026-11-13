@@ -228,13 +228,30 @@ function applyGlassIntensity(raw){
 }
 async function renderMyAcademiaProfilePhoto(){
  const avatar=$('profile-avatar-button');if(!avatar||!session?.user)return;
+ const shape=['circle','square','rectangle'].includes(session.user.user_metadata?.academia_photo_shape)?session.user.user_metadata.academia_photo_shape:'circle';
+ avatar.dataset.photoShape=shape;
  const path=session.user.user_metadata?.academia_photo_path||'';
  if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
- try{
-  const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);
-  if(error)throw error;
-  avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية">';
- }catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
+ try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية">'}
+ catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
+}
+async function saveProfilePhotoShape(shape){
+ if(!session?.user?.id||!['circle','square','rectangle'].includes(shape))return;
+ const {data,error}=await db.auth.updateUser({data:{academia_photo_shape:shape}});if(error)throw error;
+ session={...session,user:data.user};await renderMyAcademiaProfilePhoto();
+ const menu=$('profile-photo-shape-menu');if(menu)menu.hidden=true;
+ $('profile-photo-shape-toggle')?.setAttribute('aria-expanded','false');msg('تم حفظ شكل الصورة الشخصية.');
+}
+async function removeMyAcademiaProfilePhoto(){
+ if(!session?.user?.id)return;
+ const uid=session.user.id,path=session.user.user_metadata?.academia_photo_path||'';
+ const {data,error}=await db.auth.updateUser({data:{academia_photo_path:null}});if(error)throw error;
+ session={...session,user:data.user};
+ try{await run(db.from('account_profile_photos').delete().eq('user_id',uid))}catch(dbError){console.warn('Profile photo index cleanup:',dbError.message)}
+ if(path&&path.startsWith(uid+'/profile/')){const {error:removeError}=await db.storage.from('student-photos').remove([path]);if(removeError)console.warn('Profile photo storage cleanup:',removeError.message)}
+ await renderMyAcademiaProfilePhoto();
+ const menu=$('profile-photo-shape-menu');if(menu)menu.hidden=true;
+ $('profile-photo-shape-toggle')?.setAttribute('aria-expanded','false');msg('تمت إزالة الصورة الشخصية.');
 }
 async function uploadMyAcademiaProfilePhoto(file){
  if(!file||!session?.user?.id)return;
@@ -259,6 +276,24 @@ async function uploadMyAcademiaProfilePhoto(file){
  }
 }
 $('profile-avatar-button')?.addEventListener('click',()=>$('profile-photo-input')?.click());
+$('profile-photo-shape-toggle')?.addEventListener('click',()=>{
+ const menu=$('profile-photo-shape-menu');if(!menu)return;menu.hidden=!menu.hidden;
+ $('profile-photo-shape-toggle').setAttribute('aria-expanded',String(!menu.hidden));
+});
+$('profile-photo-shape-menu')?.querySelectorAll('[data-profile-photo-shape]').forEach(button=>{
+ button.onclick=async()=>{try{await saveProfilePhotoShape(button.dataset.profilePhotoShape)}catch(error){msg('تعذر حفظ شكل الصورة: '+error.message)}};
+});
+$('profile-photo-remove')?.addEventListener('click',async()=>{
+ if(!session?.user?.user_metadata?.academia_photo_path){msg('لا توجد صورة شخصية لإزالتها.');return}
+ if(!confirm('هل تريد إزالة صورتك الشخصية؟'))return;
+ try{await removeMyAcademiaProfilePhoto()}catch(error){msg('تعذر إزالة الصورة: '+error.message)}
+});
+document.addEventListener('click',event=>{
+ const menu=$('profile-photo-shape-menu'),toggle=$('profile-photo-shape-toggle'),avatar=$('profile-avatar-button');
+ if(menu&&!menu.hidden&&!menu.contains(event.target)&&!toggle?.contains(event.target)&&!avatar?.contains(event.target)){
+  menu.hidden=true;toggle?.setAttribute('aria-expanded','false');
+ }
+});
 $('profile-photo-input')?.addEventListener('change',async e=>{
  const file=e.target.files?.[0];e.target.value='';if(!file)return;
  const button=$('profile-avatar-button');if(button)button.disabled=true;
@@ -1163,12 +1198,25 @@ async function loadMessageThread(view){
  }
  const rows=Array.isArray(data?.messages)?data.messages:[];
  $('message-thread').innerHTML=rows.length?rows.map(m=>{
-  const mine=m.sender_id===session?.user?.id;
+  const mine=m.sender_id===session?.user?.id,canDeleteMessage=role==='owner'||mine;
   const stamp=m.created_at?new Date(m.created_at).toLocaleString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
   const receipt=mine?(m.read_at?'✓ تمت القراءة':'✓ تم الإرسال'):'';
-  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><time class="message-time">'+esc(stamp)+'</time><p>'+esc(m.body)+'</p>'+(mine?'<small class="message-receipt">'+receipt+'</small>':'')+'</article>';
+  const deleteButton=canDeleteMessage?'<button type="button" class="message-delete-button" data-thread-message-delete="'+esc(m.id)+'" aria-label="حذف هذه الرسالة" title="حذف هذه الرسالة">حذف</button>':'';
+  return '<article class="message-bubble '+(mine?'mine':'theirs')+'"><div class="message-bubble-meta"><time class="message-time">'+esc(stamp)+'</time>'+deleteButton+'</div><p>'+esc(m.body)+'</p>'+(mine?'<small class="message-receipt">'+receipt+'</small>':'')+'</article>';
  }).join(''):'<div class="message-welcome-empty"><span>✉</span><b>ابدأ المحادثة</b><p>لا توجد رسائل هنا بعد. اكتب أول رسالة في الأسفل.</p></div>';
  $('message-thread').scrollTop=$('message-thread').scrollHeight;
+ $('message-thread').querySelectorAll('[data-thread-message-delete]').forEach(button=>button.onclick=async()=>{
+  const messageId=button.dataset.threadMessageDelete;
+  if(!confirm('هل تريد حذف هذه الرسالة المحددة فقط؟ لا يمكن التراجع عن الحذف.'))return;
+  button.disabled=true;
+  try{
+   const {data:deleted,error:deleteError}=await db.functions.invoke('academia-messages',{body:{action:'delete_message',message_id:messageId}});
+   if(deleteError||deleted?.error)throw new Error(deleted?.error||deleteError.message);
+   await loadMessageThread(view);
+   const inbox=$('owner-message-inbox');if(role==='owner'&&inbox&&!inbox.hidden)await loadOwnerMessageInbox(0);
+   await refreshUnreadCounts();msg('تم حذف الرسالة المحددة.');
+  }catch(error){button.disabled=false;msg('تعذر حذف الرسالة: '+(error.message||'حاول مرة أخرى'))}
+ });
  const form=$('message-send-form');form.hidden=false;
  form.onsubmit=async e=>{
   e.preventDefault();if(form.dataset.busy==='true')return;

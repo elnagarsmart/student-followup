@@ -3383,3 +3383,33 @@ html[data-skin] #nav .nav-item span{
 @media(max-width:760px){#dashboard .profile-avatar-button{width:35px!important;height:35px!important;min-width:35px!important;flex-basis:35px!important}}
 /* Reduce heavy blur and glass sheen across the app while retaining the chosen dark-blue palette. */
 :root{--glass-blur:7px!important;--glass-saturation:112%!important;--glass-sheen:.035!important}
+
+
+/* Message-level delete controls */
+html[data-theme="dark"] .message-bubble-meta,html[data-theme="light"] .message-bubble-meta{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:20px}
+html[data-theme="dark"] .message-delete-button{border:1px solid rgba(239,105,122,.28)!important;border-radius:7px!important;background:rgba(239,105,122,.08)!important;color:#ff9ba8!important;padding:3px 8px!important;font-size:10px!important;font-weight:800!important;line-height:1.4!important;min-height:25px!important}
+html[data-theme="dark"] .message-delete-button:hover{background:rgba(239,105,122,.17)!important;border-color:rgba(239,105,122,.55)!important}
+html[data-theme="dark"] .message-delete-button:disabled{opacity:.55;cursor:wait}
+html[data-theme="light"] .message-delete-button{border:1px solid #f2c8cf!important;border-radius:7px!important;background:#fff4f5!important;color:#b52e43!important;padding:3px 8px!important;font-size:10px!important;font-weight:800!important;min-height:25px!important}
+.message-bubble{transition:box-shadow .18s ease,transform .18s ease}
+.message-bubble:hover{box-shadow:0 8px 22px rgba(3,13,29,.12)}
+@media(max-width:700px){.message-bubble{max-width:94%!important}.message-delete-button{min-height:30px!important;padding:5px 10px!important}}
+/* Profile photo shape picker */
+#dashboard .profile-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+#dashboard .profile-avatar-button[data-photo-shape="circle"]{width:44px!important;height:44px!important;min-width:44px!important;flex-basis:44px!important;border-radius:50%!important}
+#dashboard .profile-avatar-button[data-photo-shape="square"]{width:44px!important;height:44px!important;min-width:44px!important;flex-basis:44px!important;border-radius:10px!important}
+#dashboard .profile-avatar-button[data-photo-shape="rectangle"]{width:60px!important;height:40px!important;min-width:60px!important;flex-basis:60px!important;border-radius:10px!important}
+#dashboard .profile-avatar-button[data-photo-shape] img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:inherit!important}
+#dashboard .profile-photo-shape-toggle{position:absolute!important;right:-7px!important;bottom:-5px!important;z-index:2!important;display:grid!important;place-items:center!important;width:21px!important;height:21px!important;padding:0!important;border-radius:50%!important;border:1px solid rgba(210,225,245,.55)!important;background:#1b3656!important;color:#f5f9ff!important;font-size:11px!important;line-height:1!important;box-shadow:0 2px 8px rgba(0,0,0,.24)!important}
+#dashboard .profile-photo-shape-menu{position:absolute!important;top:calc(100% + 12px)!important;right:0!important;z-index:120!important;width:176px!important;padding:9px!important;display:grid!important;gap:5px!important;border:1px solid rgba(170,198,232,.34)!important;border-radius:13px!important;background:rgba(12,27,47,.97)!important;color:#edf5ff!important;box-shadow:0 14px 38px rgba(0,0,0,.34)!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important}
+#dashboard .profile-photo-shape-menu[hidden]{display:none!important}
+#dashboard .profile-photo-shape-menu b{font-size:11px!important;padding:3px 6px 6px!important;color:#a9c6eb!important}
+#dashboard .profile-photo-shape-menu button{width:100%!important;min-height:34px!important;padding:6px 9px!important;text-align:right!important;border:1px solid rgba(179,205,238,.13)!important;border-radius:8px!important;background:rgba(255,255,255,.055)!important;color:#edf5ff!important;font-size:11px!important}
+#dashboard .profile-photo-shape-menu button:hover{background:rgba(81,145,220,.22)!important}
+#dashboard .profile-photo-shape-menu .profile-photo-remove{margin-top:3px!important;border-color:rgba(255,120,139,.25)!important;color:#ff9eaa!important;background:rgba(160,38,61,.12)!important}
+@media(max-width:760px){
+ #dashboard .profile-avatar-button[data-photo-shape="circle"],#dashboard .profile-avatar-button[data-photo-shape="square"]{width:35px!important;height:35px!important;min-width:35px!important;flex-basis:35px!important}
+ #dashboard .profile-avatar-button[data-photo-shape="rectangle"]{width:48px!important;height:33px!important;min-width:48px!important;flex-basis:48px!important}
+ #dashboard .profile-photo-shape-toggle{width:18px!important;height:18px!important;right:-5px!important;bottom:-5px!important;font-size:9px!important}
+ #dashboard .profile-photo-shape-menu{width:160px!important;right:-4px!important}
+}
