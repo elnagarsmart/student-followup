@@ -249,7 +249,7 @@ async function uploadMyAcademiaProfilePhoto(file){
   const {data,error}=await db.auth.updateUser({data:{academia_photo_path:path}});
   if(error)throw error;
   session={...session,user:data.user};
-  await run(db.from('account_profile_photos').upsert({user_id:uid,owner_id:ownerId||uid,photo_path:path,updated_at:new Date().toISOString()},{onConflict:'user_id'}));
+  await run(db.from('account_profile_photos').upsert({user_id:uid,owner_id:ownerId||links?.[0]?.owner_id||uid,photo_path:path,updated_at:new Date().toISOString()},{onConflict:'user_id'}));
   await renderMyAcademiaProfilePhoto();
   if(oldPath&&oldPath.startsWith(uid+'/profile/')){try{await db.storage.from('student-photos').remove([oldPath])}catch(cleanupError){console.warn('Previous profile photo cleanup:',cleanupError.message)}}
   msg('تم تحديث صورتك الشخصية بنجاح.');
@@ -572,6 +572,20 @@ async function load(force=false){if(!session?.user?.id)return;const userId=sessi
  studentPhotoUrls={};
  const photoPaths=students.map(x=>x.photo_path).filter(Boolean);
  if(photoPaths.length){try{const {data:photoRows,error:photoError}=await db.storage.from('student-photos').createSignedUrls(photoPaths,3600);if(!photoError)studentPhotoUrls=Object.fromEntries((photoRows||[]).filter(x=>x.signedUrl).map(x=>[x.path,x.signedUrl]));}catch(photoError){console.warn('Student photo links unavailable:',photoError.message)}}
+ if(isOwner&&ids.length){try{
+  const profiles=await run(db.from('account_profile_photos').select('user_id,photo_path').eq('owner_id',ownerId));
+  const profileUserIds=profiles.map(p=>p.user_id);
+  if(profileUserIds.length){
+   const accounts=await run(db.from('student_login_accounts').select('student_id,auth_user_id').eq('owner_id',ownerId).in('auth_user_id',profileUserIds));
+   const accountByUser=new Map(accounts.map(x=>[x.auth_user_id,x.student_id]));
+   const linked=profiles.filter(p=>accountByUser.has(p.user_id));
+   if(linked.length){
+    const {data:signed,error}=await db.storage.from('student-photos').createSignedUrls(linked.map(x=>x.photo_path),3600);
+    if(!error)for(let i=0;i<linked.length;i++){const sid=accountByUser.get(linked[i].user_id);if(signed?.[i]?.signedUrl)studentPhotoUrls[sid]=signed[i].signedUrl;}
+   }
+  }
+ }catch(profileError){console.warn('Linked student account photos unavailable:',profileError.message)}}
+
  const jobs=[];if(ids.length&&(can('view_attendance')||can('manage_attendance')))jobs.push(run(db.from('attendance').select('*').eq('owner_id',ownerId).in('student_id',ids).order('session_date',{ascending:false}).limit(500)).then(v=>attendance=v));else attendance=[];
  if(ids.length&&(can('view_payments')||can('manage_payments')))jobs.push(run(db.from('payments').select('*').eq('owner_id',ownerId).in('student_id',ids).order('paid_at',{ascending:false}).limit(500)).then(v=>payments=v));else payments=[];
  if(isOwner||can('manage_portals'))links=await run(db.from('student_portal_links').select('*').eq('owner_id',ownerId).order('created_at',{ascending:false}));else links=[];await Promise.all(jobs);
