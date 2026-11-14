@@ -3413,3 +3413,344 @@ html[data-theme="light"] .message-delete-button{border:1px solid #f2c8cf!importa
  #dashboard .profile-photo-shape-toggle{width:18px!important;height:18px!important;right:-5px!important;bottom:-5px!important;font-size:9px!important}
  #dashboard .profile-photo-shape-menu{width:160px!important;right:-4px!important}
 }
+
+
+/* ==========================================================
+   ACADEMIA FINAL PAGE RHYTHM SYSTEM
+   One page grid, one card language, one responsive breakpoint.
+   ========================================================== */
+#dashboard.app-shell{
+ --ui-page:#0a1424;
+ --ui-surface:#111e32;
+ --ui-surface-raised:#16263e;
+ --ui-border:#283b57;
+ --ui-border-soft:#1e3049;
+ --ui-text:#eaf0fa;
+ --ui-muted:#93a4bf;
+ --ui-accent:#5d9cf0;
+ display:block!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ min-height:100vh;
+ overflow-x:hidden!important;
+ background:var(--ui-page)!important;
+ color:var(--ui-text)!important;
+}
+html[data-theme="light"] #dashboard.app-shell{
+ --ui-page:#f2f5fa;
+ --ui-surface:#fff;
+ --ui-surface-raised:#f7f9fc;
+ --ui-border:#dfe6f0;
+ --ui-border-soft:#e9eef5;
+ --ui-text:#24334b;
+ --ui-muted:#74839a;
+ --ui-accent:#376fc7;
+ background:var(--ui-page)!important;
+ color:var(--ui-text)!important;
+}
+#dashboard.app-shell,
+#dashboard.app-shell *{box-sizing:border-box}
+#dashboard.app-shell .sidebar{
+ width:282px!important;
+ min-width:282px!important;
+ box-sizing:border-box!important;
+}
+#dashboard.app-shell .main{
+ width:calc(100% - 282px)!important;
+ max-width:none!important;
+ min-width:0!important;
+ margin:0 282px 0 0!important;
+ padding:28px 30px 24px!important;
+ float:none!important;
+ position:relative!important;
+ box-sizing:border-box!important;
+}
+#dashboard.app-shell .topbar{
+ width:100%!important;
+ min-width:0!important;
+ min-height:74px!important;
+ margin:0 0 20px!important;
+ padding:12px 16px!important;
+ gap:14px!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ flex-wrap:nowrap!important;
+ border:1px solid var(--ui-border)!important;
+ border-radius:16px!important;
+ background:var(--ui-surface)!important;
+ box-shadow:0 5px 18px rgba(5,17,36,.08)!important;
+}
+#dashboard.app-shell .topbar-heading{min-width:0!important;flex:1 1 auto!important}
+#dashboard.app-shell .topbar-heading .eyebrow{margin:0 0 3px!important;font-size:11px!important;color:var(--ui-muted)!important}
+#dashboard.app-shell .topbar h1{margin:0!important;font-size:clamp(19px,2vw,25px)!important;line-height:1.45!important;color:var(--ui-text)!important;overflow-wrap:anywhere}
+#dashboard.app-shell .topbar-actions{
+ flex:0 0 auto!important;min-width:0!important;display:flex!important;
+ align-items:center!important;gap:9px!important;flex-wrap:nowrap!important;
+}
+#dashboard.app-shell #content{
+ display:block!important;width:100%!important;max-width:none!important;min-width:0!important;
+ margin:0!important;padding:0!important;
+}
+#dashboard.app-shell #content>*{
+ box-sizing:border-box!important;width:100%;max-width:100%!important;min-width:0!important;
+}
+#dashboard.app-shell .panel,
+#dashboard.app-shell .attendance-panel,
+#dashboard.app-shell .attendance-history-panel,
+#dashboard.app-shell .settings-card,
+#dashboard.app-shell .student-mobile-card,
+#dashboard.app-shell .message-contacts-panel,
+#dashboard.app-shell .message-conversation-panel,
+#dashboard.app-shell .owner-widget,
+#dashboard.app-shell .manage-section,
+#dashboard.app-shell .table-panel,
+#dashboard.app-shell .settings-security-block,
+#dashboard.app-shell .editor-form,
+#dashboard.app-shell .ai-student-row{
+ min-width:0!important;
+ border:1px solid var(--ui-border)!important;
+ border-radius:16px!important;
+ background:var(--ui-surface)!important;
+ color:var(--ui-text)!important;
+ box-shadow:0 7px 22px rgba(4,16,34,.075)!important;
+}
+#dashboard.app-shell .panel{width:100%!important;padding:21px!important;margin:0 0 17px!important}
+#dashboard.app-shell .panel-heading,
+#dashboard.app-shell .attendance-panel-heading,
+#dashboard.app-shell .message-section-heading{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:12px!important;min-width:0!important;flex-wrap:wrap!important;
+ margin:0 0 16px!important;padding:0 0 12px!important;
+ border-bottom:1px solid var(--ui-border-soft)!important;
+}
+#dashboard.app-shell .panel-heading h2,
+#dashboard.app-shell .panel-heading h3,
+#dashboard.app-shell .attendance-panel-heading h3,
+#dashboard.app-shell .message-section-heading h3{
+ margin:0!important;color:var(--ui-text)!important;font-size:16px!important;
+ line-height:1.55!important;font-weight:850!important;
+}
+#dashboard.app-shell .panel-heading p,
+#dashboard.app-shell .attendance-panel-heading p,
+#dashboard.app-shell .message-section-heading p{
+ margin:3px 0 0!important;color:var(--ui-muted)!important;font-size:12px!important;line-height:1.75!important;
+}
+#dashboard.app-shell .attendance-page,
+#dashboard.app-shell .settings-page{display:grid!important;gap:16px!important;width:100%!important;min-width:0!important}
+#dashboard.app-shell .attendance-page-heading,
+#dashboard.app-shell .message-page-heading,
+#dashboard.app-shell .settings-intro{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ flex-wrap:wrap!important;gap:14px!important;width:100%!important;min-width:0!important;
+ margin:0 0 2px!important;padding:2px 2px 4px!important;
+}
+#dashboard.app-shell .attendance-page-heading h2,
+#dashboard.app-shell .message-page-heading h2,
+#dashboard.app-shell .settings-intro h2{
+ margin:0 0 5px!important;color:var(--ui-text)!important;font-size:22px!important;
+ line-height:1.5!important;font-weight:900!important;
+}
+#dashboard.app-shell .attendance-page-heading .muted,
+#dashboard.app-shell .message-page-heading .muted,
+#dashboard.app-shell .settings-intro p:not(.eyebrow){
+ color:var(--ui-muted)!important;font-size:12px!important;line-height:1.8!important;margin:0!important;
+}
+#dashboard.app-shell .form-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ align-items:end!important;gap:13px!important;width:100%!important;min-width:0!important;
+ margin:0 0 16px!important;padding:17px!important;
+ border:1px solid var(--ui-border)!important;border-radius:14px!important;
+ background:var(--ui-surface-raised)!important;
+}
+#dashboard.app-shell .form-grid>*,
+#dashboard.app-shell .settings-fields>*{min-width:0!important;max-width:100%!important}
+#dashboard.app-shell label,
+#dashboard.app-shell .settings-fields label{
+ min-width:0!important;display:grid!important;gap:6px!important;
+ color:var(--ui-muted)!important;font-size:12px!important;line-height:1.7!important;font-weight:700!important;
+}
+#dashboard.app-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#dashboard.app-shell select,
+#dashboard.app-shell textarea{
+ box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ min-height:44px!important;padding:10px 12px!important;border:1px solid var(--ui-border)!important;
+ border-radius:10px!important;background:var(--ui-page)!important;color:var(--ui-text)!important;
+ font:inherit!important;font-size:14px!important;line-height:1.5!important;box-shadow:none!important;
+}
+#dashboard.app-shell textarea{min-height:92px!important;resize:vertical!important}
+#dashboard.app-shell input:focus,
+#dashboard.app-shell select:focus,
+#dashboard.app-shell textarea:focus{
+ outline:2px solid color-mix(in srgb,var(--ui-accent) 40%,transparent)!important;
+ outline-offset:1px!important;border-color:var(--ui-accent)!important;
+}
+#dashboard.app-shell button,
+#dashboard.app-shell .button{max-width:100%;font-family:inherit;line-height:1.45}
+#dashboard.app-shell .table-wrap{
+ display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+ overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;
+ border:1px solid var(--ui-border)!important;border-radius:13px!important;
+ background:var(--ui-surface)!important;
+}
+#dashboard.app-shell .table-wrap table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0}
+#dashboard.app-shell .table-wrap th{
+ padding:12px 13px!important;background:var(--ui-surface-raised)!important;
+ color:var(--ui-muted)!important;border-bottom:1px solid var(--ui-border)!important;
+ font-size:11px!important;line-height:1.6!important;white-space:nowrap;
+}
+#dashboard.app-shell .table-wrap td{
+ padding:12px 13px!important;color:var(--ui-text)!important;
+ border-bottom:1px solid var(--ui-border-soft)!important;font-size:12px!important;line-height:1.7!important;
+}
+#dashboard.app-shell .table-wrap tbody tr:last-child td{border-bottom:0!important}
+#dashboard.app-shell .settings-form{display:grid!important;gap:15px!important;width:100%!important}
+#dashboard.app-shell .settings-card{padding:20px!important;min-height:0!important}
+#dashboard.app-shell .settings-section-head{margin-bottom:17px!important}
+#dashboard.app-shell .settings-section-head h3{color:var(--ui-text)!important;font-size:15px!important}
+#dashboard.app-shell .settings-section-head p,
+#dashboard.app-shell .settings-fields small{color:var(--ui-muted)!important;font-size:11px!important;line-height:1.75!important}
+#dashboard.app-shell .settings-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+#dashboard.app-shell .settings-tabs{
+ display:flex!important;flex-wrap:wrap!important;gap:8px!important;
+ padding:0 0 12px!important;margin:0!important;position:static!important;
+ border:0!important;background:transparent!important;
+}
+#dashboard.app-shell .settings-tabs button{
+ min-height:40px!important;padding:8px 13px!important;border:1px solid var(--ui-border)!important;
+ border-radius:10px!important;background:var(--ui-surface)!important;
+ color:var(--ui-muted)!important;font-size:12px!important;white-space:normal!important;
+}
+#dashboard.app-shell .settings-tabs button.active{
+ color:var(--ui-text)!important;border-color:var(--ui-accent)!important;
+ background:color-mix(in srgb,var(--ui-accent) 13%,var(--ui-surface))!important;
+}
+#dashboard.app-shell .messages-layout{
+ display:grid!important;grid-template-columns:minmax(240px,300px) minmax(0,1fr)!important;
+ gap:14px!important;width:100%!important;min-width:0!important;align-items:stretch!important;
+}
+#dashboard.app-shell .message-panel{width:100%!important;max-width:100%!important}
+#dashboard.app-shell .message-contacts-panel,
+#dashboard.app-shell .message-conversation-panel{padding:15px!important;min-width:0!important}
+#dashboard.app-shell .message-thread{min-width:0!important}
+#dashboard.app-shell .owner-dashboard-layout{width:100%!important;max-width:none!important}
+#dashboard.app-shell .owner-metrics{width:100%!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#dashboard.app-shell .owner-lower-grid{width:100%!important}
+#dashboard.app-shell .main footer{
+ display:flex!important;justify-content:space-between!important;gap:12px!important;
+ flex-wrap:wrap!important;width:100%!important;margin-top:22px!important;
+ border-top:1px solid var(--ui-border-soft)!important;color:var(--ui-muted)!important;
+}
+
+/* Medium screens: one workspace width, sidebar becomes a drawer. */
+@media(max-width:1050px){
+ #dashboard.app-shell{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important}
+ #dashboard.app-shell .sidebar{
+  position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;
+  width:min(84vw,310px)!important;min-width:0!important;height:100dvh!important;max-height:100dvh!important;
+  padding:16px 13px calc(14px + env(safe-area-inset-bottom))!important;
+  display:flex!important;flex-direction:column!important;overflow-y:auto!important;overflow-x:hidden!important;
+  z-index:100!important;transform:translateX(105%)!important;transition:transform .22s ease!important;
+ }
+ #dashboard.app-shell.mobile-nav-open .sidebar{transform:translateX(0)!important}
+ #dashboard.app-shell .main{
+  display:block!important;width:100%!important;max-width:none!important;min-width:0!important;
+  margin:0!important;padding:22px 22px 28px!important;box-sizing:border-box!important;
+ }
+ #dashboard.app-shell .messages-layout{grid-template-columns:minmax(220px,280px) minmax(0,1fr)!important}
+}
+
+/* Phones: every section uses the same gutter, stacked cards and readable controls. */
+@media(max-width:760px){
+ html,body,#dashboard.app-shell{width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:hidden!important}
+ #dashboard.app-shell .main{
+  width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;
+  padding:14px 14px calc(32px + env(safe-area-inset-bottom))!important;
+ }
+ #dashboard.app-shell .topbar{
+  display:flex!important;flex-wrap:nowrap!important;align-items:center!important;
+  width:100%!important;min-width:0!important;min-height:62px!important;
+  margin:0 0 15px!important;padding:9px 10px!important;gap:8px!important;
+ }
+ #dashboard.app-shell .topbar-heading{display:block!important;min-width:0!important;flex:1 1 auto!important}
+ #dashboard.app-shell .topbar h1{font-size:clamp(16px,4.4vw,21px)!important;line-height:1.4!important}
+ #dashboard.app-shell .topbar-actions{min-width:0!important;max-width:none!important;gap:6px!important;flex:0 0 auto!important}
+ #dashboard.owner-overview-active .topbar-heading{display:none!important}
+ #dashboard.app-shell .topbar-actions .theme-toggle,
+ #dashboard.app-shell .topbar-actions .install-app-button,
+ #dashboard.app-shell .topbar-actions .date-chip{display:none!important}
+ #dashboard.app-shell .topbar-icon-button{width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;flex-basis:36px!important}
+ #dashboard.app-shell #content{width:100%!important;max-width:100%!important;min-width:0!important}
+ #dashboard.app-shell #content>*{width:100%!important;max-width:100%!important;min-width:0!important}
+ #dashboard.app-shell .panel{padding:15px!important;margin:0 0 13px!important;border-radius:14px!important}
+ #dashboard.app-shell .panel-heading,
+ #dashboard.app-shell .attendance-panel-heading,
+ #dashboard.app-shell .message-section-heading{gap:9px!important;margin-bottom:12px!important;padding-bottom:10px!important}
+ #dashboard.app-shell .panel-heading h2,
+ #dashboard.app-shell .panel-heading h3,
+ #dashboard.app-shell .attendance-panel-heading h3,
+ #dashboard.app-shell .message-section-heading h3{font-size:15px!important}
+ #dashboard.app-shell .form-grid{grid-template-columns:minmax(0,1fr)!important;gap:11px!important;padding:13px!important;margin-bottom:13px!important}
+ #dashboard.app-shell .settings-fields{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ #dashboard.app-shell .settings-span-2{grid-column:1!important}
+ #dashboard.app-shell .settings-card{padding:14px!important;border-radius:14px!important;min-height:0!important}
+ #dashboard.app-shell .settings-intro h2,
+ #dashboard.app-shell .attendance-page-heading h2,
+ #dashboard.app-shell .message-page-heading h2{font-size:19px!important}
+ #dashboard.app-shell .settings-intro,
+ #dashboard.app-shell .attendance-page-heading,
+ #dashboard.app-shell .message-page-heading{align-items:flex-start!important;gap:10px!important;margin-bottom:5px!important}
+ #dashboard.app-shell .settings-tabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ #dashboard.app-shell .settings-tabs button{min-width:0!important;min-height:40px!important;font-size:11px!important;padding:8px!important}
+ #dashboard.app-shell .messages-layout{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+ #dashboard.app-shell .message-contacts-panel,
+ #dashboard.app-shell .message-conversation-panel{padding:11px!important;border-radius:14px!important}
+ #dashboard.app-shell .message-contact-list{display:flex!important;flex-direction:row!important;gap:7px!important;max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important}
+ #dashboard.app-shell .message-contact-item{flex:0 0 155px!important;width:155px!important;max-width:70vw!important}
+ #dashboard.app-shell .message-conversation-panel{min-height:0!important}
+ #dashboard.app-shell .message-thread{min-height:230px!important;max-height:48vh!important;padding:11px!important}
+ #dashboard.app-shell .message-compose{padding:10px!important}
+ #dashboard.app-shell .message-compose-row{display:flex!important;flex-direction:column!important;gap:8px!important}
+ #dashboard.app-shell .message-compose-row button{width:100%!important;min-height:44px!important}
+ #dashboard.app-shell .attendance-page{gap:12px!important}
+ #dashboard.app-shell .attendance-page-heading{flex-direction:column!important}
+ #dashboard.app-shell .attendance-heading-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important}
+ #dashboard.app-shell .attendance-heading-actions button{min-width:0!important;width:100%!important}
+ #dashboard.app-shell .attendance-panel,
+ #dashboard.app-shell .attendance-history-panel{padding:13px!important;border-radius:14px!important}
+ #dashboard.app-shell .attendance-session-grid,
+ #dashboard.app-shell .attendance-selected-details,
+ #dashboard.app-shell .attendance-manual-grid,
+ #dashboard.app-shell .attendance-barcode-form{grid-template-columns:minmax(0,1fr)!important}
+ #dashboard.app-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;width:100%!important}
+ #dashboard.app-shell .content-grid{grid-template-columns:minmax(0,1fr)!important;gap:11px!important}
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ #dashboard.app-shell .owner-lower-grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+ #dashboard.app-shell .owner-widget{min-height:0!important;padding:13px!important}
+ #dashboard.app-shell .owner-welcome{min-height:0!important;padding:18px!important}
+ #dashboard.app-shell .table-wrap{width:100%!important;max-width:100%!important;overflow-x:auto!important}
+ #dashboard.app-shell .table-wrap table{min-width:680px!important}
+ #dashboard.app-shell .table-wrap th,
+ #dashboard.app-shell .table-wrap td{font-size:11px!important;padding:10px 9px!important}
+ #dashboard.app-shell .student-table-wrap{display:none!important}
+ #dashboard.app-shell .student-mobile-cards{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+ #dashboard.app-shell .student-mobile-card{padding:13px!important}
+ #dashboard.app-shell .ai-import-form{grid-template-columns:minmax(0,1fr)!important}
+ #dashboard.app-shell .ai-student-row{padding:12px!important}
+ #dashboard.app-shell .main footer{display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important;padding:16px 3px!important;gap:5px!important}
+ #dashboard.app-shell .mobile-nav-toggle{display:inline-flex!important;visibility:visible!important;opacity:1!important}
+}
+@media(max-width:390px){
+ #dashboard.app-shell .main{padding-inline:11px!important}
+ #dashboard.app-shell .topbar{gap:5px!important}
+ #dashboard.app-shell .topbar-profile{max-width:100px!important}
+ #dashboard.app-shell .topbar-profile>div:last-child{max-width:61px!important}
+ #dashboard.app-shell .topbar-profile b{max-width:61px!important}
+ #dashboard.app-shell .owner-metric-card{min-width:0!important}
+ #dashboard.app-shell .owner-metric-copy strong{overflow-wrap:anywhere!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #dashboard.app-shell .panel,#dashboard.app-shell .stat-card,#dashboard.app-shell .settings-card,
+ #dashboard.app-shell .owner-widget,#dashboard.app-shell .nav-item{transition:none!important;transform:none!important}
+}
