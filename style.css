@@ -3754,3 +3754,133 @@ html[data-theme="light"] #dashboard.app-shell{
  #dashboard.app-shell .panel,#dashboard.app-shell .stat-card,#dashboard.app-shell .settings-card,
  #dashboard.app-shell .owner-widget,#dashboard.app-shell .nav-item{transition:none!important;transform:none!important}
 }
+
+
+/* ACADEMIA — final unified page layout */
+#dashboard.app-shell:not([hidden]){
+ --academy-sidebar-width:clamp(244px,20vw,282px);
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ min-height:100vh;min-height:100dvh;overflow-x:clip;
+}
+#dashboard.app-shell>.main{
+ box-sizing:border-box!important;min-width:0!important;max-width:none!important;
+ width:calc(100% - var(--academy-sidebar-width))!important;
+ margin:0!important;margin-right:var(--academy-sidebar-width)!important;
+ padding:clamp(18px,2.2vw,32px)!important;
+}
+#dashboard.app-shell .sidebar{box-sizing:border-box!important;width:var(--academy-sidebar-width)!important;min-width:0!important;max-width:var(--academy-sidebar-width)!important}
+#dashboard.app-shell #content{display:block!important;width:100%!important;max-width:1680px!important;min-width:0!important;margin:0 auto!important}
+#dashboard.app-shell #content>*{min-width:0;max-width:100%;box-sizing:border-box}
+#dashboard.app-shell #content>section.panel{width:100%;margin:0 0 16px}
+#dashboard.app-shell .panel,#dashboard.app-shell .settings-card,#dashboard.app-shell .attendance-panel,#dashboard.app-shell .attendance-history-panel,#dashboard.app-shell .message-contacts-panel,#dashboard.app-shell .message-conversation-panel{box-sizing:border-box;min-width:0;max-width:100%}
+#dashboard.app-shell .topbar{box-sizing:border-box;width:100%;min-width:0;max-width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#dashboard.app-shell .topbar-heading{min-width:0;flex:1 1 180px}
+#dashboard.app-shell .topbar-heading h1,#dashboard.app-shell .panel-heading h3,#dashboard.app-shell .settings-intro h2,#dashboard.app-shell .message-page-heading h2{overflow-wrap:anywhere;line-height:1.45}
+#dashboard.app-shell .topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 1 auto;min-width:0;max-width:100%;flex-wrap:wrap}
+#dashboard.app-shell .topbar-actions>*{min-width:0}
+#dashboard.app-shell .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr));gap:14px;min-width:0}
+#dashboard.app-shell .content-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:14px;min-width:0;max-width:100%}
+#dashboard.app-shell .form-grid,#dashboard.app-shell .settings-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr));align-items:end;gap:14px;min-width:0}
+#dashboard.app-shell .form-grid>*,#dashboard.app-shell .settings-fields>*{min-width:0;max-width:100%}
+#dashboard.app-shell .form-grid .span-all,#dashboard.app-shell .settings-fields .settings-span-2{grid-column:1/-1}
+#dashboard.app-shell input,#dashboard.app-shell select,#dashboard.app-shell textarea,#dashboard.app-shell button{max-width:100%;box-sizing:border-box}
+#dashboard.app-shell input:not([type="checkbox"]):not([type="radio"]),#dashboard.app-shell select,#dashboard.app-shell textarea{min-width:0}
+#dashboard.app-shell .panel-heading,#dashboard.app-shell .settings-intro,#dashboard.app-shell .settings-section-head,#dashboard.app-shell .message-page-heading,#dashboard.app-shell .attendance-page-heading{min-width:0;max-width:100%;flex-wrap:wrap}
+#dashboard.app-shell .settings-page{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;width:100%;max-width:100%;min-width:0}
+#dashboard.app-shell .settings-form,#dashboard.app-shell .settings-card{width:100%;min-width:0}
+#dashboard.app-shell .settings-tabs{display:flex;flex-wrap:wrap;gap:7px;max-width:100%;min-width:0}
+#dashboard.app-shell .settings-tabs button{min-width:0;max-width:100%;white-space:normal}
+#dashboard.app-shell .table-wrap,#dashboard.app-shell .student-table-wrap{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto!important;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain}
+#dashboard.app-shell .table-wrap table{width:max-content;min-width:100%;max-width:none;border-collapse:collapse}
+#dashboard.app-shell .table-wrap th,#dashboard.app-shell .table-wrap td{white-space:nowrap}
+#dashboard.app-shell .messages-layout{display:grid;grid-template-columns:minmax(220px,.78fr) minmax(0,1.8fr);gap:14px;min-width:0;max-width:100%}
+#dashboard.app-shell .message-contacts-panel,#dashboard.app-shell .message-conversation-panel{min-width:0}
+#dashboard.app-shell .message-thread{min-width:0;overflow-x:hidden}
+#dashboard.app-shell .message-bubble{max-width:min(88%,620px);overflow-wrap:anywhere}
+#dashboard.app-shell .toolbar,#dashboard.app-shell .attendance-heading-actions,#dashboard.app-shell .attendance-selected-actions,#dashboard.app-shell .scan-actions{display:flex;flex-wrap:wrap;gap:8px;min-width:0;max-width:100%}
+#dashboard.app-shell .notice-banner{max-width:100%;overflow-wrap:anywhere}
+#dashboard.app-shell .main footer{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#dashboard.app-shell dialog,#dashboard.app-shell .modal{box-sizing:border-box;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto}
+#dashboard.app-shell .editor-form,#dashboard.app-shell .student-mobile-card,#dashboard.app-shell .student-mobile-cards{min-width:0;max-width:100%}
+
+@media(max-width:1050px){
+ #dashboard.app-shell:not([hidden]){width:100%!important;max-width:100%!important;overflow-x:clip}
+ #dashboard.app-shell>.main{display:block!important;position:relative!important;float:none!important;inset:auto!important;box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:16px clamp(10px,2.4vw,20px) calc(24px + env(safe-area-inset-bottom))!important}
+ #dashboard.app-shell .sidebar{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;width:min(86vw,320px)!important;max-width:320px!important;min-width:0!important;height:100vh!important;height:100dvh!important;min-height:0!important;max-height:100dvh!important;padding:16px 12px calc(14px + env(safe-area-inset-bottom))!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:10px!important;overflow-x:hidden!important;overflow-y:auto!important;z-index:100!important;transform:translateX(105%)!important;transition:transform .22s ease!important}
+ #dashboard.mobile-nav-open .sidebar{transform:translateX(0)!important}
+ #dashboard.app-shell .sidebar .brand{display:flex!important;align-items:center!important;padding:4px 6px 16px!important}
+ #dashboard.app-shell .sidebar .mobile-nav-close{display:flex!important;align-items:center!important;justify-content:space-between!important;min-height:42px!important}
+ #dashboard.app-shell .sidebar nav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;flex:1 1 auto!important;min-width:0!important;min-height:0!important;width:100%!important;overflow-x:hidden!important;overflow-y:auto!important;align-items:stretch!important;justify-content:start!important;gap:5px!important}
+ #dashboard.app-shell .sidebar nav .nav-item{display:flex!important;flex:0 0 auto!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:46px!important;flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;gap:10px!important;padding:10px 12px!important;font-size:12px!important;white-space:normal!important}
+ #dashboard.app-shell .sidebar nav .nav-item span{display:inline-grid!important;min-width:24px!important;flex:0 0 24px!important}
+ #dashboard.app-shell .sidebar .sidebar-bottom{position:static!important;inset:auto!important;z-index:auto!important;display:grid!important;grid-template-columns:1fr!important;flex:0 0 auto!important;gap:6px!important;margin:8px 0 0!important;padding:10px 0 0!important;border-top:1px solid rgba(255,255,255,.15)!important;background:transparent!important;box-shadow:none!important}
+ #dashboard.app-shell .sidebar .sidebar-bottom .nav-item{width:100%!important;max-width:none!important;min-width:0!important;min-height:42px!important;display:flex!important;flex-direction:row!important;justify-content:flex-start!important;white-space:normal!important;text-align:right!important;font-size:11px!important;padding:8px 11px!important}
+ #dashboard.app-shell #mobile-nav-toggle{display:inline-flex!important;visibility:visible!important;opacity:1!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;align-items:center!important;justify-content:center!important}
+ #dashboard.app-shell #mobile-nav-backdrop:not([hidden]){display:block!important;position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;border:0!important;border-radius:0!important;background:rgba(2,7,19,.62)!important;z-index:90!important;padding:0!important}
+ #dashboard.app-shell .messages-layout{grid-template-columns:minmax(0,1fr)!important}
+ #dashboard.app-shell .message-contacts-panel{order:0}
+ #dashboard.app-shell .message-conversation-panel{order:1}
+}
+@media(max-width:760px){
+ #dashboard.app-shell>.main{padding:12px 11px calc(22px + env(safe-area-inset-bottom))!important}
+ #dashboard.app-shell .topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:nowrap!important;gap:7px!important;padding:10px!important;margin-bottom:12px!important}
+ #dashboard.app-shell .topbar-heading{display:block!important;flex:1 1 auto!important;width:auto!important;min-width:0!important}
+ #dashboard.app-shell .topbar-heading h1{font-size:clamp(15px,4.2vw,20px)!important;line-height:1.35!important}
+ #dashboard.app-shell .topbar-actions{flex:0 1 auto!important;display:flex!important;flex-wrap:nowrap!important;gap:5px!important;min-width:0!important}
+ #dashboard.app-shell .topbar-actions .theme-toggle,#dashboard.app-shell .topbar-actions .install-app-button,#dashboard.app-shell .topbar-actions .date-chip{display:none!important}
+ #dashboard.app-shell .topbar-profile{gap:5px!important;min-width:0!important;max-width:112px!important}
+ #dashboard.app-shell .topbar-profile>div:last-child{max-width:70px!important;min-width:0!important}
+ #dashboard.app-shell .topbar-profile b{max-width:70px!important;font-size:10px!important;white-space:nowrap!important}
+ #dashboard.app-shell .topbar-profile small{font-size:9px!important}
+ #dashboard.app-shell .topbar-icon-button{width:35px!important;height:35px!important;min-width:35px!important;min-height:35px!important;flex:0 0 35px!important}
+ #dashboard.app-shell .topbar-icon-button svg{width:18px!important;height:18px!important}
+ #dashboard.app-shell .panel{padding:13px!important;margin-bottom:12px!important}
+ #dashboard.app-shell .panel-heading{gap:8px!important;margin-bottom:12px!important}
+ #dashboard.app-shell .panel-heading h3{font-size:14px!important}
+ #dashboard.app-shell .form-grid,#dashboard.app-shell .settings-fields{grid-template-columns:minmax(0,1fr)!important;gap:11px!important}
+ #dashboard.app-shell .form-grid .span-all,#dashboard.app-shell .settings-fields .settings-span-2{grid-column:auto!important}
+ #dashboard.app-shell .form-grid input,#dashboard.app-shell .form-grid select,#dashboard.app-shell .settings-fields input,#dashboard.app-shell .settings-fields select,#dashboard.app-shell .settings-fields textarea,#dashboard.app-shell .stack input{min-height:42px;font-size:16px!important}
+ #dashboard.app-shell .settings-intro{align-items:flex-start!important;flex-direction:column!important;gap:8px!important}
+ #dashboard.app-shell .settings-intro h2{font-size:20px!important}
+ #dashboard.app-shell .settings-card{padding:14px!important}
+ #dashboard.app-shell .settings-tabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important}
+ #dashboard.app-shell .settings-tabs button{min-width:0!important;padding:9px 7px!important;font-size:10px!important}
+ #dashboard.app-shell .message-page-heading{align-items:stretch!important;flex-direction:column!important;gap:9px!important}
+ #dashboard.app-shell .message-page-heading button{width:100%!important}
+ #dashboard.app-shell .message-contacts-panel{padding:10px!important}
+ #dashboard.app-shell .message-contact-list{display:flex!important;gap:7px!important;overflow-x:auto!important;max-width:100%!important;padding-bottom:5px!important}
+ #dashboard.app-shell .message-contact-item{flex:0 0 auto!important;min-width:135px!important;max-width:190px!important}
+ #dashboard.app-shell .message-conversation-panel{min-height:0!important}
+ #dashboard.app-shell .message-thread{min-height:220px!important;max-height:52vh!important;padding:12px!important}
+ #dashboard.app-shell .message-compose{padding:10px!important}
+ #dashboard.app-shell .message-compose-row{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+ #dashboard.app-shell .message-compose-row textarea{width:100%!important;min-height:78px!important;font-size:16px!important}
+ #dashboard.app-shell .message-compose-row button{width:100%!important;min-height:42px!important}
+ #dashboard.app-shell .table-wrap{margin-top:10px!important}
+ #dashboard.app-shell .table-wrap th,#dashboard.app-shell .table-wrap td{padding:9px 8px!important;font-size:10px!important}
+ #dashboard.app-shell .toolbar,#dashboard.app-shell .attendance-heading-actions,#dashboard.app-shell .attendance-selected-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important}
+ #dashboard.app-shell .toolbar>* ,#dashboard.app-shell .attendance-heading-actions>* ,#dashboard.app-shell .attendance-selected-actions>*{min-width:0!important;width:100%!important}
+ #dashboard.app-shell .toolbar input{grid-column:1/-1!important}
+ #dashboard.app-shell .main footer{display:grid!important;gap:4px!important;text-align:center!important}
+ #dashboard.app-shell dialog,#dashboard.app-shell .modal{width:calc(100vw - 18px)!important;max-width:calc(100vw - 18px)!important;max-height:calc(100dvh - 18px)!important;margin:auto!important}
+}
+@media(max-width:430px){
+ #dashboard.app-shell .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+ #dashboard.app-shell .stat-card{padding:11px!important;min-width:0!important}
+ #dashboard.app-shell .stat-card strong{font-size:clamp(16px,5vw,21px)!important;overflow-wrap:anywhere}
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #dashboard.app-shell .owner-metric-card{min-width:0!important}
+ #dashboard.app-shell .settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #dashboard.app-shell .panel-heading{align-items:flex-start!important}
+ #dashboard.app-shell .panel-heading>*{min-width:0!important;max-width:100%!important}
+ #dashboard.app-shell .student-mobile-meta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #dashboard.app-shell .message-bubble{max-width:95%!important}
+}
+@media(max-width:360px){
+ #dashboard.app-shell .topbar{gap:4px!important;padding:8px!important}
+ #dashboard.app-shell .topbar-profile{max-width:92px!important}
+ #dashboard.app-shell .topbar-profile>div:last-child,#dashboard.app-shell .topbar-profile b{max-width:52px!important}
+ #dashboard.app-shell .topbar-icon-button{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;flex-basis:32px!important}
+ #dashboard.app-shell .stats-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(prefers-reduced-motion:reduce){#dashboard.app-shell *,#dashboard.app-shell *::before,#dashboard.app-shell *::after{scroll-behavior:auto!important;transition:none!important}}
