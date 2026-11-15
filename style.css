@@ -3884,3 +3884,17 @@ html[data-theme="light"] #dashboard.app-shell{
  #dashboard.app-shell .stats-grid{grid-template-columns:minmax(0,1fr)!important}
 }
 @media(prefers-reduced-motion:reduce){#dashboard.app-shell *,#dashboard.app-shell *::before,#dashboard.app-shell *::after{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Final visibility guard: a forced display rule must never reveal an inactive view. */
+html body #auth.auth-shell[hidden],
+html body #dashboard.app-shell[hidden]{
+ display:none!important;
+ visibility:hidden!important;
+ pointer-events:none!important;
+}
+html body #auth.auth-shell:not([hidden]),
+html body #dashboard.app-shell:not([hidden]){
+ visibility:visible;
+ pointer-events:auto;
+}
