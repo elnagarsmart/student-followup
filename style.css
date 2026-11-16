@@ -3898,3 +3898,24 @@ html body #dashboard.app-shell:not([hidden]){
  visibility:visible;
  pointer-events:auto;
 }
+
+
+/* Shared non-owner dashboard details: keep the same visual language, but only their own records. */
+#dashboard.owner-overview-active .owner-metric-link-static,
+#dashboard.owner-overview-active .owner-widget-link-static{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:48px;
+ padding:10px 14px;border-radius:14px;border:1px solid rgba(208,228,255,.18);
+ background:rgba(4,21,39,.38);color:#c5e4ff;font-size:12px;font-weight:800;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.09);
+}
+#dashboard.owner-overview-active .owner-shared-detail-list{display:grid;align-content:start;gap:0}
+#dashboard.owner-overview-active .owner-overview-message-row .owner-message-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#dashboard.owner-overview-active .owner-account-ready{padding:18px 12px;text-align:center;color:#eaf2ff}
+#dashboard.owner-overview-active .owner-account-ready b{font-size:15px}
+#dashboard.owner-overview-active .owner-account-ready p{font-size:11px;line-height:1.9;color:#a8bdd7}
+#dashboard.owner-overview-active .owner-visitor-actions{max-width:240px;margin:0 auto;width:100%}
+#dashboard.owner-overview-active .owner-visitor-actions button{border-color:rgba(255,133,151,.3);color:#ffabb6}
+@media(max-width:760px){
+ #dashboard.owner-overview-active .owner-shared-detail-list{min-width:0}
+ #dashboard.owner-overview-active .owner-overview-message-row{grid-template-columns:36px minmax(0,1fr)}
+}
