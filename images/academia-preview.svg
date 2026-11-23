@@ -1,5 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1730"/><stop offset="1" stop-color="#263f70"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe39a"/><stop offset="1" stop-color="#dfa83d"/></linearGradient></defs>
-<rect width="1200" height="630" fill="url(#bg)"/><circle cx="1060" cy="80" r="300" fill="#4272aa" opacity=".16"/><circle cx="120" cy="600" r="260" fill="#d8a94f" opacity=".1"/>
-<g transform="translate(88 125)"><rect width="450" height="370" rx="30" fill="#102344" stroke="#7893bc" stroke-opacity=".5" stroke-width="3"/><rect x="28" y="28" width="394" height="62" rx="14" fill="#243d68"/><circle cx="62" cy="59" r="16" fill="url(#gold)"/><rect x="92" y="49" width="150" height="10" rx="5" fill="#eaf0fc" opacity=".85"/><rect x="92" y="66" width="98" height="7" rx="4" fill="#9fb4d6" opacity=".7"/><g fill="#1b3459" stroke="#ffffff" stroke-opacity=".11"><rect x="28" y="112" width="120" height="100" rx="16"/><rect x="165" y="112" width="120" height="100" rx="16"/><rect x="302" y="112" width="120" height="100" rx="16"/></g><g fill="#e4b755"><circle cx="88" cy="145" r="18"/><circle cx="225" cy="145" r="18"/><circle cx="362" cy="145" r="18"/></g><g fill="#eaf0fc" opacity=".8"><rect x="49" y="177" width="78" height="8" rx="4"/><rect x="186" y="177" width="78" height="8" rx="4"/><rect x="323" y="177" width="78" height="8" rx="4"/></g><g fill="#1c355a"><rect x="28" y="234" width="394" height="36" rx="10"/><rect x="28" y="282" width="394" height="36" rx="10"/><rect x="28" y="330" width="394" height="24" rx="8"/></g><g fill="#6db5c9"><circle cx="50" cy="252" r="7"/><circle cx="50" cy="300" r="7"/></g><g fill="#eaf0fc" opacity=".75"><rect x="72" y="247" width="146" height="7" rx="4"/><rect x="72" y="295" width="146" height="7" rx="4"/></g></g>
-<g transform="translate(690 120)" text-anchor="end" direction="rtl"><circle cx="340" cy="70" r="62" fill="#1d3a67" stroke="#e4b755" stroke-width="3"/><path d="M340 25 397 49 340 73 283 49Z" fill="url(#gold)"/><path d="M300 73v31q40 34 80 0V73" fill="#f5f7fc"/><text x="520" y="238" fill="#ffffff" font-size="76" font-family="Noto Sans Arabic, sans-serif" font-weight="700">أكاديميا</text><text x="520" y="320" fill="#f2c76b" font-size="43" font-family="Noto Sans Arabic, sans-serif" font-weight="700">إدارة ومتابعة الطلاب</text><text x="520" y="385" fill="#d8e3f5" font-size="25" font-family="Noto Sans Arabic, sans-serif">برنامج عربي للأكاديميات والمراكز التعليمية</text><text x="520" y="445" fill="#c0d0e8" font-size="22" font-family="Noto Sans Arabic, sans-serif">الطلاب • الحضور والغياب • المدفوعات • المشرفون</text></g></svg>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08090b"/><stop offset=".56" stop-color="#171613"/><stop offset="1" stop-color="#0b0c0e"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f1dfb3"/><stop offset=".5" stop-color="#d7bb7d"/><stop offset="1" stop-color="#98713a"/></linearGradient>
+ <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#302d26"/><stop offset="1" stop-color="#171719"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#d7bb7d" stop-opacity=".22"/><stop offset="1" stop-color="#d7bb7d" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<circle cx="1080" cy="25" r="340" fill="url(#halo)"/><circle cx="40" cy="600" r="250" fill="url(#halo)"/>
+<g transform="translate(70 92)">
+ <rect width="560" height="440" rx="30" fill="url(#panel)" stroke="#d7bb7d" stroke-opacity=".32" stroke-width="2"/>
+ <rect x="22" y="22" width="516" height="58" rx="15" fill="#25231e" stroke="#d7bb7d" stroke-opacity=".19"/>
+ <rect x="42" y="39" width="26" height="26" rx="8" fill="url(#gold)"/>
+ <rect x="84" y="42" width="105" height="8" rx="4" fill="#f2e7ce" opacity=".9"/><rect x="84" y="56" width="68" height="6" rx="3" fill="#9e9583" opacity=".65"/>
+ <g fill="#24231f" stroke="#d7bb7d" stroke-opacity=".19"><rect x="22" y="100" width="158" height="112" rx="15"/><rect x="201" y="100" width="158" height="112" rx="15"/><rect x="380" y="100" width="158" height="112" rx="15"/></g>
+ <g fill="url(#gold)"><circle cx="52" cy="133" r="12"/><circle cx="231" cy="133" r="12"/><circle cx="410" cy="133" r="12"/></g>
+ <g fill="#f4edde" opacity=".9"><rect x="42" y="164" width="75" height="7" rx="4"/><rect x="221" y="164" width="75" height="7" rx="4"/><rect x="400" y="164" width="75" height="7" rx="4"/></g>
+ <rect x="22" y="232" width="516" height="184" rx="15" fill="#1d1d1e" stroke="#d7bb7d" stroke-opacity=".16"/>
+ <path d="M47 278h460M47 324h460M47 370h460" stroke="#d7bb7d" stroke-opacity=".13" stroke-width="2"/>
+ <g fill="#d7bb7d"><circle cx="55" cy="255" r="6"/><circle cx="55" cy="301" r="6"/><circle cx="55" cy="347" r="6"/></g>
+ <g fill="#f1eadc" opacity=".7"><rect x="75" y="251" width="160" height="7" rx="4"/><rect x="75" y="297" width="220" height="7" rx="4"/><rect x="75" y="343" width="185" height="7" rx="4"/></g>
+ <g fill="#d7bb7d" opacity=".82"><rect x="425" y="248" width="63" height="12" rx="6"/><rect x="398" y="294" width="90" height="12" rx="6"/><rect x="440" y="340" width="48" height="12" rx="6"/></g>
+</g>
+<g transform="translate(700 90)" text-anchor="end" direction="rtl">
+ <g transform="translate(362 100)">
+  <rect x="-68" y="-68" width="136" height="136" rx="33" fill="#171613" stroke="#d7bb7d" stroke-opacity=".6" stroke-width="3"/>
+  <path d="M-34 36 0-40 34 36" fill="none" stroke="url(#gold)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M-18 4h36M0 14v25" stroke="#f2dfb0" stroke-width="7" stroke-linecap="round"/>
+  <circle cy="49" r="8" fill="#d7bb7d"/>
+ </g>
+ <text x="540" y="272" fill="#f5f0e6" font-size="72" font-family="Cairo, Noto Sans Arabic, sans-serif" font-weight="800">Academia | أكاديميا</text>
+ <text x="540" y="345" fill="url(#gold)" font-size="38" font-family="Cairo, Noto Sans Arabic, sans-serif" font-weight="700">Luxury Liquid Glass</text>
+ <text x="540" y="405" fill="#c2b9a8" font-size="25" font-family="Cairo, Noto Sans Arabic, sans-serif">إدارة ومتابعة تعليمية في مساحة واحدة</text>
+ <text x="540" y="458" fill="#a79d8b" font-size="21" font-family="Cairo, Noto Sans Arabic, sans-serif">الطلاب • الحضور • المدفوعات • المشرفون • التواصل</text>
+</g>
+</svg>
