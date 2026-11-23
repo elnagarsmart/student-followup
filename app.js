@@ -640,12 +640,22 @@ function drawNav(){
  role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:
  role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
  [['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['appearance','المظهر والثيمات','🎨']];
+ // Keep utility actions out of the phone tab bar; expose them from a compact More menu instead.
+ items.push(['mobile-more','المزيد','⋯']);
  $('nav').innerHTML=items.map(([id,n,i])=>{
   const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:id==='alerts'?unreadPlatformNotices:0;
   const label=id==='alerts'?'تنبيهات غير مقروءة':'رسائل غير مقروءة';
   return '<button class="nav-item '+(tab===id?'active':'')+'" data-tab="'+id+'" title="'+esc(n)+'" aria-label="'+esc(n)+'"><span>'+i+'</span>'+n+(count?'<b class="nav-count" aria-label="'+count+' '+label+'">'+(count>99?'99+':count)+'</b>':'')+'</button>';
  }).join('');
- $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;closeMobileNav();drawNav();render()});
+ $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  if(b.dataset.tab==='mobile-more'){
+   const opened=$('dashboard').classList.toggle('mobile-actions-open');
+   b.classList.toggle('active',opened);b.setAttribute('aria-expanded',String(opened));return;
+  }
+  $('dashboard').classList.remove('mobile-actions-open');
+  tab=b.dataset.tab;closeMobileNav();drawNav();render();
+ });
+ document.querySelector('.sidebar-bottom')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>$('dashboard').classList.remove('mobile-actions-open')));
 
  const messageBadge=$('topbar-message-count');
  if(messageBadge){messageBadge.textContent=unreadTotal>99?'99+':String(unreadTotal);messageBadge.hidden=!unreadTotal}
