@@ -3940,3 +3940,43 @@ html body #dashboard.app-shell:not([hidden]){
  #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
  #dashboard.app-shell .owner-lower-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
+
+
+/* Profile photo polish: larger avatar, visible shape picker and image crop. */
+#dashboard .profile-avatar-wrap{position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:68px;height:68px}
+#dashboard .profile-avatar-button{width:60px!important;height:60px!important;min-width:60px!important;min-height:60px!important;padding:0!important;overflow:hidden!important;display:grid!important;place-items:center!important;border:2px solid rgba(173,211,255,.55)!important;border-radius:50%!important;background:linear-gradient(145deg,#203e65,#101d34)!important;color:#eaf5ff!important;font-size:22px!important;font-weight:800!important;box-shadow:0 6px 22px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.2)!important;transition:border-radius .22s,transform .22s,box-shadow .22s}
+#dashboard .profile-avatar-button:hover{transform:scale(1.04);box-shadow:0 8px 26px rgba(24,110,230,.26),inset 0 1px 0 rgba(255,255,255,.25)!important}
+#dashboard .profile-avatar-button img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+#dashboard .profile-avatar-button[data-photo-shape="circle"]{border-radius:50%!important}
+#dashboard .profile-avatar-button[data-photo-shape="square"]{border-radius:13px!important}
+#dashboard .profile-avatar-button[data-photo-shape="rectangle"]{width:68px!important;height:48px!important;min-width:68px!important;min-height:48px!important;border-radius:12px!important}
+#dashboard .profile-photo-shape-toggle{position:absolute;bottom:-2px;left:-2px;width:24px;height:24px;border:1px solid rgba(220,237,255,.65);border-radius:50%;display:grid;place-items:center;padding:0;background:linear-gradient(145deg,#2d76cb,#14345b);color:#fff;font-size:11px;box-shadow:0 2px 8px #0003;z-index:4}
+#dashboard .profile-photo-shape-menu{position:absolute;top:calc(100% + 10px);left:0;z-index:120;min-width:174px;padding:9px;display:grid;gap:5px;border:1px solid rgba(180,215,255,.3);border-radius:15px;background:rgba(12,24,44,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 14px 36px rgba(0,0,0,.38)}
+#dashboard .profile-photo-shape-menu[hidden]{display:none!important}
+#dashboard .profile-photo-shape-menu>b{padding:6px 8px;color:#c7ddfa;font-size:11px}
+#dashboard .profile-photo-shape-menu button{min-height:38px;padding:8px 10px;text-align:right;border:1px solid rgba(180,215,255,.15);border-radius:9px;background:rgba(255,255,255,.055);color:#e8f2ff;font-size:12px}
+#dashboard .profile-photo-shape-menu button:hover{background:rgba(70,145,240,.2);border-color:rgba(120,190,255,.4)}
+#dashboard .profile-photo-shape-menu .profile-photo-remove{color:#ffb9c4;border-color:rgba(255,120,145,.2)}
+#dashboard .topbar-profile{align-items:center!important;gap:12px!important;min-width:0}
+#dashboard .topbar-profile>div:last-child{min-width:0;max-width:190px}
+#dashboard .topbar-profile b{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Sidebar: never clip menu entries; keep all sections reachable on desktop. */
+@media(min-width:701px){
+ #dashboard.app-shell>.sidebar{width:clamp(248px,21vw,300px)!important;max-width:clamp(248px,21vw,300px)!important;min-width:clamp(248px,21vw,300px)!important;padding:20px 14px 16px!important;gap:10px!important;overflow-x:hidden!important;overflow-y:auto!important;scrollbar-width:thin!important;scrollbar-color:rgba(155,193,240,.42) transparent!important}
+ #dashboard.app-shell .sidebar nav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important;min-width:0!important;flex:0 0 auto!important;overflow:visible!important}
+ #dashboard.app-shell .sidebar nav .nav-item{display:flex!important;justify-content:flex-start!important;align-items:center!important;min-width:0!important;width:100%!important;max-width:none!important;min-height:44px!important;white-space:normal!important;overflow:visible!important;text-align:right!important;font-size:12px!important;line-height:1.35!important;padding:10px 12px!important}
+ #dashboard.app-shell .sidebar nav .nav-item span{display:inline-flex!important;flex:0 0 auto!important;min-width:24px!important;justify-content:center!important;font-size:17px!important;line-height:1!important}
+ #dashboard.app-shell .sidebar nav .nav-item:before{display:none!important}
+ #dashboard.app-shell .sidebar-bottom{position:static!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:5px!important;margin-top:auto!important;padding-top:10px!important;border-top:1px solid rgba(255,255,255,.1)!important}
+ #dashboard.app-shell .sidebar-bottom .nav-item{display:flex!important;justify-content:flex-start!important;min-width:0!important;width:100%!important;max-width:none!important;min-height:40px!important;font-size:11px!important;padding:9px 11px!important}
+ #dashboard.app-shell>.main{width:calc(100% - clamp(248px,21vw,300px))!important;margin-right:clamp(248px,21vw,300px)!important}
+}
+@media(max-width:700px){
+ #dashboard .profile-avatar-wrap{width:52px;height:52px}
+ #dashboard .profile-avatar-button{width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important}
+ #dashboard .profile-avatar-button[data-photo-shape="rectangle"]{width:52px!important;height:38px!important;min-width:52px!important;min-height:38px!important}
+ #dashboard .profile-photo-shape-toggle{width:21px;height:21px;font-size:10px}
+ #dashboard .profile-photo-shape-menu{left:auto;right:0;min-width:162px}
+ #dashboard .topbar-profile{max-width:none!important}
+}
