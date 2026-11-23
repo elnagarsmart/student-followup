@@ -654,6 +654,21 @@ function drawNav(){
  if(alertBadge){alertBadge.textContent=unreadPlatformNotices>99?'99+':String(unreadPlatformNotices);alertBadge.hidden=!unreadPlatformNotices}
  const messageButton=$('topbar-messages');
  if(messageButton)messageButton.onclick=()=>{tab='messages';closeMobileNav();drawNav();render()};
+ // Compact mobile shortcuts mirror the current user's permitted primary sections.
+ const mobileNav=$('mobile-bottom-nav');
+ if(mobileNav){
+  const quickItems=['overview','students','attendance','payments','messages']
+   .map(id=>items.find(item=>item[0]===id))
+   .filter(Boolean)
+   .slice(0,5);
+  mobileNav.innerHTML=quickItems.map(([id,name,iconMarkup])=>
+   '<button type="button" data-mobile-tab="'+esc(id)+'" class="'+(tab===id?'active':'')+'" aria-label="'+esc(name)+'" title="'+esc(name)+'"><span>'+iconMarkup+'</span><small>'+esc(name)+'</small></button>'
+  ).join('')+'<button type="button" class="more-button" data-mobile-more aria-label="فتح كل الأقسام"><span>☰</span><small>المزيد</small></button>';
+  mobileNav.querySelectorAll('[data-mobile-tab]').forEach(button=>button.onclick=()=>{
+   tab=button.dataset.mobileTab;closeMobileNav();drawNav();render();
+  });
+  mobileNav.querySelector('[data-mobile-more]')?.addEventListener('click',toggleMobileNav);
+ }
 }
 async function refreshUnreadCounts(){
  if(!session?.user?.id)return;
