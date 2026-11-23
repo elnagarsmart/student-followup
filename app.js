@@ -181,7 +181,7 @@ function applyTheme(theme){
 function applyAcademiaIdentity(){
  const profile=academySettings?.profile||DEFAULT_ACADEMY_SETTINGS.profile;
  const name=String(profile.academyName||'أكاديميا').trim()||'أكاديميا';
- const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent=name;
+ const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent='Academia | '+name;
  const brandCaption=document.querySelector('.sidebar .brand small');if(brandCaption)brandCaption.textContent='إدارة ومتابعة الطلاب';
  const logo=String(profile.logoUrl||'').trim();let logoSrc='/icons/icon.svg';
  if(logo){try{const parsed=new URL(logo,window.location.origin);if(parsed.protocol==='https:')logoSrc=parsed.href}catch{}}
@@ -189,7 +189,7 @@ function applyAcademiaIdentity(){
  const footer=document.querySelector('.main footer');if(footer){const first=footer.childNodes[0];if(first&&first.nodeType===3)first.textContent=name+' · نظام متابعة الطلاب ';}
  const userLabel=$('user-email');
  if(userLabel&&session?.user){userLabel.textContent=profile.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
- document.title=name+' | إدارة ومتابعة الطلاب';
+ document.title='Academia | '+name+' — إدارة ومتابعة الطلاب';
  const main=document.querySelector('.main'),topbar=document.querySelector('.topbar');
  let identityStrip=$('academy-identity-strip');
  if(main&&topbar&&!identityStrip){identityStrip=document.createElement('div');identityStrip.id='academy-identity-strip';identityStrip.className='academy-identity-strip';identityStrip.setAttribute('aria-label','بيانات التواصل مع الأكاديمية');topbar.insertAdjacentElement('afterend',identityStrip);}
@@ -654,6 +654,21 @@ function drawNav(){
  if(alertBadge){alertBadge.textContent=unreadPlatformNotices>99?'99+':String(unreadPlatformNotices);alertBadge.hidden=!unreadPlatformNotices}
  const messageButton=$('topbar-messages');
  if(messageButton)messageButton.onclick=()=>{tab='messages';closeMobileNav();drawNav();render()};
+ // Compact mobile shortcuts mirror the current user's permitted primary sections.
+ const mobileNav=$('mobile-bottom-nav');
+ if(mobileNav){
+  const quickItems=['overview','students','attendance','payments','messages']
+   .map(id=>items.find(item=>item[0]===id))
+   .filter(Boolean)
+   .slice(0,5);
+  mobileNav.innerHTML=quickItems.map(([id,name,iconMarkup])=>
+   '<button type="button" data-mobile-tab="'+esc(id)+'" class="'+(tab===id?'active':'')+'" aria-label="'+esc(name)+'" title="'+esc(name)+'"><span>'+iconMarkup+'</span><small>'+esc(name)+'</small></button>'
+  ).join('')+'<button type="button" class="more-button" data-mobile-more aria-label="فتح كل الأقسام"><span>☰</span><small>المزيد</small></button>';
+  mobileNav.querySelectorAll('[data-mobile-tab]').forEach(button=>button.onclick=()=>{
+   tab=button.dataset.mobileTab;closeMobileNav();drawNav();render();
+  });
+  mobileNav.querySelector('[data-mobile-more]')?.addEventListener('click',toggleMobileNav);
+ }
 }
 async function refreshUnreadCounts(){
  if(!session?.user?.id)return;

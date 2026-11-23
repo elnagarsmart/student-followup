@@ -1,5 +1,5 @@
-const CACHE = 'academia-pwa-v51';
-const CORE = ['/', '/index.html', '/style.css', '/app.js', '/config.js', '/manifest.webmanifest', '/icons/icon.svg'];
+const CACHE = 'academia-pwa-v52';
+const CORE = ['/', '/index.html', '/style.css', '/design-system.css', '/app.js', '/config.js', '/manifest.webmanifest', '/icons/icon.svg'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
 });
