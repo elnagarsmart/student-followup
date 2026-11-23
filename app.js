@@ -181,7 +181,7 @@ function applyTheme(theme){
 function applyAcademiaIdentity(){
  const profile=academySettings?.profile||DEFAULT_ACADEMY_SETTINGS.profile;
  const name=String(profile.academyName||'أكاديميا').trim()||'أكاديميا';
- const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent=name;
+ const brand=document.querySelector('.sidebar .brand b');if(brand)brand.textContent='Academia | '+name;
  const brandCaption=document.querySelector('.sidebar .brand small');if(brandCaption)brandCaption.textContent='إدارة ومتابعة الطلاب';
  const logo=String(profile.logoUrl||'').trim();let logoSrc='/icons/icon.svg';
  if(logo){try{const parsed=new URL(logo,window.location.origin);if(parsed.protocol==='https:')logoSrc=parsed.href}catch{}}
@@ -189,7 +189,7 @@ function applyAcademiaIdentity(){
  const footer=document.querySelector('.main footer');if(footer){const first=footer.childNodes[0];if(first&&first.nodeType===3)first.textContent=name+' · نظام متابعة الطلاب ';}
  const userLabel=$('user-email');
  if(userLabel&&session?.user){userLabel.textContent=profile.displayName||session.user.email||session.user.phone||'حساب أكاديميا';userLabel.title=session.user.email||'';}
- document.title=name+' | إدارة ومتابعة الطلاب';
+ document.title='Academia | '+name+' — إدارة ومتابعة الطلاب';
  const main=document.querySelector('.main'),topbar=document.querySelector('.topbar');
  let identityStrip=$('academy-identity-strip');
  if(main&&topbar&&!identityStrip){identityStrip=document.createElement('div');identityStrip.id='academy-identity-strip';identityStrip.className='academy-identity-strip';identityStrip.setAttribute('aria-label','بيانات التواصل مع الأكاديمية');topbar.insertAdjacentElement('afterend',identityStrip);}
