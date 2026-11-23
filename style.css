@@ -4283,3 +4283,93 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  #dashboard.app-shell .main{width:63vw!important;margin-right:37vw!important;padding-inline:7px!important}
  #dashboard.app-shell .sidebar nav .nav-item{font-size:9px!important;gap:5px!important}
 }
+
+
+/* Academia responsive navigation v3:
+   desktop = right sidebar; phones = persistent bottom navigation for every role. */
+@media(max-width:760px){
+ #dashboard.app-shell .sidebar{
+  position:fixed!important;top:auto!important;right:0!important;bottom:0!important;left:0!important;
+  width:100%!important;height:auto!important;min-height:0!important;max-height:132px!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  justify-content:flex-end!important;gap:4px!important;
+  padding:7px 7px calc(7px + env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;transform:none!important;visibility:visible!important;opacity:1!important;
+  z-index:100!important;border:0!important;border-top:1px solid rgba(214,184,117,.38)!important;
+  border-radius:18px 18px 0 0!important;
+  background:linear-gradient(160deg,rgba(18,30,49,.98),rgba(8,15,28,.99))!important;
+  box-shadow:0 -10px 34px rgba(0,0,0,.28)!important;
+  backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important;
+ }
+ #dashboard.app-shell .sidebar>.brand,
+ #dashboard.app-shell .sidebar>.profile,
+ #dashboard.app-shell .sidebar>.mobile-nav-close{display:none!important}
+ #dashboard.app-shell .sidebar nav{
+  display:flex!important;flex:1 1 auto!important;min-width:0!important;min-height:56px!important;
+  align-items:stretch!important;justify-content:space-around!important;gap:3px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;
+  -webkit-overflow-scrolling:touch!important;padding:0 1px!important;
+ }
+ #dashboard.app-shell .sidebar nav::-webkit-scrollbar{display:none!important}
+ #dashboard.app-shell .sidebar nav .nav-item{
+  position:relative!important;display:flex!important;flex:1 0 64px!important;
+  min-width:64px!important;max-width:112px!important;min-height:54px!important;
+  flex-direction:column!important;justify-content:center!important;align-items:center!important;
+  gap:4px!important;padding:5px 3px!important;margin:0!important;
+  border:1px solid transparent!important;border-radius:12px!important;
+  background:transparent!important;color:#aebbd0!important;
+  font-size:10px!important;line-height:1.25!important;font-weight:600!important;
+  text-align:center!important;white-space:normal!important;
+ }
+ #dashboard.app-shell .sidebar nav .nav-item span{
+  display:flex!important;flex:0 0 auto!important;min-width:0!important;
+  align-items:center!important;justify-content:center!important;
+  font-size:18px!important;line-height:1!important;
+ }
+ #dashboard.app-shell .sidebar nav .nav-item span svg{width:19px!important;height:19px!important}
+ #dashboard.app-shell .sidebar nav .nav-item.active{
+  color:#f0d69a!important;background:rgba(214,184,117,.13)!important;
+  border-color:rgba(214,184,117,.25)!important;box-shadow:none!important;
+ }
+ #dashboard.app-shell .sidebar nav .nav-item.active:before{display:none!important}
+ #dashboard.app-shell .sidebar nav .nav-item .nav-count{
+  position:absolute!important;top:1px!important;right:calc(50% - 24px)!important;
+  min-width:15px!important;padding:2px 4px!important;font-size:8px!important;
+ }
+ #dashboard.app-shell .sidebar .sidebar-bottom{
+  display:flex!important;flex:0 0 auto!important;flex-direction:row!important;
+  align-items:center!important;justify-content:space-around!important;gap:5px!important;
+  margin:2px 0 0!important;padding:4px 0 0!important;
+  border-top:1px solid rgba(255,255,255,.10)!important;
+  background:transparent!important;box-shadow:none!important;
+ }
+ #dashboard.app-shell .sidebar .sidebar-bottom .nav-item{
+  display:flex!important;flex:1 1 0!important;min-width:0!important;max-width:none!important;
+  min-height:25px!important;justify-content:center!important;align-items:center!important;
+  padding:3px 5px!important;border-radius:8px!important;background:rgba(255,255,255,.045)!important;
+  color:#b9c5d8!important;font-size:9px!important;line-height:1.2!important;text-align:center!important;
+  white-space:normal!important;
+ }
+ #dashboard.app-shell .sidebar .sidebar-bottom .logout{color:#ffc3c3!important}
+ #dashboard.app-shell .main{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  margin:0!important;padding:12px 12px calc(148px + env(safe-area-inset-bottom))!important;
+  box-sizing:border-box!important;
+ }
+ #dashboard.app-shell #mobile-nav-toggle,
+ #dashboard.app-shell #mobile-nav-backdrop{display:none!important;visibility:hidden!important;pointer-events:none!important}
+ #dashboard.app-shell .topbar{gap:8px!important;flex-wrap:wrap!important}
+ #dashboard.app-shell .topbar-heading{min-width:0!important}
+ #dashboard.app-shell .topbar-profile{display:none!important}
+ #dashboard.app-shell .main footer{display:block!important;line-height:1.9!important}
+}
+@media(max-width:380px){
+ #dashboard.app-shell .sidebar{max-height:126px!important;padding-inline:4px!important}
+ #dashboard.app-shell .sidebar nav .nav-item{flex-basis:58px!important;min-width:58px!important;font-size:9px!important}
+ #dashboard.app-shell .main{padding-bottom:142px!important}
+}
+@media(min-width:761px){
+ #dashboard.app-shell .sidebar{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;width:260px!important;height:100vh!important;display:flex!important;flex-direction:column!important;transform:none!important;visibility:visible!important}
+ #dashboard.app-shell .main{width:calc(100% - 260px)!important;margin-right:260px!important}
+ #dashboard.app-shell .mobile-nav-toggle,#dashboard.app-shell #mobile-nav-backdrop{display:none!important}
+}
