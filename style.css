@@ -4089,3 +4089,88 @@ html[data-theme="light"]{
  #dashboard.app-shell .stat-card{min-height:116px!important}
  #dashboard.app-shell .settings-page .settings-card,#dashboard.app-shell .settings-page .settings-section{padding:12px!important}
 }
+
+
+/* === Academia: new clean professional visual system === */
+:root{
+ --ac-bg:#edf2f7;--ac-surface:#fff;--ac-surface2:#f6f9fc;--ac-ink:#16253a;--ac-muted:#64758b;
+ --ac-border:rgba(28,55,88,.10);--ac-accent:#0e9f91;--ac-accent-soft:rgba(14,159,145,.10);
+ --ac-shadow:0 5px 20px rgba(17,38,65,.06);--ac-radius:18px;--ac-space:16px;
+}
+html[data-theme="dark"]{
+ --ac-bg:#0b1220;--ac-surface:#111c2d;--ac-surface2:#172438;--ac-ink:#e8eef7;--ac-muted:#91a4bc;
+ --ac-border:rgba(163,188,220,.11);--ac-accent:#45c4b5;--ac-accent-soft:rgba(69,196,181,.10);
+ --ac-shadow:0 8px 24px rgba(0,0,0,.16);
+}
+html[data-theme="light"]{color-scheme:light}
+#dashboard.app-shell{background:var(--ac-bg)!important;color:var(--ac-ink)!important}
+#dashboard.app-shell .main{background:transparent!important}
+#dashboard.app-shell .topbar{min-height:66px!important;border:1px solid var(--ac-border)!important;border-radius:16px!important;background:var(--ac-surface)!important;box-shadow:var(--ac-shadow)!important;padding:10px 16px!important}
+#dashboard.app-shell .sidebar{background:var(--ac-surface)!important;border:1px solid var(--ac-border)!important;border-radius:20px!important;box-shadow:var(--ac-shadow)!important;padding:12px!important}
+#dashboard.app-shell .sidebar nav{gap:5px!important}
+#dashboard.app-shell .sidebar nav .nav-item{border-radius:12px!important;padding:10px 12px!important;min-height:42px!important;background:transparent!important;border:1px solid transparent!important;color:var(--ac-muted)!important;box-shadow:none!important;font-weight:650!important}
+#dashboard.app-shell .sidebar nav .nav-item:hover{background:var(--ac-surface2)!important;border-color:var(--ac-border)!important;color:var(--ac-ink)!important;transform:none!important}
+#dashboard.app-shell .sidebar nav .nav-item.active{background:var(--ac-accent-soft)!important;color:var(--ac-accent)!important;border-color:transparent!important;box-shadow:none!important}
+#dashboard.app-shell .sidebar nav .nav-item span{color:inherit!important}
+#dashboard.app-shell .sidebar-bottom{border:0!important;background:transparent!important;padding-top:8px!important}
+#dashboard.app-shell .sidebar-bottom .nav-item{border-radius:12px!important}
+#dashboard.app-shell .welcome-card{min-height:128px!important;border-radius:20px!important;background:linear-gradient(115deg,#16354d,#155c66)!important;border:0!important;box-shadow:none!important;padding:24px!important;color:#fff!important}
+#dashboard.app-shell .welcome-card *{color:inherit!important}
+#dashboard.app-shell .stats-grid,#dashboard.app-shell .content-grid,#dashboard.app-shell .owner-lower-grid{gap:16px!important}
+#dashboard.app-shell .stat-card,#dashboard.app-shell .panel,#dashboard.app-shell .card,#dashboard.app-shell .metric,
+#dashboard.app-shell .settings-card,#dashboard.app-shell .settings-section,#dashboard.app-shell .account-panel,
+#dashboard.app-shell .table-panel,#dashboard.app-shell .message-thread,#dashboard.app-shell .message-compose,
+#dashboard.app-shell .modal,#dashboard.app-shell .owner-metric-card,#dashboard.app-shell .owner-widget,
+#dashboard.app-shell .manage-section{
+ background:var(--ac-surface)!important;color:var(--ac-ink)!important;border:1px solid var(--ac-border)!important;
+ border-radius:var(--ac-radius)!important;box-shadow:var(--ac-shadow)!important;
+}
+#dashboard.app-shell .stat-card{min-height:132px!important;padding:18px!important;position:relative!important}
+#dashboard.app-shell .stat-card:before{display:none!important}
+#dashboard.app-shell .stat-card .icon,#dashboard.app-shell .stat-card .stat-icon{border-radius:12px!important;background:var(--ac-accent-soft)!important;color:var(--ac-accent)!important;box-shadow:none!important}
+#dashboard.app-shell .panel-heading,#dashboard.app-shell .settings-section-title,#dashboard.app-shell .table-panel thead,
+#dashboard.app-shell .panel>header,#dashboard.app-shell .panel>h3,#dashboard.app-shell .panel>h2{border:0!important;box-shadow:none!important}
+#dashboard.app-shell hr,#dashboard.app-shell .divider,#dashboard.app-shell .separator,#dashboard.app-shell .settings-divider{opacity:.12!important}
+#dashboard.app-shell .settings-page .settings-intro{padding:4px 2px 18px!important}
+#dashboard.app-shell .settings-page .settings-card,#dashboard.app-shell .settings-page .settings-section{padding:20px!important;margin:0 0 14px!important}
+#dashboard.app-shell .settings-page .settings-tabs{display:flex!important;flex-wrap:wrap!important;gap:8px!important;border:0!important}
+#dashboard.app-shell .settings-page .settings-tabs button{background:var(--ac-surface2)!important;color:var(--ac-ink)!important;border:1px solid var(--ac-border)!important;border-radius:12px!important;box-shadow:none!important}
+#dashboard.app-shell .settings-page .settings-tabs button.active{background:var(--ac-accent)!important;color:#fff!important;border-color:var(--ac-accent)!important}
+#dashboard.app-shell input,#dashboard.app-shell textarea,#dashboard.app-shell select{background:var(--ac-surface2)!important;color:var(--ac-ink)!important;border:1px solid var(--ac-border)!important;border-radius:11px!important;box-shadow:none!important}
+#dashboard.app-shell input:focus,#dashboard.app-shell textarea:focus,#dashboard.app-shell select:focus{outline:2px solid color-mix(in srgb,var(--ac-accent) 25%,transparent)!important;border-color:var(--ac-accent)!important}
+#dashboard.app-shell button:not(.nav-item):not(.profile-avatar-button):not(.mobile-nav-toggle){border-radius:11px!important;box-shadow:none!important}
+#dashboard.app-shell .settings-page .theme-preset{background:var(--ac-surface2)!important;color:var(--ac-ink)!important;border:1px solid var(--ac-border)!important;border-radius:14px!important}
+#dashboard.app-shell .settings-page .theme-preset.active{border:1px solid var(--ac-accent)!important;box-shadow:0 0 0 2px var(--ac-accent-soft)!important}
+#dashboard.app-shell .settings-page .theme-preset-preview{border-radius:9px!important}
+#dashboard.app-shell .table-panel table{border-collapse:separate!important;border-spacing:0 4px!important}
+#dashboard.app-shell .table-panel tbody tr{background:var(--ac-surface2)!important}
+#dashboard.app-shell .table-panel tbody td{border:0!important;color:var(--ac-ink)!important}
+#dashboard.app-shell .table-panel tbody td:first-child{border-radius:0 10px 10px 0!important}
+#dashboard.app-shell .table-panel tbody td:last-child{border-radius:10px 0 0 10px!important}
+#dashboard.app-shell .topbar-icon-button{background:var(--ac-surface2)!important;border:1px solid var(--ac-border)!important;border-radius:12px!important;color:var(--ac-ink)!important}
+#dashboard.app-shell .profile-avatar-wrap{width:58px!important;height:58px!important}
+#dashboard.app-shell .profile-avatar-button{width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;border:2px solid var(--ac-border)!important;border-radius:50%!important;box-shadow:none!important;background:var(--ac-surface2)!important}
+#dashboard.app-shell .profile-avatar-button img{object-fit:cover!important;width:100%!important;height:100%!important;border-radius:50%!important}
+#dashboard.app-shell .profile-photo-shape-toggle,#dashboard.app-shell .profile-photo-shape-menu{display:none!important}
+#dashboard.app-shell .topbar-profile{gap:9px!important}
+#dashboard.app-shell .topbar-profile b{max-width:210px!important}
+#dashboard.app-shell .topbar-profile small{color:var(--ac-muted)!important}
+#dashboard.app-shell .stat-card,#dashboard.app-shell .panel,#dashboard.app-shell .settings-card,#dashboard.app-shell .settings-section{transition:box-shadow .16s ease,border-color .16s ease,transform .16s ease!important}
+#dashboard.app-shell .stat-card:hover,#dashboard.app-shell .panel:hover{border-color:color-mix(in srgb,var(--ac-accent) 25%,var(--ac-border))!important;box-shadow:0 9px 24px rgba(15,30,50,.08)!important}
+@media(min-width:1051px){
+ #dashboard.app-shell>.main{padding:24px!important}
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ #dashboard.app-shell .owner-lower-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:1050px){
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:700px){
+ #dashboard.app-shell .main{padding:12px!important}
+ #dashboard.app-shell .topbar{border-radius:14px!important;padding:8px 10px!important}
+ #dashboard.app-shell .welcome-card{min-height:108px!important;padding:18px!important}
+ #dashboard.app-shell .stat-card{min-height:110px!important;padding:13px!important}
+ #dashboard.app-shell .owner-metrics{gap:10px!important}
+ #dashboard.app-shell .owner-lower-grid{grid-template-columns:1fr!important}
+ #dashboard.app-shell .settings-page .settings-card,#dashboard.app-shell .settings-page .settings-section{padding:14px!important}
+}
