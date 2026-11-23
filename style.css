@@ -4244,3 +4244,42 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  #content>.panel:has(.supervisor-form) .table-wrap{overflow-x:auto}
  #content>.panel:has(.supervisor-form) table{min-width:680px}
 }
+
+
+/* FINAL MOBILE NAV FIX: the sidebar is a permanent layout column, not a drawer. */
+@media(max-width:760px){
+ #dashboard.app-shell .sidebar{
+  position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;
+  width:min(35vw,258px)!important;min-width:146px!important;max-width:258px!important;
+  height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  padding:16px 9px calc(14px + env(safe-area-inset-bottom))!important;
+  overflow-x:hidden!important;overflow-y:auto!important;
+  transform:translateX(0)!important;visibility:visible!important;opacity:1!important;
+  z-index:70!important;border-left:1px solid rgba(214,184,117,.45)!important;
+  background:linear-gradient(160deg,rgba(20,35,58,.98),rgba(9,17,31,.99))!important;
+  box-shadow:-10px 0 32px rgba(0,0,0,.24)!important;
+ }
+ #dashboard.app-shell .sidebar .brand{display:flex!important;align-items:center!important;gap:8px!important;padding:3px 3px 14px!important}
+ #dashboard.app-shell .sidebar .brand>div:last-child{display:block!important;min-width:0!important}
+ #dashboard.app-shell .sidebar .brand b{font-size:clamp(11px,2vw,16px)!important}
+ #dashboard.app-shell .sidebar .brand small{font-size:9px!important}
+ #dashboard.app-shell .sidebar .profile{display:flex!important;justify-content:flex-start!important;padding:10px 2px!important;margin:0 0 9px!important}
+ #dashboard.app-shell .sidebar .profile>div:last-child{display:block!important;min-width:0!important}
+ #dashboard.app-shell .sidebar nav{display:grid!important;grid-template-columns:minmax(0,1fr)!important;flex:1 1 auto!important;min-height:0!important;min-width:0!important;overflow:visible!important;gap:4px!important;align-content:start!important}
+ #dashboard.app-shell .sidebar nav .nav-item{display:flex!important;flex:0 0 auto!important;width:100%!important;max-width:none!important;min-width:0!important;min-height:38px!important;flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;gap:7px!important;padding:7px 6px!important;font-size:clamp(9px,1.55vw,12px)!important;line-height:1.35!important;white-space:normal!important;text-align:right!important}
+ #dashboard.app-shell .sidebar nav .nav-item span{display:inline-grid!important;flex:0 0 18px!important;min-width:18px!important;font-size:14px!important}
+ #dashboard.app-shell .sidebar .sidebar-bottom{position:static!important;inset:auto!important;display:grid!important;grid-template-columns:1fr!important;flex:0 0 auto!important;gap:5px!important;margin-top:10px!important;padding:10px 0 0!important;border-top:1px solid rgba(255,255,255,.16)!important;background:transparent!important;box-shadow:none!important}
+ #dashboard.app-shell .sidebar .sidebar-bottom .nav-item{display:flex!important;width:100%!important;min-width:0!important;max-width:none!important;min-height:36px!important;justify-content:flex-start!important;text-align:right!important;padding:7px 6px!important;font-size:10px!important;white-space:normal!important}
+ #dashboard.app-shell .main{width:calc(100% - min(35vw,258px))!important;max-width:none!important;min-width:0!important;margin:0 min(35vw,258px) 0 0!important;padding:13px 10px 24px!important;box-sizing:border-box!important}
+ #dashboard.app-shell .topbar{flex-wrap:wrap!important;gap:7px!important}
+ #dashboard.app-shell .topbar-heading{min-width:0!important}
+ #dashboard.app-shell #mobile-nav-toggle,
+ #dashboard.app-shell .sidebar .mobile-nav-close,
+ #dashboard.app-shell #mobile-nav-backdrop{display:none!important;visibility:hidden!important;pointer-events:none!important}
+}
+@media(max-width:390px){
+ #dashboard.app-shell .sidebar{width:37vw!important;min-width:136px!important;padding-inline:6px!important}
+ #dashboard.app-shell .main{width:63vw!important;margin-right:37vw!important;padding-inline:7px!important}
+ #dashboard.app-shell .sidebar nav .nav-item{font-size:9px!important;gap:5px!important}
+}
