@@ -3980,3 +3980,112 @@ html body #dashboard.app-shell:not([hidden]){
  #dashboard .profile-photo-shape-menu{left:auto;right:0;min-width:162px}
  #dashboard .topbar-profile{max-width:none!important}
 }
+
+
+/* === Academia UI refresh: calmer surfaces, remove harsh divider lines === */
+:root{
+ --ui-radius:20px;
+ --ui-stroke:rgba(142,177,221,.13);
+ --ui-shadow:0 14px 40px rgba(0,0,0,.18);
+ --ui-gap:16px;
+}
+html[data-theme="dark"]{
+ --ui-bg:#081221;--ui-panel:#111f35;--ui-panel2:#172942;--ui-text:#e8f1fc;--ui-muted:#92a8c4;
+ --ui-border:rgba(145,184,232,.13);--ui-line:rgba(145,184,232,.09);
+ --ui-highlight:rgba(255,255,255,.055);--ui-input:#102039;
+}
+html[data-theme="light"]{
+ --ui-bg:#f1f5fb;--ui-panel:#fff;--ui-panel2:#f8faff;--ui-text:#17243a;--ui-muted:#65758d;
+ --ui-border:rgba(39,76,120,.12);--ui-line:rgba(39,76,120,.075);--ui-highlight:rgba(255,255,255,.75);--ui-input:#f4f7fc;
+}
+#dashboard.app-shell{background:var(--ui-bg)!important;color:var(--ui-text)!important}
+#dashboard.app-shell .main{background:transparent!important}
+#dashboard.app-shell .panel,
+#dashboard.app-shell .card,
+#dashboard.app-shell .stat-card,
+#dashboard.app-shell .metric,
+#dashboard.app-shell .settings-card,
+#dashboard.app-shell .settings-section,
+#dashboard.app-shell .account-panel,
+#dashboard.app-shell .table-panel,
+#dashboard.app-shell .message-thread,
+#dashboard.app-shell .message-compose,
+#dashboard.app-shell .modal,
+#dashboard.app-shell .welcome-card,
+#dashboard.app-shell .owner-metric-card,
+#dashboard.app-shell .owner-widget,
+#dashboard.app-shell .manage-section{
+ border:1px solid var(--ui-border)!important;border-radius:var(--ui-radius)!important;
+ box-shadow:var(--ui-shadow)!important;background:linear-gradient(145deg,var(--ui-panel),var(--ui-panel2))!important;
+ color:var(--ui-text)!important;
+}
+#dashboard.app-shell .panel-heading,
+#dashboard.app-shell .settings-section-title,
+#dashboard.app-shell .table thead,
+#dashboard.app-shell .table-panel thead,
+#dashboard.app-shell .panel>header,
+#dashboard.app-shell .panel>h3,
+#dashboard.app-shell .panel>h2{border-bottom:0!important;box-shadow:none!important}
+#dashboard.app-shell hr,
+#dashboard.app-shell .divider,
+#dashboard.app-shell .separator,
+#dashboard.app-shell .settings-divider,
+#dashboard.app-shell .panel-heading:after,
+#dashboard.app-shell .panel-heading:before{border:0!important;height:0!important;background:transparent!important;box-shadow:none!important}
+#dashboard.app-shell .panel-heading{padding-bottom:8px!important;margin-bottom:8px!important}
+#dashboard.app-shell .settings-page,
+#dashboard.app-shell .settings-page *{box-sizing:border-box}
+#dashboard.app-shell .settings-page .settings-card,
+#dashboard.app-shell .settings-page .settings-section{padding:clamp(14px,2vw,22px)!important;margin-bottom:14px!important}
+#dashboard.app-shell .settings-tabs{gap:9px!important;border:0!important}
+#dashboard.app-shell .settings-tabs button{border:1px solid var(--ui-border)!important;border-radius:13px!important;background:var(--ui-panel2)!important;color:var(--ui-text)!important;box-shadow:none!important}
+#dashboard.app-shell .settings-tabs button.active{background:linear-gradient(135deg,#2563eb,#3b82f6)!important;color:white!important;border-color:transparent!important}
+#dashboard.app-shell input,#dashboard.app-shell textarea,#dashboard.app-shell select,
+#dashboard.app-shell .settings-page input,#dashboard.app-shell .settings-page select{
+ border:1px solid var(--ui-border)!important;border-radius:12px!important;background:var(--ui-input)!important;color:var(--ui-text)!important;box-shadow:none!important
+}
+#dashboard.app-shell button:not(.nav-item):not(.profile-avatar-button):not(.mobile-nav-toggle){border-radius:12px!important}
+#dashboard.app-shell .sidebar{background:linear-gradient(180deg,var(--ui-panel),var(--ui-bg))!important;border:1px solid var(--ui-border)!important;border-radius:24px!important;box-shadow:var(--ui-shadow)!important;padding:14px!important}
+#dashboard.app-shell .sidebar nav .nav-item{border:1px solid transparent!important;border-radius:13px!important;background:transparent!important;color:var(--ui-text)!important;box-shadow:none!important;transition:background .16s,border-color .16s,transform .16s!important}
+#dashboard.app-shell .sidebar nav .nav-item:hover{background:var(--ui-highlight)!important;border-color:var(--ui-border)!important;transform:translateX(-2px)}
+#dashboard.app-shell .sidebar nav .nav-item.active{background:linear-gradient(120deg,rgba(45,116,225,.22),rgba(45,116,225,.08))!important;border-color:rgba(63,145,255,.3)!important;color:#67aaff!important}
+#dashboard.app-shell .sidebar-bottom{border-top:0!important;padding-top:8px!important}
+#dashboard.app-shell .topbar{background:linear-gradient(130deg,var(--ui-panel),var(--ui-panel2))!important;border:1px solid var(--ui-border)!important;border-radius:20px!important;box-shadow:var(--ui-shadow)!important}
+#dashboard.app-shell .topbar-icon-button{border:1px solid var(--ui-border)!important;background:var(--ui-panel2)!important}
+#dashboard.app-shell .stat-card{min-height:140px!important;padding:18px!important}
+#dashboard.app-shell .stats-grid,#dashboard.app-shell .content-grid{gap:var(--ui-gap)!important}
+#dashboard.app-shell .welcome-card{background:linear-gradient(120deg,#14325b,#1e4c87)!important;color:#f3f8ff!important;border:0!important}
+#dashboard.app-shell .welcome-card *{color:inherit!important}
+#dashboard.app-shell .profile-avatar-wrap{width:62px!important;height:62px!important}
+#dashboard.app-shell .profile-avatar-button{width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;border-radius:50%!important;border:2px solid var(--ui-border)!important;background:linear-gradient(135deg,#2e5b91,#1c2c46)!important;overflow:hidden!important;box-shadow:0 5px 18px rgba(0,0,0,.18)!important}
+#dashboard.app-shell .profile-avatar-button img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;border-radius:50%!important}
+#dashboard.app-shell .profile-photo-shape-toggle{display:none!important}
+#dashboard.app-shell .profile-photo-shape-menu{display:none!important}
+#dashboard.app-shell .topbar-profile{gap:10px!important}
+#dashboard.app-shell .topbar-profile>div:last-child{max-width:220px!important}
+#dashboard.app-shell .topbar-profile b{max-width:220px!important}
+#dashboard.app-shell .topbar-profile small{color:var(--ui-muted)!important}
+#dashboard.app-shell .settings-page .theme-preset{border:1px solid var(--ui-border)!important;border-radius:16px!important;background:var(--ui-panel2)!important;color:var(--ui-text)!important}
+#dashboard.app-shell .settings-page .theme-preset.active{border-color:rgba(65,143,255,.65)!important;box-shadow:0 0 0 2px rgba(65,143,255,.13)!important}
+#dashboard.app-shell .settings-page .theme-preset-preview{border-radius:11px!important;overflow:hidden!important}
+#dashboard.app-shell .settings-page .settings-intro{margin-bottom:16px!important}
+#dashboard.app-shell .settings-page .settings-intro h2{margin:4px 0 8px!important}
+#dashboard.app-shell .settings-page .settings-intro p{color:var(--ui-muted)!important}
+#dashboard.app-shell .settings-page .settings-page-grid{gap:14px!important}
+#dashboard.app-shell .settings-page label{color:var(--ui-text)!important}
+#dashboard.app-shell .settings-page small{color:var(--ui-muted)!important}
+#dashboard.app-shell .settings-page .settings-tabs button,
+#dashboard.app-shell .settings-page .theme-preset,
+#dashboard.app-shell .settings-page .settings-card,
+#dashboard.app-shell .settings-page .settings-section{transition:background .2s,border-color .2s,box-shadow .2s!important}
+#dashboard.app-shell .table-panel table{border-collapse:separate!important;border-spacing:0 5px!important}
+#dashboard.app-shell .table-panel tbody tr{background:var(--ui-panel2)!important}
+#dashboard.app-shell .table-panel tbody td{border-top:0!important;border-bottom:0!important}
+#dashboard.app-shell .table-panel tbody tr td:first-child{border-radius:0 12px 12px 0!important}
+#dashboard.app-shell .table-panel tbody tr td:last-child{border-radius:12px 0 0 12px!important}
+#dashboard.app-shell .message-thread>*{border-bottom:0!important}
+@media(max-width:700px){
+ #dashboard.app-shell .sidebar{border-radius:0 22px 22px 0!important}
+ #dashboard.app-shell .stat-card{min-height:116px!important}
+ #dashboard.app-shell .settings-page .settings-card,#dashboard.app-shell .settings-page .settings-section{padding:12px!important}
+}
