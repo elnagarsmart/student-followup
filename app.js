@@ -655,7 +655,7 @@ function drawNav(){
   $('dashboard').classList.remove('mobile-actions-open');
   tab=b.dataset.tab;closeMobileNav();drawNav();render();
  });
- $('sidebar-bottom')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>$('dashboard').classList.remove('mobile-actions-open')));
+ document.querySelector('.sidebar-bottom')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>$('dashboard').classList.remove('mobile-actions-open')));
 
  const messageBadge=$('topbar-message-count');
  if(messageBadge){messageBadge.textContent=unreadTotal>99?'99+':String(unreadTotal);messageBadge.hidden=!unreadTotal}
