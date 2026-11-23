@@ -638,7 +638,7 @@ async function refreshPlatformNoticeCount(){
 function drawNav(){
  const items=role==='visitor'?[['overview','الرئيسية','⌂']]:
  role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:
- role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
+ role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['appearance','المظهر والتصاميم','🎨'],['settings','إعدادات حسابي','⚙'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
  [['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['appearance','المظهر والثيمات','🎨']];
  // Keep utility actions out of the phone tab bar; expose them from a compact More menu instead.
  items.push(['mobile-more','المزيد','⋯']);
@@ -840,7 +840,7 @@ async function loadOwnerOverviewMessages(){
 }
 
 async function render(){$('dashboard').classList.toggle('owner-overview-active',tab==='overview');if(role==='visitor'){$('page-title').textContent='نظرة عامة';renderSharedRoleOverview(0,0,0);return;}$('dashboard').classList.toggle('owner-overview-active',tab==='overview');const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات',alerts:'الإنذارات والتنبيهات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length,paidStudentsThisMonth=new Set(payments.filter(p=>String(p.paid_at||'').slice(0,7)===localDate().slice(0,7)&&p.student_id).map(p=>p.student_id)).size;
-if(tab==='appearance'&&(role==='student'||role==='guardian')){
+if(tab==='appearance'&&(role==='student'||role==='guardian'||role==='supervisor')){
  const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','أبيض وذهبي','light']];
  const current=localStorage.getItem('academia-portal-skin')||'blue';
  $('content').innerHTML='<section class="panel"><div class="panel-heading"><div><h2>المظهر والثيمات</h2><p>اختَر الشكل المناسب لحسابك. التغيير يظهر على جهازك فقط ولا يؤثر على حسابات الآخرين.</p></div></div><div class="theme-preset-grid">'+presets.map(([id,label])=>'<button type="button" class="theme-preset '+(id===current?'active':'')+'" data-portal-skin="'+id+'"><span class="theme-preset-preview preset-'+id+'"><i></i><i></i><i></i></span><b>'+label+'</b></button>').join('')+'</div></section>';
@@ -854,6 +854,13 @@ if(tab==='appearance'&&(role==='student'||role==='guardian')){
   applyTheme(mode);
   $('content').querySelectorAll('[data-portal-skin]').forEach(x=>x.classList.toggle('active',x===button));
  });
+}
+if(tab==='settings'&&role==='supervisor'){
+ const skin=localStorage.getItem('academia-portal-skin')||'blue';
+ const labels={blue:'أزرق عصري',green:'أخضر هادئ',violet:'بنفسجي أنيق',midnight:'داكن احترافي',gold:'أبيض وذهبي'};
+ $('content').innerHTML='<section class="panel"><div class="panel-heading"><div><h2>إعدادات حساب المشرف</h2><p>إعدادات شخصية على هذا الجهاز، ولا تغيّر إعدادات الأكاديمية أو صلاحياتك.</p></div></div><div class="settings-actions"><button class="btn secondary" id="supervisor-theme-btn">🌗 تبديل الوضع الفاتح والداكن</button><button class="btn secondary" id="supervisor-design-btn">🎨 تخصيص المظهر — '+esc(labels[skin]||labels.blue)+'</button></div><p class="muted">إعدادات الأكاديمية الرئيسية وإدارة الصلاحيات تظل متاحة للمالك فقط.</p></section>';
+ $('supervisor-theme-btn').onclick=()=>{const mode=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(mode);localStorage.setItem('academia-theme',mode)};
+ $('supervisor-design-btn').onclick=()=>{tab='appearance';drawNav();render()};
 }
 if(tab==='settings'&&role==='owner'){
  const s=mergeAcademySettings(academySettings),p=s.profile,a=s.appearance,m=s.messages,d=s.defaults;
