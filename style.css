@@ -3919,3 +3919,24 @@ html body #dashboard.app-shell:not([hidden]){
  #dashboard.owner-overview-active .owner-shared-detail-list{min-width:0}
  #dashboard.owner-overview-active .owner-overview-message-row{grid-template-columns:36px minmax(0,1fr)}
 }
+
+/* Desktop layout repair: prevent the navigation column from becoming a top-row block. */
+@media(min-width:1051px){
+ html,body,#app{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+ #dashboard.app-shell:not([hidden]){position:relative!important;display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:100vh!important;min-height:100dvh!important;overflow-x:clip!important}
+ #dashboard.app-shell>.sidebar{position:fixed!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;inset-block:0!important;inset-inline-start:auto!important;width:var(--academy-sidebar-width,282px)!important;max-width:var(--academy-sidebar-width,282px)!important;min-width:var(--academy-sidebar-width,282px)!important;height:100vh!important;height:100dvh!important;display:flex!important;flex-direction:column!important;transform:none!important;z-index:40!important;overflow-y:auto!important}
+ #dashboard.app-shell>.main{display:block!important;position:relative!important;float:none!important;inset:auto!important;box-sizing:border-box!important;width:calc(100% - var(--academy-sidebar-width,282px))!important;max-width:none!important;min-width:0!important;margin:0!important;margin-right:var(--academy-sidebar-width,282px)!important;padding:clamp(20px,2.4vw,36px)!important}
+ #dashboard.app-shell .topbar{width:100%!important;max-width:100%!important;min-width:0!important;margin:0 0 22px!important;flex-wrap:nowrap!important}
+ #dashboard.app-shell #content{width:100%!important;max-width:none!important;min-width:0!important;margin:0!important}
+ #dashboard.app-shell #content>*{width:100%!important;max-width:100%!important;min-width:0!important}
+ #dashboard.app-shell .stats-grid{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))!important}
+ #dashboard.app-shell .content-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))!important}
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ #dashboard.app-shell .owner-lower-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ #dashboard.app-shell #mobile-nav-toggle,#dashboard.app-shell #mobile-nav-backdrop{display:none!important}
+}
+@media(min-width:1051px) and (max-width:1250px){
+ #dashboard.app-shell>.main{padding:20px!important}
+ #dashboard.app-shell .owner-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #dashboard.app-shell .owner-lower-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
