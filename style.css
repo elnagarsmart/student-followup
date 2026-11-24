@@ -4516,3 +4516,44 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  html body #dashboard.app-shell>.sidebar{width:100vw!important;min-width:100vw!important}
  html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{flex-basis:68px!important;min-width:68px!important}
 }
+
+
+/* Floating mobile navigation: detached from screen edges, with a compact glass surface. */
+@media(max-width:760px){
+ html body #dashboard.app-shell>.sidebar{
+  position:fixed!important;top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;
+  left:12px!important;right:12px!important;inset-inline:12px!important;
+  width:auto!important;min-width:0!important;max-width:none!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  margin:0!important;padding:7px 7px!important;box-sizing:border-box!important;
+  border:1px solid rgba(214,184,117,.28)!important;border-radius:23px!important;
+  background:rgba(9,13,21,.94)!important;
+  box-shadow:0 10px 32px rgba(0,0,0,.38),0 2px 8px rgba(0,0,0,.2)!important;
+  overflow:visible!important;transform:none!important;visibility:visible!important;opacity:1!important;
+  -webkit-backdrop-filter:blur(24px) saturate(160%)!important;
+  backdrop-filter:blur(24px) saturate(160%)!important;
+ }
+ html body #dashboard.app-shell>.sidebar>nav#nav{
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  min-height:70px!important;max-height:76px!important;height:auto!important;
+  display:flex!important;flex:0 1 auto!important;flex-direction:row!important;
+  align-items:stretch!important;justify-content:space-around!important;
+  overflow-x:auto!important;overflow-y:hidden!important;box-sizing:border-box!important;
+ }
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{
+  min-height:68px!important;height:68px!important;flex:1 0 70px!important;
+  min-width:70px!important;max-width:112px!important;
+ }
+ html body #dashboard.app-shell>.sidebar>.sidebar-bottom{
+  right:10px!important;left:auto!important;bottom:calc(100% + 10px)!important;
+  width:min(250px,76vw)!important;max-width:calc(100vw - 44px)!important;
+ }
+ html body #dashboard.app-shell>.main{
+  padding-bottom:calc(112px + env(safe-area-inset-bottom))!important;
+ }
+}
+@media(max-width:380px){
+ html body #dashboard.app-shell>.sidebar{left:8px!important;right:8px!important;inset-inline:8px!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{flex-basis:66px!important;min-width:66px!important}
+ html body #dashboard.app-shell>.main{padding-bottom:calc(108px + env(safe-area-inset-bottom))!important}
+}
