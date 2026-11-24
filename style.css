@@ -4924,3 +4924,17 @@ html[data-skin="gold"] #dashboard .theme-preset-preview.preset-gold{border-color
 .profile-photo-viewer-actions{display:flex!important;gap:9px!important;justify-content:flex-end!important}
 .profile-photo-viewer-actions button{padding:10px 14px!important;border-radius:9px!important;background:#293648!important;color:#eaf0f7!important;border:1px solid #44566d!important}
 .profile-photo-viewer-actions .profile-photo-viewer-done{background:#b88a36!important;color:#17130b!important;border-color:#987331!important}
+
+
+/* Functional accent selection: all accent palettes apply to real controls and highlights. */
+html[data-accent="blue"]{--academy-accent:#3979d8;--academy-accent-strong:#2d65bd;--academy-accent-soft:#e9f2ff}
+html[data-accent="teal"]{--academy-accent:#198b8b;--academy-accent-strong:#116f70;--academy-accent-soft:#dff3f1}
+html[data-accent="violet"]{--academy-accent:#7664c8;--academy-accent-strong:#5b4ba7;--academy-accent-soft:#ece8ff}
+html[data-accent="rose"]{--academy-accent:#c45a75;--academy-accent-strong:#9f405b;--academy-accent-soft:#fde9ef}
+html[data-accent="amber"]{--academy-accent:#c5a052;--academy-accent-strong:#987536;--academy-accent-soft:#f2e5c6}
+#dashboard button:focus-visible,#dashboard input:focus-visible,#dashboard select:focus-visible,#dashboard textarea:focus-visible{
+ outline:2px solid var(--academy-accent)!important;outline-offset:2px!important
+}
+#dashboard .settings-save-button,#dashboard .settings-preview-button,#dashboard .stat-card .stat-icon{
+ border-color:var(--academy-accent)!important
+}
