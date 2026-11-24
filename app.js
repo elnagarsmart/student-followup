@@ -244,7 +244,7 @@ function openProfilePhotoViewer(){
  const img=overlay.querySelector('.profile-photo-viewer-image'),range=overlay.querySelector('.profile-photo-zoom'),out=overlay.querySelector('.profile-photo-zoom-value');
  const current=Number(session.user.user_metadata?.academia_photo_zoom||1);range.value=String(Math.max(1,Math.min(2.5,current)));
  db.storage.from('student-photos').createSignedUrl(path,3600).then(({data,error})=>{if(!error&&data?.signedUrl)img.src=data.signedUrl});
- const updateZoom=()=>{img.style.transform='scale('+range.value+')';out.textContent=Math.round(Number(range.value)*100)+'%'};range.oninput=updateZoom;updateZoom();
+ const updateZoom=()=>{img.style.transform='scale('+range.value+')';out.textContent=Math.round(Number(range.value)*100)+'%'};range.oninput=updateZoom;range.onchange=()=>saveProfilePhotoZoom(range.value).catch(error=>msg('تعذر حفظ حجم الصورة: '+error.message));updateZoom();
  const close=()=>overlay.remove();overlay.querySelector('.profile-photo-viewer-close').onclick=close;overlay.querySelector('.profile-photo-viewer-done').onclick=close;
  overlay.querySelector('.profile-photo-change').onclick=()=>{close();$('profile-photo-input')?.click()};
  overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
