@@ -4938,3 +4938,57 @@ html[data-accent="amber"]{--academy-accent:#c5a052;--academy-accent-strong:#9875
 #dashboard .settings-save-button,#dashboard .settings-preview-button,#dashboard .stat-card .stat-icon{
  border-color:var(--academy-accent)!important
 }
+
+
+/* Owner welcome title: pin Arabic copy to the RIGHT edge. */
+#dashboard.owner-overview-active .owner-welcome{
+ direction:rtl!important;justify-content:flex-start!important;text-align:right!important;
+}
+#dashboard.owner-overview-active .owner-welcome-copy{
+ direction:rtl!important;text-align:right!important;
+ margin-inline-start:0!important;margin-inline-end:auto!important;
+ width:auto!important;max-width:100%!important;
+}
+#dashboard.owner-overview-active .owner-welcome-copy p,
+#dashboard.owner-overview-active .owner-welcome-copy h2,
+#dashboard.owner-overview-active .owner-welcome-copy span{
+ direction:rtl!important;text-align:right!important;
+}
+/* Finish the classic no-glass look on the dashboard hero and metric blocks. */
+#dashboard.owner-overview-active .owner-welcome{
+ background:#1d3048!important;border:1px solid #344962!important;
+ box-shadow:0 5px 16px rgba(5,12,22,.12)!important;
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#dashboard.owner-overview-active .owner-welcome::before,
+#dashboard.owner-overview-active .owner-welcome::after{display:none!important;content:none!important}
+#dashboard.owner-overview-active .owner-metric-card{
+ background:#192536!important;border:1px solid #34465d!important;
+ box-shadow:0 3px 10px rgba(0,0,0,.10)!important;
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#dashboard.owner-overview-active .owner-metric-card.tone-fees{background:#2b261e!important;border-color:#5b4930!important}
+#dashboard.owner-overview-active .owner-metric-card.tone-attendance{background:#1b2a3d!important;border-color:#344c68!important}
+#dashboard.owner-overview-active .owner-metric-card.tone-students{background:#20263a!important;border-color:#454365!important}
+#dashboard.owner-overview-active .owner-metric-card.tone-paid{background:#1b302e!important;border-color:#355b52!important}
+#dashboard.owner-overview-active .owner-widget{
+ background:#172334!important;border:1px solid #33445a!important;
+ box-shadow:0 3px 10px rgba(0,0,0,.08)!important;
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-welcome{background:#26384e!important;color:#fff!important}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-metric-card,
+html[data-theme="light"] #dashboard.owner-overview-active .owner-widget{
+ background:#fff!important;color:#283342!important;border-color:#d7dce3!important;
+}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-metric-card * ,
+html[data-theme="light"] #dashboard.owner-overview-active .owner-widget *{color:inherit}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-welcome-copy h2{color:#fff!important}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-welcome-copy p{color:#e0e8f2!important}
+html[data-theme="light"] #dashboard.owner-overview-active .owner-welcome-copy span{color:#e4ebf4!important}
+html[data-skin="gold"][data-theme="dark"] #dashboard.owner-overview-active .owner-welcome{background:#3a2d1d!important;border-color:#80653b!important}
+html[data-skin="gold"][data-theme="dark"] #dashboard.owner-overview-active .owner-metric-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard.owner-overview-active .owner-widget{background:#211b13!important;border-color:#574529!important}
+html[data-skin="gold"][data-theme="dark"] #dashboard.owner-overview-active .owner-metric-card * ,
+html[data-skin="gold"][data-theme="dark"] #dashboard.owner-overview-active .owner-widget *{color:#f2ead9!important}
+html[data-skin="gold"][data-theme="light"] #dashboard.owner-overview-active .owner-welcome{background:#493b25!important;border-color:#b29254!important}
