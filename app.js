@@ -232,9 +232,29 @@ async function renderMyAcademiaProfilePhoto(){
  avatar.dataset.photoShape=shape;
  const path=session.user.user_metadata?.academia_photo_path||'';
  if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
- try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية">'}
+ try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">}
  catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
 }
+
+function openProfilePhotoViewer(){
+ const path=session?.user?.user_metadata?.academia_photo_path;if(!path)return;
+ const overlay=document.createElement('div');overlay.className='profile-photo-viewer';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','عرض الصورة الشخصية');
+ overlay.innerHTML='<div class="profile-photo-viewer-card"><button type="button" class="profile-photo-viewer-close" aria-label="إغلاق">×</button><img class="profile-photo-viewer-image" alt="الصورة الشخصية"><div class="profile-photo-viewer-controls"><label>حجم الصورة <input class="profile-photo-zoom" type="range" min="1" max="2.5" step=".05" value="1"></label><output class="profile-photo-zoom-value">100%</output></div><div class="profile-photo-viewer-actions"><button type="button" class="profile-photo-change">تغيير الصورة</button><button type="button" class="profile-photo-viewer-done">تم</button></div></div>';
+ document.body.appendChild(overlay);
+ const img=overlay.querySelector('.profile-photo-viewer-image'),range=overlay.querySelector('.profile-photo-zoom'),out=overlay.querySelector('.profile-photo-zoom-value');
+ const current=Number(session.user.user_metadata?.academia_photo_zoom||1);range.value=String(Math.max(1,Math.min(2.5,current)));
+ db.storage.from('student-photos').createSignedUrl(path,3600).then(({data,error})=>{if(!error&&data?.signedUrl)img.src=data.signedUrl});
+ const updateZoom=()=>{img.style.transform='scale('+range.value+')';out.textContent=Math.round(Number(range.value)*100)+'%'};range.oninput=updateZoom;updateZoom();
+ const close=()=>overlay.remove();overlay.querySelector('.profile-photo-viewer-close').onclick=close;overlay.querySelector('.profile-photo-viewer-done').onclick=close;
+ overlay.querySelector('.profile-photo-change').onclick=()=>{close();$('profile-photo-input')?.click()};
+ overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+}
+async function saveProfilePhotoZoom(value){
+ if(!session?.user)return;const zoom=Math.max(1,Math.min(2.5,Number(value)||1));
+ const {data,error}=await db.auth.updateUser({data:{academia_photo_zoom:zoom}});if(error)throw error;
+ session={...session,user:data.user};await renderMyAcademiaProfilePhoto();
+}
+
 async function saveProfilePhotoShape(shape){
  if(!session?.user?.id||!['circle','square','rectangle'].includes(shape))return;
  const {data,error}=await db.auth.updateUser({data:{academia_photo_shape:shape}});if(error)throw error;
@@ -275,7 +295,7 @@ async function uploadMyAcademiaProfilePhoto(file){
   throw error;
  }
 }
-$('profile-avatar-button')?.addEventListener('click',()=>$('profile-photo-input')?.click());
+$('profile-avatar-button')?.addEventListener('click',()=>{if(session?.user?.user_metadata?.academia_photo_path)openProfilePhotoViewer();else $('profile-photo-input')?.click();});
 $('profile-photo-shape-toggle')?.addEventListener('click',()=>{
  const menu=$('profile-photo-shape-menu');if(!menu)return;menu.hidden=!menu.hidden;
  $('profile-photo-shape-toggle').setAttribute('aria-expanded',String(!menu.hidden));
@@ -896,7 +916,7 @@ if(tab==='settings'&&role==='owner'){
      <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
      <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
      <label>القائمة الجانبية<select name="sidebar"><option value="expanded" ${a.sidebar==='expanded'?'selected':''}>كاملة</option><option value="compact" ${a.sidebar==='compact'?'selected':''}>أيقونات فقط على الكمبيوتر</option></select></label>
-      <label class="settings-span-2 glass-strength-field"><span>قوة الزجاج والشفافية <output id="glass-intensity-value">${Number(a.glassIntensity??34)}%</output></span><input name="glassIntensity" type="range" min="0" max="100" step="1" value="${Number(a.glassIntensity??34)}"><small>0 = مظهر هادئ شبه صلب · 100 = ضبابية زجاجية أوضح. يتغير الشكل فورًا قبل الحفظ.</small></label>
+      
     </div>
     <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
    </section>
@@ -959,10 +979,10 @@ if(tab==='settings'&&role==='owner'){
   </section>
  </div>`;
  const form=$('academy-settings-form');
- const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:v.get('glassIntensity')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;applyGlassIntensity(next.appearance.glassIntensity);const out=$('glass-intensity-value');if(out)out.textContent=next.appearance.glassIntensity+'%';};
+ const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:v.get('glassIntensity')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;applyGlassIntensity(0);};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
  form.elements.glassIntensity.oninput=preview;
-  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
+  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=(skin==='midnight'||skin==='gold')?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
  const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
  const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
  $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
