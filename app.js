@@ -1048,7 +1048,7 @@ if(tab==='alerts'){
     const className=item.severity==='critical'?'critical':item.severity==='info'?'info':'warning';
     const stamp=item.created_at?new Date(item.created_at).toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}):'';
     const readStatus=item.read_at?'<span class="platform-alert-read">✓ تمت القراءة</span>':'<button type="button" class="button ghost" data-alert-read="'+esc(item.id)+'">تحديد كمقروء</button>';
-    return '<article class="platform-alert-card '+className+' '+(item.read_at?'is-read':'is-unread')+'"><div class="platform-alert-card-top"><span class="platform-alert-severity">'+(severityLabel[item.severity]||'تنبيه')+'</span><time>'+esc(stamp)+'</time></div><h3>'+esc(item.title)+'</h3><p>'+esc(item.message)+'</p><div class="platform-alert-card-bottom">'+readStatus+'</div></article>';
+    return '<article class="platform-alert-card '+className+' '+(item.read_at?'is-read':'is-unread')+'"><div class="platform-alert-card-top"><span class="platform-alert-severity">'+(severityLabel[item.severity]||'تنبيه')+'</span><time>'+esc(stamp)+'</time></div><h3>'+esc(item.title)+'</h3><p>'+esc(item.message)+'</p><div class="platform-alert-card-bottom">'+readStatus+'<button type="button" class="button danger" data-alert-delete="'+esc(item.id)+'">حذف</button></div></article>';
    }).join('');
    root.querySelectorAll('[data-alert-read]').forEach(button=>button.onclick=async()=>{
     button.disabled=true;
@@ -1056,6 +1056,20 @@ if(tab==='alerts'){
      await run(db.from('platform_user_notices').update({read_at:new Date().toISOString()}).eq('id',button.dataset.alertRead).eq('user_id',session.user.id));
      await refreshPlatformNoticeCount();drawNav();await render();
     }catch(error){button.disabled=false;msg('تعذر تحديث التنبيه: '+error.message)}
+   });
+   root.querySelectorAll('[data-alert-delete]').forEach(button=>button.onclick=async()=>{
+    const id=button.dataset.alertDelete;
+    if(!id||!confirm('هل تريد حذف هذا التنبيه نهائيًا؟'))return;
+    button.disabled=true;button.textContent='جار الحذف…';
+    try{
+     await run(db.from('platform_user_notices').delete().eq('id',id).eq('user_id',session.user.id));
+     await refreshPlatformNoticeCount();drawNav();await render();
+     msg('تم حذف التنبيه.');
+    }catch(error){
+     button.disabled=false;button.textContent='حذف';
+     msg('تعذر حذف التنبيه: '+error.message);
+     console.error('Platform alert deletion failed:',error);
+    }
    });
   }
  }catch(error){root.innerHTML='<p class="error-message">تعذر تحميل التنبيهات. حدّث الصفحة وحاول مرة أخرى.</p>';console.error('Platform alerts unavailable:',error)}
