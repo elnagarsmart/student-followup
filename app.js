@@ -668,10 +668,8 @@ function drawNav(){
   return '<button class="nav-item '+(tab===id?'active':'')+'" data-tab="'+id+'" title="'+esc(n)+'" aria-label="'+esc(n)+'"><span>'+i+'</span>'+n+(count?'<b class="nav-count" aria-label="'+count+' '+label+'">'+(count>99?'99+':count)+'</b>':'')+'</button>';
  }).join('');
  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  $('dashboard').classList.remove('mobile-actions-open');
   tab=b.dataset.tab;closeMobileNav();drawNav();render();
  });
- document.querySelector('.sidebar-bottom')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>$('dashboard').classList.remove('mobile-actions-open')));
 
  const messageBadge=$('topbar-message-count');
  if(messageBadge){messageBadge.textContent=unreadTotal>99?'99+':String(unreadTotal);messageBadge.hidden=!unreadTotal}
