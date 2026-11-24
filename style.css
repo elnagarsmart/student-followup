@@ -4840,3 +4840,87 @@ html[data-font-size="normal"] #dashboard{zoom:1}
 html[data-font-size="large"] #dashboard{zoom:1.08}
 html[data-font-size="small"] #auth{zoom:.96}
 html[data-font-size="large"] #auth{zoom:1.05}
+
+
+/* Hard disable glass/blur/translucent styling in every page and overlay. */
+#dashboard *,#auth *,body>*{
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#dashboard .glass,#dashboard [class*="glass"],#dashboard .liquid-glass,
+#dashboard .glass-panel,#dashboard .glass-card,#dashboard .floating-glass{
+ background-image:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+#dashboard .sidebar,#dashboard .mobile-bottom-nav,#dashboard .mobile-nav-menu,
+#dashboard .nav-item,#dashboard .panel,#dashboard .stat-card,#dashboard .settings-card,
+#dashboard .modal-card,#dashboard .notice-card,#dashboard .table-wrap{
+ opacity:1!important;
+}
+/* Gold-on-charcoal theme with warm, suede-like matte surfaces. */
+html[data-skin="gold"][data-theme="dark"] body{background:#100e0b!important;color:#f1eadb!important}
+html[data-skin="gold"][data-theme="dark"] #dashboard .panel,
+html[data-skin="gold"][data-theme="dark"] #dashboard .stat-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .settings-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .table-wrap,
+html[data-skin="gold"][data-theme="dark"] #dashboard .student-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .supervisor-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .group-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .payment-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .attendance-card,
+html[data-skin="gold"][data-theme="dark"] #dashboard .message-panel{
+ background:#211b13!important;border-color:#4b3b24!important;color:#f2ead9!important
+}
+html[data-skin="gold"][data-theme="dark"] #dashboard .sidebar{
+ background:#17120b!important;border-color:#574426!important;color:#f0e5ca!important
+}
+html[data-skin="gold"][data-theme="dark"] #dashboard .nav-item{color:#c9bda5!important}
+html[data-skin="gold"][data-theme="dark"] #dashboard .nav-item.active{
+ background:#332716!important;color:#f0d28d!important;border-color:#8c6d38!important;box-shadow:inset -3px 0 #c5a052!important
+}
+html[data-skin="gold"][data-theme="dark"] #dashboard .stat-icon,
+html[data-skin="gold"][data-theme="dark"] #dashboard .settings-section-icon{
+ background:#3b2d18!important;color:#e4bc68!important;border:1px solid #68512d!important
+}
+html[data-skin="gold"][data-theme="dark"] #dashboard input,
+html[data-skin="gold"][data-theme="dark"] #dashboard select,
+html[data-skin="gold"][data-theme="dark"] #dashboard textarea{
+ background:#18140f!important;color:#f2ead9!important;border-color:#59462b!important
+}
+html[data-skin="gold"][data-theme="dark"] #dashboard .welcome{
+ background:#3a2c19!important;border-color:#82663a!important;color:#f5e5bd!important
+}
+html[data-skin="gold"][data-theme="light"] #dashboard .panel,
+html[data-skin="gold"][data-theme="light"] #dashboard .stat-card,
+html[data-skin="gold"][data-theme="light"] #dashboard .settings-card,
+html[data-skin="gold"][data-theme="light"] #dashboard .table-wrap{
+ background:#fffdf8!important;border-color:#e2d4b4!important;color:#30291e!important
+}
+html[data-skin="gold"][data-theme="light"] #dashboard .sidebar{
+ background:#f3ead8!important;border-color:#ddc79c!important;color:#30291e!important
+}
+html[data-skin="gold"][data-theme="light"] #dashboard .sidebar .nav-item{color:#56472e!important}
+html[data-skin="gold"][data-theme="light"] #dashboard .sidebar .nav-item.active{
+ background:#e6d2a5!important;color:#45331a!important;border-color:#bd9950!important;box-shadow:inset -3px 0 #b68a38!important
+}
+html[data-skin="gold"][data-theme="light"] #dashboard input,
+html[data-skin="gold"][data-theme="light"] #dashboard select,
+html[data-skin="gold"][data-theme="light"] #dashboard textarea{
+ background:#fff!important;color:#30291e!important;border-color:#d8c8a6!important
+}
+html[data-skin="gold"] #dashboard button,html[data-skin="gold"] #dashboard .nav-item.active,
+html[data-skin="gold"] #dashboard .settings-save-button{
+ accent-color:#c5a052!important
+}
+html[data-skin="gold"] #dashboard .settings-preview .preview-dot{background:#c5a052!important}
+html[data-skin="gold"] #dashboard .theme-preset-preview.preset-gold{border-color:#c5a052!important}
+/* Modal photo preview and persisted crop/zoom controls. */
+.profile-photo-viewer{position:fixed!important;inset:0!important;z-index:9999!important;display:grid!important;place-items:center!important;padding:18px!important;background:#0b0e13!important}
+.profile-photo-viewer-card{width:min(94vw,540px)!important;max-height:92dvh!important;overflow:auto!important;padding:20px!important;border:1px solid #3a4658!important;border-radius:16px!important;background:#171f2b!important;color:#eef2f7!important;box-shadow:0 14px 45px #0005!important;display:grid!important;gap:15px!important}
+.profile-photo-viewer-close{justify-self:start!important;font-size:25px!important;width:38px!important;height:38px!important;border-radius:8px!important;background:#273243!important;color:#fff!important;border:1px solid #45546a!important}
+.profile-photo-viewer-image{width:min(72vw,340px)!important;height:min(72vw,340px)!important;max-height:48dvh!important;object-fit:contain!important;justify-self:center!important;transition:transform .1s linear!important}
+.profile-photo-viewer-controls{display:flex!important;align-items:center!important;gap:12px!important}
+.profile-photo-viewer-controls label{flex:1!important;display:grid!important;gap:8px!important;color:#e8edf5!important;font-size:13px!important}
+.profile-photo-viewer-controls input{width:100%!important;accent-color:#c5a052!important}
+.profile-photo-zoom-value{min-width:50px!important;color:#d6b56b!important;font-weight:700!important}
+.profile-photo-viewer-actions{display:flex!important;gap:9px!important;justify-content:flex-end!important}
+.profile-photo-viewer-actions button{padding:10px 14px!important;border-radius:9px!important;background:#293648!important;color:#eaf0f7!important;border:1px solid #44566d!important}
+.profile-photo-viewer-actions .profile-photo-viewer-done{background:#b88a36!important;color:#17130b!important;border-color:#987331!important}
