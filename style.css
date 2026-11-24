@@ -4706,3 +4706,137 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{min-height:42px!important;padding:8px 9px!important;font-size:11px!important}
  html body #dashboard.app-shell>.sidebar>.sidebar-bottom{gap:4px!important;padding-top:9px!important}
 }
+
+
+/* ===== Academia Classic UI refresh: solid surfaces, no glass ===== */
+:root{
+ --academy-accent:#b88a36;--academy-accent-strong:#8e6824;--academy-accent-soft:#f2e7cf;
+ --classic-border:#2a3548;--classic-surface:#151e2d;--classic-surface-2:#1b2738;
+ --classic-text:#e9edf3;--classic-muted:#aab5c4;
+ --academy-font-scale:1;
+}
+html[data-skin="gold"],html[data-accent="amber"]{
+ --academy-accent:#c5a052;--academy-accent-strong:#987536;--academy-accent-soft:#f2e5c6;
+}
+html[data-theme="dark"] body{background:#0b111b!important;background-image:none!important;color:#e9edf3!important}
+html[data-theme="light"] body{background:#f1f2f4!important;background-image:none!important;color:#242a33!important}
+#dashboard .sidebar,#dashboard .main,#dashboard .topbar,#dashboard .panel,#dashboard .stat-card,
+#dashboard .settings-card,#dashboard .welcome,#dashboard .date-chip,#dashboard .profile,
+#dashboard .academy-identity-strip,#dashboard .settings-preview,#dashboard .settings-check,
+#dashboard .message-panel,#dashboard .table-wrap,#dashboard .modal-card,#dashboard .notice-card,
+#dashboard .empty-state,#dashboard .attendance-card,#dashboard .payment-card,
+#dashboard .student-card,#dashboard .supervisor-card,#dashboard .group-card,
+#dashboard .topbar-actions,#dashboard .topbar-profile,#dashboard .nav-item,
+#dashboard .sidebar-bottom .nav-item,#dashboard .theme-toggle,
+#dashboard .mobile-bottom-nav,#dashboard .mobile-nav-menu,#dashboard .mobile-nav-more-menu{
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ background-image:none!important;opacity:1!important;
+}
+#dashboard .panel,#dashboard .stat-card,#dashboard .settings-card,#dashboard .table-wrap,
+#dashboard .student-card,#dashboard .supervisor-card,#dashboard .group-card,#dashboard .payment-card,
+#dashboard .attendance-card,#dashboard .message-panel{
+ border:1px solid var(--classic-border)!important;border-radius:14px!important;
+ box-shadow:0 3px 10px rgba(0,0,0,.08)!important;
+}
+html[data-theme="dark"] #dashboard .panel,html[data-theme="dark"] #dashboard .stat-card,
+html[data-theme="dark"] #dashboard .settings-card,html[data-theme="dark"] #dashboard .table-wrap,
+html[data-theme="dark"] #dashboard .student-card,html[data-theme="dark"] #dashboard .supervisor-card,
+html[data-theme="dark"] #dashboard .group-card,html[data-theme="dark"] #dashboard .payment-card,
+html[data-theme="dark"] #dashboard .attendance-card,html[data-theme="dark"] #dashboard .message-panel{
+ background:#151e2d!important;color:#e9edf3!important;
+}
+html[data-theme="light"] #dashboard .panel,html[data-theme="light"] #dashboard .stat-card,
+html[data-theme="light"] #dashboard .settings-card,html[data-theme="light"] #dashboard .table-wrap,
+html[data-theme="light"] #dashboard .student-card,html[data-theme="light"] #dashboard .supervisor-card,
+html[data-theme="light"] #dashboard .group-card,html[data-theme="light"] #dashboard .payment-card,
+html[data-theme="light"] #dashboard .attendance-card,html[data-theme="light"] #dashboard .message-panel{
+ background:#fff!important;color:#252b34!important;border-color:#d7dce3!important;
+}
+html[data-theme="dark"] #dashboard .panel *,html[data-theme="dark"] #dashboard .stat-card *,
+html[data-theme="dark"] #dashboard .settings-card *,html[data-theme="dark"] #dashboard .table-wrap *{
+ border-color:inherit;
+}
+html[data-theme="light"] #dashboard .panel *,html[data-theme="light"] #dashboard .stat-card *,
+html[data-theme="light"] #dashboard .settings-card *,html[data-theme="light"] #dashboard .table-wrap *{
+ color:inherit;
+}
+html[data-theme="light"] #dashboard .muted,html[data-theme="light"] #dashboard small,
+html[data-theme="light"] #dashboard .panel-heading p,html[data-theme="light"] #dashboard .settings-section-head p,
+html[data-theme="light"] #dashboard .settings-fields small{color:#626b78!important}
+html[data-theme="dark"] #dashboard .muted,html[data-theme="dark"] #dashboard small,
+html[data-theme="dark"] #dashboard .panel-heading p,html[data-theme="dark"] #dashboard .settings-section-head p,
+html[data-theme="dark"] #dashboard .settings-fields small{color:#aab5c4!important}
+html[data-theme="light"] #dashboard input,html[data-theme="light"] #dashboard select,
+html[data-theme="light"] #dashboard textarea,html[data-theme="light"] #dashboard .search{
+ background:#fff!important;color:#252b34!important;border-color:#cbd2dc!important;
+}
+html[data-theme="dark"] #dashboard input,html[data-theme="dark"] #dashboard select,
+html[data-theme="dark"] #dashboard textarea,html[data-theme="dark"] #dashboard .search{
+ background:#0f1723!important;color:#edf1f7!important;border-color:#344256!important;
+}
+#dashboard button,#dashboard .nav-item,#dashboard .theme-preset,#dashboard .settings-preview-button{
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html[data-theme="light"] #dashboard button:not(.nav-item):not(.text-button):not(.channel-btn):not(.theme-toggle){
+ background:#f0f2f5!important;color:#2c3440!important;border-color:#d3d9e2!important;
+}
+html[data-theme="dark"] #dashboard button:not(.nav-item):not(.text-button):not(.channel-btn):not(.theme-toggle){
+ background:#1c293b!important;color:#e6ebf3!important;border-color:#34445a!important;
+}
+#dashboard .settings-save-button,#dashboard .ai-primary-btn,#dashboard .stack button,
+#dashboard .form-grid button,#dashboard .message-compose-row button{
+ background:var(--academy-accent)!important;color:#10151d!important;border-color:var(--academy-accent-strong)!important;
+}
+html[data-theme="light"] #dashboard .welcome{background:#26364b!important;color:#fff!important}
+html[data-theme="dark"] #dashboard .welcome{background:#26364b!important;color:#f3f5f8!important;border:1px solid #3c4d63!important}
+html[data-skin="gold"] #dashboard .welcome{background:#3c3325!important;border:1px solid #8e713d!important}
+html[data-skin="gold"] #dashboard .stat-icon,html[data-skin="gold"] #dashboard .settings-section-icon{
+ background:#342c1e!important;color:#dfbc72!important;border-color:#725a32!important
+}
+html[data-skin="gold"] #dashboard .nav-item.active{
+ background:#3a3021!important;color:#f2d18a!important;border-color:#9b7c44!important
+}
+html[data-skin="gold"] #dashboard .sidebar{
+ background:#17150f!important;border-color:#5b4829!important
+}
+html[data-skin="gold"] #dashboard .sidebar .nav-item.active{
+ background:#332919!important;color:#f1d28d!important;box-shadow:inset -3px 0 #c5a052!important
+}
+html[data-theme="dark"] #dashboard .sidebar{background:#121a26!important;color:#e7edf5!important;border-color:#2c384a!important}
+html[data-theme="light"] #dashboard .sidebar{background:#e6e9ee!important;color:#252b34!important;border-color:#cbd2dc!important}
+html[data-theme="light"] #dashboard .sidebar .brand b,html[data-theme="light"] #dashboard .sidebar .nav-item{color:#283342!important}
+html[data-theme="light"] #dashboard .sidebar .brand small,html[data-theme="light"] #dashboard .sidebar .profile small{color:#5d6978!important}
+html[data-theme="light"] #dashboard .sidebar .nav-item.active{background:#e5d4ad!important;color:#523d19!important;border-color:#c5a052!important}
+html[data-theme="light"] #dashboard .sidebar .nav-item span{color:inherit!important}
+#dashboard .welcome{text-align:right!important;direction:rtl!important}
+#dashboard .welcome h2,#dashboard .welcome p{margin-inline-start:0!important;margin-inline-end:auto!important;text-align:right!important}
+#dashboard .sidebar{border-radius:20px!important}
+@media(min-width:761px){
+ #dashboard .sidebar{position:fixed!important;top:18px!important;right:18px!important;bottom:18px!important;left:auto!important;width:250px!important;min-width:250px!important;height:auto!important;padding:20px 14px!important;border:1px solid #303c4e!important;border-radius:20px!important;box-shadow:0 8px 28px #0002!important;overflow:auto!important}
+ #dashboard .main{width:calc(100% - 290px)!important;max-width:none!important;margin:0 272px 0 18px!important;padding:24px 22px!important;min-width:0!important}
+ html[data-sidebar="compact"] #dashboard .sidebar{width:88px!important;min-width:88px!important}
+ html[data-sidebar="compact"] #dashboard .main{width:calc(100% - 128px)!important;margin-right:110px!important}
+}
+@media(max-width:760px){
+ #dashboard .sidebar,#dashboard .mobile-bottom-nav,#dashboard .mobile-nav-menu{background:#121a26!important;border:1px solid #303c4e!important;box-shadow:0 8px 26px #0002!important;backdrop-filter:none!important}
+}
+html[data-theme="light"] #dashboard .mobile-bottom-nav,html[data-theme="light"] #dashboard .mobile-nav-menu{
+ background:#f7f8fa!important;color:#283342!important;border-color:#d3d9e2!important;
+}
+html[data-theme="dark"] #dashboard .mobile-bottom-nav,html[data-theme="dark"] #dashboard .mobile-nav-menu{
+ background:#121a26!important;color:#e6edf6!important;border-color:#303c4e!important;
+}
+#dashboard .topbar,#dashboard .academy-identity-strip{background:transparent!important;box-shadow:none!important;border-color:transparent!important}
+#dashboard .topbar-profile,#dashboard .topbar-actions{background:transparent!important}
+#dashboard .profile-avatar-button{background:#27364b!important;border:1px solid #3b4b62!important;box-shadow:none!important}
+html[data-theme="light"] #dashboard .profile-avatar-button{background:#dbe1e9!important;color:#273342!important}
+html[data-skin="gold"] #dashboard .profile-avatar-button{background:#3b3020!important;border-color:#8f713e!important;color:#f0d18e!important}
+#dashboard .theme-preset-preview,#dashboard .theme-preset{backdrop-filter:none!important}
+html[data-theme="light"] #dashboard .theme-preset{background:#fff!important;color:#283342!important}
+html[data-theme="dark"] #dashboard .theme-preset{background:#182334!important;color:#e6edf5!important}
+html[data-skin="gold"] #dashboard .theme-preset.active{border-color:#c5a052!important;box-shadow:0 0 0 2px #c5a05222!important}
+html[data-font-size="small"] #dashboard{zoom:.94}
+html[data-font-size="normal"] #dashboard{zoom:1}
+html[data-font-size="large"] #dashboard{zoom:1.08}
+html[data-font-size="small"] #auth{zoom:.96}
+html[data-font-size="large"] #auth{zoom:1.05}
