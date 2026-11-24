@@ -233,7 +233,7 @@ async function renderMyAcademiaProfilePhoto(){
  avatar.dataset.photoShape=shape;
  const path=session.user.user_metadata?.academia_photo_path||'';
  if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
- try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">';
+ try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">'}
  catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
 }
 
