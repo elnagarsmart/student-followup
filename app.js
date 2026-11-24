@@ -658,21 +658,16 @@ async function refreshPlatformNoticeCount(){
 }
 function drawNav(){
  const items=role==='visitor'?[['overview','الرئيسية','⌂']]:
- role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','استيراد ذكي','✦'],['settings','الإعدادات','⚙']]:
+ role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['settings','الإعدادات','⚙']]:
  role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['appearance','المظهر والتصاميم','🎨'],['settings','إعدادات حسابي','⚙'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
  [['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['appearance','المظهر والثيمات','🎨']];
- // Show the More tab on phones only. Desktop users have the full side navigation and utility actions.
- if(window.matchMedia('(max-width:760px)').matches)items.push(['mobile-more','المزيد','⋯']);
+ // No generic More tab; utility actions are available in their proper settings/toolbar locations.
  $('nav').innerHTML=items.map(([id,n,i])=>{
   const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:id==='alerts'?unreadPlatformNotices:0;
   const label=id==='alerts'?'تنبيهات غير مقروءة':'رسائل غير مقروءة';
   return '<button class="nav-item '+(tab===id?'active':'')+'" data-tab="'+id+'" title="'+esc(n)+'" aria-label="'+esc(n)+'"><span>'+i+'</span>'+n+(count?'<b class="nav-count" aria-label="'+count+' '+label+'">'+(count>99?'99+':count)+'</b>':'')+'</button>';
  }).join('');
  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  if(b.dataset.tab==='mobile-more'){
-   const opened=$('dashboard').classList.toggle('mobile-actions-open');
-   b.classList.toggle('active',opened);b.setAttribute('aria-expanded',String(opened));return;
-  }
   $('dashboard').classList.remove('mobile-actions-open');
   tab=b.dataset.tab;closeMobileNav();drawNav();render();
  });
@@ -866,7 +861,7 @@ if(tab==='appearance'&&(role==='student'||role==='guardian'||role==='supervisor'
  const current=localStorage.getItem('academia-portal-skin')||'blue';
  $('content').innerHTML='<section class="panel"><div class="panel-heading"><div><h2>المظهر والثيمات</h2><p>اختَر الشكل المناسب لحسابك. التغيير يظهر على جهازك فقط ولا يؤثر على حسابات الآخرين.</p></div></div><div class="theme-preset-grid">'+presets.map(([id,label])=>'<button type="button" class="theme-preset '+(id===current?'active':'')+'" data-portal-skin="'+id+'"><span class="theme-preset-preview preset-'+id+'"><i></i><i></i><i></i></span><b>'+label+'</b></button>').join('')+'</div></section>';
  $('content').querySelectorAll('[data-portal-skin]').forEach(button=>button.onclick=()=>{
-  const skin=button.dataset.portalSkin,mode=skin==='midnight'?'dark':'light';
+  const skin=button.dataset.portalSkin,mode=(skin==='midnight'||skin==='gold')?'dark':'light';
   localStorage.setItem('academia-portal-skin',skin);
   document.documentElement.dataset.skin=skin;
   document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
