@@ -147,7 +147,8 @@ document.addEventListener('click',e=>{
 },true);
 $('nav')?.addEventListener('click',e=>{if(e.target.closest('button'))closeMobileNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
-window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
+let lastMobileNavigation=window.matchMedia('(max-width:760px)').matches;
+window.addEventListener('resize',()=>{const mobile=window.matchMedia('(max-width:760px)').matches;if(mobile!==lastMobileNavigation){lastMobileNavigation=mobile;if(!mobile)closeMobileNav();if(session)drawNav()}});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
  appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:34},
@@ -232,7 +233,7 @@ async function renderMyAcademiaProfilePhoto(){
  avatar.dataset.photoShape=shape;
  const path=session.user.user_metadata?.academia_photo_path||'';
  if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
- try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">}
+ try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">';
  catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
 }
 
@@ -336,7 +337,7 @@ function applyPortalThemePreference(){
  if(!['blue','green','violet','midnight','gold'].includes(skin))return;
  document.documentElement.dataset.skin=skin;
  document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
- applyTheme(skin==='midnight'?'dark':'light');
+ applyTheme((skin==='midnight'||skin==='gold')?'dark':'light');
 }
 async function saveAcademySettings(next){
  const value=mergeAcademySettings(next),id=ownerId||session.user.id;
@@ -657,11 +658,11 @@ async function refreshPlatformNoticeCount(){
 }
 function drawNav(){
  const items=role==='visitor'?[['overview','الرئيسية','⌂']]:
- role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:
+ role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','استيراد ذكي','✦'],['settings','الإعدادات','⚙']]:
  role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['appearance','المظهر والتصاميم','🎨'],['settings','إعدادات حسابي','⚙'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
  [['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['appearance','المظهر والثيمات','🎨']];
- // Keep utility actions out of the phone tab bar; expose them from a compact More menu instead.
- items.push(['mobile-more','المزيد','⋯']);
+ // Show the More tab on phones only. Desktop users have the full side navigation and utility actions.
+ if(window.matchMedia('(max-width:760px)').matches)items.push(['mobile-more','المزيد','⋯']);
  $('nav').innerHTML=items.map(([id,n,i])=>{
   const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:id==='alerts'?unreadPlatformNotices:0;
   const label=id==='alerts'?'تنبيهات غير مقروءة':'رسائل غير مقروءة';
@@ -861,7 +862,7 @@ async function loadOwnerOverviewMessages(){
 
 async function render(){$('dashboard').classList.toggle('owner-overview-active',tab==='overview');if(role==='visitor'){$('page-title').textContent='نظرة عامة';renderSharedRoleOverview(0,0,0);return;}$('dashboard').classList.toggle('owner-overview-active',tab==='overview');const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات',alerts:'الإنذارات والتنبيهات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length,paidStudentsThisMonth=new Set(payments.filter(p=>String(p.paid_at||'').slice(0,7)===localDate().slice(0,7)&&p.student_id).map(p=>p.student_id)).size;
 if(tab==='appearance'&&(role==='student'||role==='guardian'||role==='supervisor')){
- const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','أبيض وذهبي','light']];
+ const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','ذهبي كلاسيكي','dark']];
  const current=localStorage.getItem('academia-portal-skin')||'blue';
  $('content').innerHTML='<section class="panel"><div class="panel-heading"><div><h2>المظهر والثيمات</h2><p>اختَر الشكل المناسب لحسابك. التغيير يظهر على جهازك فقط ولا يؤثر على حسابات الآخرين.</p></div></div><div class="theme-preset-grid">'+presets.map(([id,label])=>'<button type="button" class="theme-preset '+(id===current?'active':'')+'" data-portal-skin="'+id+'"><span class="theme-preset-preview preset-'+id+'"><i></i><i></i><i></i></span><b>'+label+'</b></button>').join('')+'</div></section>';
  $('content').querySelectorAll('[data-portal-skin]').forEach(button=>button.onclick=()=>{
