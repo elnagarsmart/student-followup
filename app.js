@@ -147,7 +147,8 @@ document.addEventListener('click',e=>{
 },true);
 $('nav')?.addEventListener('click',e=>{if(e.target.closest('button'))closeMobileNav()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileNav()});
-window.addEventListener('resize',()=>{if(window.innerWidth>760)closeMobileNav()});
+let lastMobileNavigation=window.matchMedia('(max-width:760px)').matches;
+window.addEventListener('resize',()=>{const mobile=window.matchMedia('(max-width:760px)').matches;if(mobile!==lastMobileNavigation){lastMobileNavigation=mobile;if(!mobile)closeMobileNav();if(session)drawNav()}});
 const DEFAULT_ACADEMY_SETTINGS={
  profile:{academyName:'أكاديميا',displayName:'',contactPhone:'',whatsappSupportPhone:'+201011960156',address:'',logoUrl:''},
  appearance:{theme:'light',skin:'blue',accent:'blue',fontSize:'normal',density:'comfortable',sidebar:'expanded',glassIntensity:34},
@@ -232,9 +233,29 @@ async function renderMyAcademiaProfilePhoto(){
  avatar.dataset.photoShape=shape;
  const path=session.user.user_metadata?.academia_photo_path||'';
  if(!path){avatar.textContent=String(session.user.user_metadata?.full_name||session.user.user_metadata?.name||session.user.email||'أ').trim().charAt(0)||'أ';return}
- try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية">'}
+ try{const {data,error}=await db.storage.from('student-photos').createSignedUrl(path,3600);if(error)throw error;avatar.innerHTML='<img src="'+esc(data.signedUrl)+'" alt="الصورة الشخصية" style="transform:scale('+Math.max(1,Math.min(2.5,Number(session.user.user_metadata?.academia_photo_zoom||1)))+')">'}
  catch(error){console.warn('Profile photo unavailable:',error.message);avatar.textContent='أ'}
 }
+
+function openProfilePhotoViewer(){
+ const path=session?.user?.user_metadata?.academia_photo_path;if(!path)return;
+ const overlay=document.createElement('div');overlay.className='profile-photo-viewer';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','عرض الصورة الشخصية');
+ overlay.innerHTML='<div class="profile-photo-viewer-card"><button type="button" class="profile-photo-viewer-close" aria-label="إغلاق">×</button><img class="profile-photo-viewer-image" alt="الصورة الشخصية"><div class="profile-photo-viewer-controls"><label>حجم الصورة <input class="profile-photo-zoom" type="range" min="1" max="2.5" step=".05" value="1"></label><output class="profile-photo-zoom-value">100%</output></div><div class="profile-photo-viewer-actions"><button type="button" class="profile-photo-change">تغيير الصورة</button><button type="button" class="profile-photo-viewer-done">تم</button></div></div>';
+ document.body.appendChild(overlay);
+ const img=overlay.querySelector('.profile-photo-viewer-image'),range=overlay.querySelector('.profile-photo-zoom'),out=overlay.querySelector('.profile-photo-zoom-value');
+ const current=Number(session.user.user_metadata?.academia_photo_zoom||1);range.value=String(Math.max(1,Math.min(2.5,current)));
+ db.storage.from('student-photos').createSignedUrl(path,3600).then(({data,error})=>{if(!error&&data?.signedUrl)img.src=data.signedUrl});
+ const updateZoom=()=>{img.style.transform='scale('+range.value+')';out.textContent=Math.round(Number(range.value)*100)+'%'};range.oninput=updateZoom;range.onchange=()=>saveProfilePhotoZoom(range.value).catch(error=>msg('تعذر حفظ حجم الصورة: '+error.message));updateZoom();
+ const close=()=>overlay.remove();overlay.querySelector('.profile-photo-viewer-close').onclick=close;overlay.querySelector('.profile-photo-viewer-done').onclick=close;
+ overlay.querySelector('.profile-photo-change').onclick=()=>{close();$('profile-photo-input')?.click()};
+ overlay.addEventListener('click',e=>{if(e.target===overlay)close()});
+}
+async function saveProfilePhotoZoom(value){
+ if(!session?.user)return;const zoom=Math.max(1,Math.min(2.5,Number(value)||1));
+ const {data,error}=await db.auth.updateUser({data:{academia_photo_zoom:zoom}});if(error)throw error;
+ session={...session,user:data.user};await renderMyAcademiaProfilePhoto();
+}
+
 async function saveProfilePhotoShape(shape){
  if(!session?.user?.id||!['circle','square','rectangle'].includes(shape))return;
  const {data,error}=await db.auth.updateUser({data:{academia_photo_shape:shape}});if(error)throw error;
@@ -275,7 +296,7 @@ async function uploadMyAcademiaProfilePhoto(file){
   throw error;
  }
 }
-$('profile-avatar-button')?.addEventListener('click',()=>$('profile-photo-input')?.click());
+$('profile-avatar-button')?.addEventListener('click',()=>{if(session?.user?.user_metadata?.academia_photo_path)openProfilePhotoViewer();else $('profile-photo-input')?.click();});
 $('profile-photo-shape-toggle')?.addEventListener('click',()=>{
  const menu=$('profile-photo-shape-menu');if(!menu)return;menu.hidden=!menu.hidden;
  $('profile-photo-shape-toggle').setAttribute('aria-expanded',String(!menu.hidden));
@@ -308,7 +329,7 @@ function applyAcademyAppearance(){
  document.documentElement.dataset.fontSize=appearance.fontSize||'normal';
  document.documentElement.dataset.density=appearance.density||'comfortable';
  document.documentElement.dataset.sidebar=appearance.sidebar||'expanded';
- applyGlassIntensity(appearance.glassIntensity);
+ applyGlassIntensity(0);
  applyAcademiaIdentity();
 }
 function applyPortalThemePreference(){
@@ -316,7 +337,7 @@ function applyPortalThemePreference(){
  if(!['blue','green','violet','midnight','gold'].includes(skin))return;
  document.documentElement.dataset.skin=skin;
  document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
- applyTheme(skin==='midnight'?'dark':'light');
+ applyTheme((skin==='midnight'||skin==='gold')?'dark':'light');
 }
 async function saveAcademySettings(next){
  const value=mergeAcademySettings(next),id=ownerId||session.user.id;
@@ -637,25 +658,18 @@ async function refreshPlatformNoticeCount(){
 }
 function drawNav(){
  const items=role==='visitor'?[['overview','الرئيسية','⌂']]:
- role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['ai-import','المساعد الذكي','✦'],['settings','الإعدادات','⚙']]:
+ role==='owner'?[['overview','نظرة عامة','▦'],['students','الطلاب','♙'],['groups','المجموعات','▤'],['attendance','الحضور','✓'],['payments','المدفوعات','ج.م'],['portals','حسابات البوابة','◎'],['supervisors','المشرفون','♧'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢'],['settings','الإعدادات','⚙']]:
  role==='supervisor'?[['overview','ملخص','▦'],...(can('view_students')||can('manage_students')?[['students','الطلاب','♙']]:[]),...(can('view_attendance')||can('manage_attendance')?[['attendance','الحضور','✓']]:[]),...(can('view_payments')||can('manage_payments')?[['payments','المدفوعات','ج.م']]:[]),...(can('manage_portals')?[['portals','حسابات البوابة','◎']]:[]),['appearance','المظهر والتصاميم','🎨'],['settings','إعدادات حسابي','⚙'],['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['alerts','الإنذارات','♢']]:
  [['overview','ملخصي','▦'],['attendance','سجل الحضور','✓'],...(role==='guardian'?[['payments','المدفوعات','ج.م']]:[]),['messages','الرسائل','<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5.8A2.8 2.8 0 0 1 6.8 3h10.4A2.8 2.8 0 0 1 20 5.8v7.4a2.8 2.8 0 0 1-2.8 2.8H10l-4.5 3.1v-3.1h-.7A2.8 2.8 0 0 1 2 13.2V5.8Z"/><path d="M7 8h10M7 11.5h6"/></svg>'],['appearance','المظهر والثيمات','🎨']];
- // Keep utility actions out of the phone tab bar; expose them from a compact More menu instead.
- items.push(['mobile-more','المزيد','⋯']);
+ // No generic More tab; utility actions are available in their proper settings/toolbar locations.
  $('nav').innerHTML=items.map(([id,n,i])=>{
   const count=id==='messages'&&academySettings?.notifications?.messageBadges!==false?unreadTotal:id==='alerts'?unreadPlatformNotices:0;
   const label=id==='alerts'?'تنبيهات غير مقروءة':'رسائل غير مقروءة';
   return '<button class="nav-item '+(tab===id?'active':'')+'" data-tab="'+id+'" title="'+esc(n)+'" aria-label="'+esc(n)+'"><span>'+i+'</span>'+n+(count?'<b class="nav-count" aria-label="'+count+' '+label+'">'+(count>99?'99+':count)+'</b>':'')+'</button>';
  }).join('');
  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  if(b.dataset.tab==='mobile-more'){
-   const opened=$('dashboard').classList.toggle('mobile-actions-open');
-   b.classList.toggle('active',opened);b.setAttribute('aria-expanded',String(opened));return;
-  }
-  $('dashboard').classList.remove('mobile-actions-open');
   tab=b.dataset.tab;closeMobileNav();drawNav();render();
  });
- document.querySelector('.sidebar-bottom')?.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>$('dashboard').classList.remove('mobile-actions-open')));
 
  const messageBadge=$('topbar-message-count');
  if(messageBadge){messageBadge.textContent=unreadTotal>99?'99+':String(unreadTotal);messageBadge.hidden=!unreadTotal}
@@ -841,11 +855,11 @@ async function loadOwnerOverviewMessages(){
 
 async function render(){$('dashboard').classList.toggle('owner-overview-active',tab==='overview');if(role==='visitor'){$('page-title').textContent='نظرة عامة';renderSharedRoleOverview(0,0,0);return;}$('dashboard').classList.toggle('owner-overview-active',tab==='overview');const title={overview:role==='owner'?'نظرة عامة':'ملخص الحساب',supervisors:'إدارة المشرفين',students:'إدارة الطلاب',groups:'مجموعات الطلاب',attendance:'الحضور والغياب',payments:'المدفوعات',portals:'حسابات البوابة',messages:'الرسائل والمحادثات',alerts:'الإنذارات والتنبيهات','ai-import':'المساعد الذكي',settings:'إعدادات أكاديميا'};$('page-title').textContent=title[tab]||'لوحة التحكم';if(tab!=='attendance'&&activeAttendanceScanner)void stopAttendanceCamera();if(tab!=='messages'&&messageRefreshTimer){clearInterval(messageRefreshTimer);messageRefreshTimer=null;}const total=payments.reduce((a,p)=>a+Number(p.amount||0),0),present=attendance.filter(a=>a.status==='حاضر').length,paidStudentsThisMonth=new Set(payments.filter(p=>String(p.paid_at||'').slice(0,7)===localDate().slice(0,7)&&p.student_id).map(p=>p.student_id)).size;
 if(tab==='appearance'&&(role==='student'||role==='guardian'||role==='supervisor')){
- const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','أبيض وذهبي','light']];
+ const presets=[['blue','أزرق عصري','light'],['green','أخضر هادئ','light'],['violet','بنفسجي أنيق','light'],['midnight','داكن احترافي','dark'],['gold','ذهبي كلاسيكي','dark']];
  const current=localStorage.getItem('academia-portal-skin')||'blue';
  $('content').innerHTML='<section class="panel"><div class="panel-heading"><div><h2>المظهر والثيمات</h2><p>اختَر الشكل المناسب لحسابك. التغيير يظهر على جهازك فقط ولا يؤثر على حسابات الآخرين.</p></div></div><div class="theme-preset-grid">'+presets.map(([id,label])=>'<button type="button" class="theme-preset '+(id===current?'active':'')+'" data-portal-skin="'+id+'"><span class="theme-preset-preview preset-'+id+'"><i></i><i></i><i></i></span><b>'+label+'</b></button>').join('')+'</div></section>';
  $('content').querySelectorAll('[data-portal-skin]').forEach(button=>button.onclick=()=>{
-  const skin=button.dataset.portalSkin,mode=skin==='midnight'?'dark':'light';
+  const skin=button.dataset.portalSkin,mode=(skin==='midnight'||skin==='gold')?'dark':'light';
   localStorage.setItem('academia-portal-skin',skin);
   document.documentElement.dataset.skin=skin;
   document.documentElement.dataset.accent=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';
@@ -896,7 +910,7 @@ if(tab==='settings'&&role==='owner'){
      <label>حجم الخط<select name="fontSize"><option value="small" ${a.fontSize==='small'?'selected':''}>صغير</option><option value="normal" ${a.fontSize==='normal'?'selected':''}>متوسط</option><option value="large" ${a.fontSize==='large'?'selected':''}>كبير</option></select></label>
      <label>كثافة العرض<select name="density"><option value="comfortable" ${a.density==='comfortable'?'selected':''}>مريح</option><option value="compact" ${a.density==='compact'?'selected':''}>مضغوط — صفوف أقل ارتفاعًا</option></select></label>
      <label>القائمة الجانبية<select name="sidebar"><option value="expanded" ${a.sidebar==='expanded'?'selected':''}>كاملة</option><option value="compact" ${a.sidebar==='compact'?'selected':''}>أيقونات فقط على الكمبيوتر</option></select></label>
-      <label class="settings-span-2 glass-strength-field"><span>قوة الزجاج والشفافية <output id="glass-intensity-value">${Number(a.glassIntensity??34)}%</output></span><input name="glassIntensity" type="range" min="0" max="100" step="1" value="${Number(a.glassIntensity??34)}"><small>0 = مظهر هادئ شبه صلب · 100 = ضبابية زجاجية أوضح. يتغير الشكل فورًا قبل الحفظ.</small></label>
+      
     </div>
     <div class="settings-preview"><span class="preview-dot"></span><span>معاينة اللون والمظهر</span><button type="button" id="settings-preview-theme" class="settings-preview-button">تبديل سريع</button></div>
    </section>
@@ -959,10 +973,10 @@ if(tab==='settings'&&role==='owner'){
   </section>
  </div>`;
  const form=$('academy-settings-form');
- const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:v.get('glassIntensity')}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;applyGlassIntensity(next.appearance.glassIntensity);const out=$('glass-intensity-value');if(out)out.textContent=next.appearance.glassIntensity+'%';};
+ const preview=()=>{const v=new FormData(form);const next=mergeAcademySettings({...s,profile:{academyName:v.get('academyName'),displayName:v.get('displayName'),contactPhone:v.get('contactPhone'),whatsappSupportPhone:v.get('whatsappSupportPhone'),address:v.get('address')},appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:0}});document.documentElement.dataset.theme=next.appearance.theme;document.documentElement.dataset.skin=next.appearance.skin;document.documentElement.dataset.accent=next.appearance.accent;document.documentElement.dataset.fontSize=next.appearance.fontSize;document.documentElement.dataset.density=next.appearance.density;document.documentElement.dataset.sidebar=next.appearance.sidebar;applyGlassIntensity(0);};
  form.querySelectorAll('select[name="theme"],select[name="accent"],select[name="fontSize"],select[name="density"],select[name="sidebar"]').forEach(el=>el.onchange=preview);
- form.elements.glassIntensity.oninput=preview;
-  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=skin==='midnight'?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
+ 
+  form.querySelectorAll('[data-theme-preset]').forEach(button=>button.onclick=()=>{const skin=button.dataset.themePreset;form.elements.skin.value=skin;form.elements.theme.value=(skin==='midnight'||skin==='gold')?'dark':'light';form.elements.accent.value=({blue:'blue',green:'teal',violet:'violet',midnight:'blue',gold:'amber'})[skin]||'blue';form.querySelectorAll('[data-theme-preset]').forEach(item=>item.classList.toggle('active',item===button));preview();});
  const settingsSections=[...document.querySelectorAll('.settings-page .settings-card')];
  const showSettingsSection=id=>{settingsSections.forEach(section=>{section.hidden=section.id!==id;});$('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>{const active=button.dataset.settingsJump===id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false');});const actions=document.querySelector('.settings-actions');if(actions)actions.hidden=id==='settings-security'||id==='settings-data';const status=$('settings-status');if(status)status.hidden=id==='settings-security'||id==='settings-data';};
  $('settings-tabs').querySelectorAll('[data-settings-jump]').forEach(button=>button.onclick=()=>showSettingsSection(button.dataset.settingsJump));
@@ -976,7 +990,7 @@ if(tab==='settings'&&role==='owner'){
   if(!Number.isFinite(monthlyFee)||monthlyFee<0){msg('راجع قيمة الرسوم الافتراضية.');return}
   const next=mergeAcademySettings({
    profile:{academyName:String(v.get('academyName')||'').trim(),displayName:String(v.get('displayName')||'').trim(),contactPhone:String(v.get('contactPhone')||'').trim(),whatsappSupportPhone:String(v.get('whatsappSupportPhone')||'').trim(),address:String(v.get('address')||'').trim(),logoUrl:String(v.get('logoUrl')||'').trim()},
-   appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:Number(v.get('glassIntensity')||0)},
+   appearance:{theme:v.get('theme'),skin:v.get('skin'),accent:v.get('accent'),fontSize:v.get('fontSize'),density:v.get('density'),sidebar:v.get('sidebar'),glassIntensity:0},
    messages:{signature:String(v.get('messageSignature')||'').trim(),soundNotifications:v.get('soundNotifications')==='on',templates:{attendance:String(v.get('attendanceTemplate')||''),absence:String(v.get('absenceTemplate')||''),payment:String(v.get('paymentTemplate')||''),welcome:String(v.get('welcomeTemplate')||'')}},
    notifications:{messageBadges:v.get('messageBadges')==='on',vibration:v.get('vibration')==='on',browserAlerts:v.get('browserAlerts')==='on'},
    defaults:{monthlyFee,groupId:String(v.get('defaultGroup')||''),codePrefix:String(v.get('codePrefix')||'ST-').trim(),attendanceSession:String(v.get('attendanceSession')||'الجلسة الأولى').trim()||'الجلسة الأولى',autoGenerateCode:v.get('autoGenerateCode')==='on'}
