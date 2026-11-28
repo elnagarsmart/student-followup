@@ -4715,3 +4715,41 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  .whatsapp-support-launcher{width:48px;min-height:48px;padding:0!important;gap:0;border-radius:50%!important}
  .whatsapp-support-launcher span{display:none}
 }
+
+/* === Light-mode readability fix: owner overview text on white cards ===
+   The app-shell theme forces .owner-metric-card/.owner-widget backgrounds to
+   var(--ac-surface) (white in light mode) while the owner-overview block
+   hardcodes light text colors. Scope corrections to light mode only so the
+   dark glass design is untouched. */
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-metric-copy>span{color:#33465e}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-metric-copy strong{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-metric-copy small{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-metric-link,
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-link{background:var(--ac-surface2,#f6f9fc);border-color:rgba(28,55,88,.12);color:#12233a;box-shadow:none}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-metric-link b,
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-link b{color:#0e9f91}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-heading{border-bottom-color:rgba(28,55,88,.08)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-heading h3{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-heading p{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-widget-icon{color:#2f6fd0;background:rgba(47,111,208,.08);border-color:rgba(47,111,208,.20)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-donut::before{background:#fff;border-color:rgba(28,55,88,.08);box-shadow:inset 0 4px 12px rgba(17,38,65,.05)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-donut strong{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-donut span{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-legend>div{color:#33465e;border-bottom-color:rgba(28,55,88,.08)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-legend b{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-payment-row{border-bottom-color:rgba(28,55,88,.08)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-payment-date{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-payment-person b{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-payment-person small{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-payment-row>strong{color:#0c8a6c}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-overview-message-row{border-bottom-color:rgba(28,55,88,.08)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-message-avatar{background:linear-gradient(145deg,#e3ecf7,#ccd9e8);border-color:rgba(28,55,88,.12);color:#2c4a73}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-message-copy b{color:#12233a}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-message-copy time,
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-message-copy small{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-message-copy p{color:#33465e}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .owner-empty{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .empty-row{color:#5d7089}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active footer{color:#5d7089;border-color:rgba(28,55,88,.10)}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active footer span{color:#7a8ba1}
+html:not([data-theme="dark"]) #dashboard.owner-overview-active .mobile-nav-toggle{border-color:rgba(28,55,88,.14)!important;background:var(--ac-surface2,#f6f9fc)!important;color:#16253a!important}
