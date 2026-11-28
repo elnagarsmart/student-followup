@@ -4846,3 +4846,38 @@ html:not([data-theme="dark"]) #dashboard.owner-overview-active .mobile-nav-toggl
  html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item>span,
  html body #dashboard.app-shell>.sidebar>.sidebar-bottom>.nav-item{transition:none!important}
 }
+
+/* === Dark floating pill tab bar with sliding glass highlight (phones) ===
+   Highlight element .tab-glass is moved by tabbar.js with transform only. */
+@media(max-width:760px){
+ html body #dashboard.app-shell>.sidebar,
+ html[data-theme="dark"] body #dashboard.app-shell>.sidebar{
+  border-radius:32px!important;padding:6px!important;
+  background:rgba(24,26,32,.88)!important;border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.06)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(180%)!important;backdrop-filter:blur(28px) saturate(180%)!important;
+ }
+ html body #dashboard.app-shell>.sidebar>nav#nav{position:relative!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item,
+ html[data-theme="dark"] body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{color:#a9b0bd!important;touch-action:pan-x!important;-webkit-tap-highlight-color:transparent}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item.active{color:#fff!important;touch-action:none!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item.tab-hover{color:#fff!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item::after,
+ html[data-theme="dark"] body #dashboard.app-shell>.sidebar>nav#nav>.nav-item::after{display:none!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav>.tab-glass{
+  position:absolute;inset-inline-start:0;top:0;height:56px;margin:0;border-radius:28px;pointer-events:none;z-index:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.14));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 4px 14px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.30);
+  -webkit-backdrop-filter:blur(8px) brightness(1.15);backdrop-filter:blur(8px) brightness(1.15);
+  opacity:0;will-change:transform,width;
+  transition:transform .42s cubic-bezier(.34,1.3,.5,1),width .3s ease,opacity .2s ease;
+ }
+ html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{z-index:1!important}
+ html body #dashboard.app-shell>.sidebar>nav#nav.tab-dragging{scroll-snap-type:none!important}
+ html body #dashboard.app-shell>.sidebar>.sidebar-bottom{background:rgba(24,26,32,.96)!important;border-color:rgba(255,255,255,.08)!important}
+ html body #dashboard.app-shell>.sidebar>.sidebar-bottom>.nav-item{background:rgba(255,255,255,.07)!important;color:#e9edf3!important}
+ html body #dashboard.app-shell>.sidebar>.sidebar-bottom>.nav-item.logout{color:#ffb6b6!important}
+}
+@media(min-width:761px){.tab-glass{display:none}}
+@media(prefers-reduced-motion:reduce){html body #dashboard.app-shell>.sidebar>nav#nav>.tab-glass{transition:none!important}}
