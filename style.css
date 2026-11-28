@@ -4706,3 +4706,12 @@ html[data-theme="dark"] #content>.panel:has(.supervisor-form) table th{backgroun
  html body #dashboard.app-shell>.sidebar>nav#nav>.nav-item{min-height:42px!important;padding:8px 9px!important;font-size:11px!important}
  html body #dashboard.app-shell>.sidebar>.sidebar-bottom{gap:4px!important;padding-top:9px!important}
 }
+
+/* Login screen: top buttons scroll with the page; compact WhatsApp launcher on phones */
+.auth-shell .auth-top-actions{position:absolute!important;top:calc(12px + env(safe-area-inset-top))!important;left:14px!important;z-index:5!important}
+.auth-shell{padding-top:68px!important}
+@media(max-width:700px){
+ .auth-shell{padding-bottom:96px!important}
+ .whatsapp-support-launcher{width:48px;min-height:48px;padding:0!important;gap:0;border-radius:50%!important}
+ .whatsapp-support-launcher span{display:none}
+}
